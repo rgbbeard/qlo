@@ -1,0 +1,87 @@
+.album-slider {
+	position:fixed;
+	top:0px;
+	left:0px;
+	bottom:0px;
+	right:0px;
+	margin:0px auto;
+	user-select:none;
+}
+.album-slider .images-container {
+	margin-left:auto;
+	margin-right:auto;
+}
+.album-slider img:first-child {
+	display:block;
+}
+.album-slider img {
+	display:none;
+	width:80%;
+	margin:0px auto;
+}
+
+.album-slider #close-slider,
+.album-slider #slider-counter,
+.album-slider .slider-button#next,
+.album-slider .slider-button#prev,
+.albums #next-album,
+.albums #prev-album {
+	position:fixed;
+	text-align:center;
+	cursor:pointer;
+}
+
+.album-slider #close-slider,
+.album-slider #slider-counter,
+.album-slider .slider-button#next,
+.album-slider .slider-button#prev {
+	background-color:rgba(255, 255, 255, 0.5);
+	color:#fff;
+}
+
+.album-slider #close-slider,
+.album-slider #slider-counter {
+	top:5px;
+	padding:5px 10px;
+	z-index:15;
+}
+.album-slider #slider-counter {
+	right:8px;
+	border-radius:3px;
+}
+.album-slider #close-slider {
+	left:8px;
+	border-radius:100px;
+}
+
+.album-slider #close-slider:hover,
+.album-slider .slider-button#next:hover,
+.album-slider .slider-button#prev:hover {
+	background-color:#fff;
+	color:#000;
+}
+
+.slider-button,
+.albums #next-album,
+.albums #prev-album {
+	top:50%;
+	padding:10px;
+}
+
+.slider-button#prev,
+.albums #prev-album {
+	left:0px;
+	border-top-right-radius:3px;
+	border-bottom-right-radius:3px;
+}
+
+.slider-button#next,
+.albums #next-album {
+	right:0px;
+	border-top-left-radius:3px;
+	border-bottom-left-radius:3px;
+}
+.album {
+	display:none;
+	margin:0px auto;
+}
