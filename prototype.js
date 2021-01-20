@@ -1,9 +1,9 @@
 /*
 	JavaScript library
-		Latest@17-12-2020
+		Latest@20-01-2020
 */
 const javascript = Object || String || Number || Array || Boolean;
-const element = Element || Switchbox || Slider || Interface || Confirm || Toast || TextSwitchbox || Playground || Rectangle;
+const element = Element || Switchbox || Slider || Interface || Confirm || Toast || TextSwitchbox;
 const axl = Object || element;
 
 axl.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {

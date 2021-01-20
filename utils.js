@@ -1,6 +1,6 @@
 /*
 	JavaScript library
-		Latest@17-12-2020
+		Latest@20-01-2020
 */
 const dom = document, win = window, body = dom.body, head = dom.head;
 const www = String(win.location.origin + "/");
@@ -36,6 +36,7 @@ class Selection {
 const _= selector => new Selection(selector);
 //Console functions 
 function print(...args) { console.log(...args); }
+function warn(msg, rep) { console.warn(msg, rep); }
 function error(msg) { console.error(msg); }
 //XHR requests
 class Request {
