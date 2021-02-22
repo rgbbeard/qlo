@@ -40,61 +40,85 @@ function warn(msg, rep) { console.warn(msg, rep); }
 function error(msg) { console.error(msg); }
 //XHR requests
 class Request {
-	constructor(request = {
-		method: "",
+	#xhr = null;
+	#headers = [];
+	#data = [];
+	#done = function() {};
+	#debugger = false;
+	constructor(params = {
+		method: "get",
 		url: "",
-		data: [],
-		done: function () { }
+		headers: {
+			"Content-type": 'application/x-www-form-urlencoded'
+		},
+		data: {},
+		done: function () {},
+		async: true,
+		debugger: false
 	}) {
-		const xhr = new XMLHttpRequest();
-		const methods = ["GET", "POST"];
-		//Check method
-		if (request.method === undefined) {
-			error("Method parameter is required.");
-		}
-		else {
-			if (methods.inArray(request.method) === true && typeof request.method === "string" && request.method.length > 0) {
-				//Check url
-				if (request.url === undefined || request.url === null || typeof request.url !== "string" && request.url.length > 0) {
-					error("Url parameter is required.");
-				}
-				else {
-					xhr.open(request.method, request.url);
-					xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-					//GET method
-					if (request.method.toUpperCase() === "GET") {
-						if (request.done !== undefined && request.done !== null && request.done.isFunction() === true) {
-							xhr.load(function () {
-								request.done(xhr.status, xhr.response);
-							});
-						}
-					}
-					//POST method
-					else if (request.method.toUpperCase() === "POST") {
-						if (request.data !== undefined && request.data !== null) {
-							let data = [];
-							for (let key in request.data) {
-								if (request.data.hasOwnProperty(key)) {
-									data.push(`${key}=${request.data[key]}`);
-								}
-							}
-							xhr.send(data.join("&"));
-							if (request.done !== undefined && request.done !== null && request.done.isFunction() === true) {
-								xhr.load(function () {
-									request.done(xhr.status, xhr.response);
-								});
-							}
-						}
-						else {
-							error("Data parameter in post request is required.");
-						}
-					}
-				}
+		this.#xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility
+		this.#debugger = Boolean(params.debugger);
+		const methods = ["get", "post", "delete", "put"];
+		//Normalize method name
+		let method = params.method.toString().toLowerCase();
+		//Check essential variables
+		if(params.url.length > 0 && params.url !== undefined && params.url !== null && methods.inArray(method)) {
+			if(params.headers.isArray() && params.headers.length > 0) {
+				this.#headers = params.headers;
+				this.#setHeaders();
 			}
-			else {
-				error("Methods can only be GET or POST.");
+
+			if(params.data.isArray() && params.data.length > 0) this.#data = params.data;
+
+			this.#xhr.open(method.toUpperCase(), params.url, params.async);
+
+			if(params.done !== null && params.done !== undefined && params.done.isFunction()) this.#done = params.done;
+
+			switch(method.toString()) {
+				case "post":
+					this.#post();
+					break;
+
+				case "get":
+					this.#get();
+					break;
+			}
+		} else error("Method or Url parameters have not valid values.");
+	}
+
+	#setHeaders() {
+		for(let name in this.#headers) {
+			let header = String(name), value = String(this.#headers[name]); 
+			this.#xhr.setRequestHeader(header, value);
+		}
+	}
+
+	#post() {
+		let post = new FormData();
+		for(let key in this.#data) {
+			let name = String(key), value = this.#data[key];
+			if(!name.isFunction() && !value.isFunction()) {
+				post.append(name, value);
 			}
 		}
+		this.this.send(post);
+	}
+
+	#get() {
+		this.send();
+	}
+
+	#send(content = null) {
+		if(content !== null) {
+			this.#xhr.send(content);
+		}
+
+		this.#xhr.onload = function() {
+			if(this.status == 200) this.#done(this.responseText, this.responseXML);
+			else if(this.#debugger == true && this.status !== 200) {
+				print("The request didn't succeed.\nMore infos below:", this);
+			}
+		};
 	}
 }
 //Converter functions
