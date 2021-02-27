@@ -1,7 +1,3 @@
-/*
-	JavaScript library
-		Latest@20-01-2020
-*/
 const dom = document, win = window, body = dom.body, head = dom.head;
 const www = String(win.location.origin + "/");
 const ww = win.innerWidth, wh = win.innerHeight;
@@ -35,68 +31,73 @@ class Selection {
 }
 const _= selector => new Selection(selector);
 //Console functions 
-function print(...args) { console.log(...args); }
+function log(...args) { console.log(...args); }
 function warn(msg, rep) { console.warn(msg, rep); }
 function error(msg) { console.error(msg); }
 //XHR requests
 class Request {
-	#xhr = null;
-	#headers = [];
-	#data = [];
-	#done = function() {};
-	#debugger = false;
+	xhr = null;
+	headers = [];
+	data = [];
+	done = function() {};
+	debugger = false;
 	constructor(params = {
 		method: "get",
 		url: "",
-		headers: {
-			"Content-type": 'application/x-www-form-urlencoded'
-		},
+		headers: {},
 		data: {},
 		done: function () {},
 		async: true,
 		debugger: false
 	}) {
-		this.#xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility
-		this.#debugger = Boolean(params.debugger);
+		this.xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility
+		this.debugger = Boolean(params.debugger);
 		const methods = ["get", "post", "delete", "put"];
 		//Normalize method name
 		let method = params.method.toString().toLowerCase();
 		//Check essential variables
 		if(params.url.length > 0 && params.url !== undefined && params.url !== null && methods.inArray(method)) {
-			if(params.headers.isArray() && params.headers.length > 0) {
-				this.#headers = params.headers;
-				this.#setHeaders();
+			if(params.async !== undefined && typeof params.async == "boolean") asyncReq = bool(params.async); 
+
+			this.xhr.open(method.toUpperCase(), params.url, true);
+
+			if(params.headers !== undefined && params.headers.isArray() && params.headers.length > 0) {
+				this.headers = params.headers;
+				this.setHeaders();
+			} else {
+				this.headers = {
+					"Content-type": 'application/x-www-form-urlencoded'
+				};
+				this.setHeaders();
 			}
 
-			if(params.data.isArray() && params.data.length > 0) this.#data = params.data;
+			if(params.data !== undefined && params.data.isArray() && params.data.length > 0) this.data = params.data;
 
-			this.#xhr.open(method.toUpperCase(), params.url, params.async);
-
-			if(params.done !== null && params.done !== undefined && params.done.isFunction()) this.#done = params.done;
+			if(params.done !== null && params.done !== undefined && params.done.isFunction()) this.done = params.done;
 
 			switch(method.toString()) {
 				case "post":
-					this.#post();
+					this.post();
 					break;
 
 				case "get":
-					this.#get();
+					this.get();
 					break;
 			}
 		} else error("Method or Url parameters have not valid values.");
 	}
 
-	#setHeaders() {
-		for(let name in this.#headers) {
-			let header = String(name), value = String(this.#headers[name]); 
-			this.#xhr.setRequestHeader(header, value);
+	setHeaders() {
+		for(let name in this.headers) {
+			let header = String(name), value = String(this.headers[name]); 
+			this.xhr.setRequestHeader(header, value);
 		}
 	}
 
-	#post() {
+	post() {
 		let post = new FormData();
-		for(let key in this.#data) {
-			let name = String(key), value = this.#data[key];
+		for(let key in this.data) {
+			let name = String(key), value = this.data[key];
 			if(!name.isFunction() && !value.isFunction()) {
 				post.append(name, value);
 			}
@@ -104,19 +105,19 @@ class Request {
 		this.this.send(post);
 	}
 
-	#get() {
+	get() {
 		this.send();
 	}
 
-	#send(content = null) {
+	send(content = null) {
 		if(content !== null) {
-			this.#xhr.send(content);
+			this.xhr.send(content);
 		}
-
-		this.#xhr.onload = function() {
-			if(this.status == 200) this.#done(this.responseText, this.responseXML);
-			else if(this.#debugger == true && this.status !== 200) {
-				print("The request didn't succeed.\nMore infos below:", this);
+		let func = this.done;
+		this.xhr.onload = function() {
+			if(this.status == 200) func(this.responseText, this.responseXML);
+			else if(this.debugger == true && this.status !== 200) {
+				log("The request didn't succeed.\nMore infos below:", this);
 			}
 		};
 	}
@@ -161,4 +162,23 @@ function checkFields(...args) {
 		if (args[x].empty() === true) return false;
 	}
 	return true;
+}
+function json2Array(jsonObject) {
+	let temp = [];
+    for(let object in jsonObject) {
+        if(typeof jsonObject[object] == "object" && !jsonObject[object].isFunction()) {
+            temp[object] = json2Array(jsonObject[object]);
+        } else temp[object] = jsonObject[object];
+    }
+    return temp;
+}
+function SystemExec() {
+	let functions = win.SystemExecution, temp = [];
+	functions.forEach(fn => {
+		if(fn.isFunction()) temp.push(fn);
+	});
+	if(temp.length > 0) {
+		temp.forEach(fn => fn.call());
+		log("SystemExec: Execution finished.");
+	} else log("SystemExec: No functions were found.");
 }
