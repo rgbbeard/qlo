@@ -161,6 +161,9 @@ String.prototype.capitalize = function () {
 	let cap = this[0].toUpperCase();
 	return cap + str;
 };
+String.prototype.rmwhitesp = function () {
+	return this.replace(/\s/g, "");
+};
 javascript.prototype.isFunction = function () {
 	return this && {}.toString.call(this) === '[object Function]';
 };
