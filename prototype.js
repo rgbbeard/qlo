@@ -1,10 +1,9 @@
-/*
-	JavaScript library
-		Latest@20-01-2020
-*/
 const javascript = Object || String || Number || Array || Boolean;
 const element = Element || Switchbox || Slider || Interface || Confirm || Toast || TextSwitchbox;
 const axl = Object || element;
+//Add here your system functions to execute them when the document loads
+window.SystemExecution = [];
+//window.onload = SystemExec; //Will be implemented soon
 
 axl.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
 	this.parentHeight = this.parentNode.offsetHeight;
@@ -40,6 +39,47 @@ axl.prototype.focused = function (fn) {
 };
 axl.prototype.instance = function() {
 	return 
+};
+axl.prototype.mousepos = function (e) {
+	if (e === undefined) e = win.event;
+	let
+		pos = this.getBoundingClientRect(),
+		posX = e.clientX - pos.left,
+		posY = e.clientY - pos.top;
+	return {
+		x: posX,
+		y: posY
+	};
+};
+axl.prototype.getPadding = function (padding = "global") {
+	let target = this;
+	if (padding !== "global") {
+		switch (padding) {
+			case "top":
+				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top"));
+			case "right":
+				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right"));
+			case "bottom":
+				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom"));
+			case "left":
+				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left"));
+		}
+	}
+	else if (padding.match(/(\,)+/)) {
+		let pads = padding.split(","), p = [];
+		for (let x = 0; x < pads.length; x++) {
+			p.push(pads[x].rmwhitesp(), parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-" + pads[x].rmwhitesp())));
+		}
+	}
+	//Default
+	else if (padding.match(/global/i)) {
+		return {
+			top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
+			right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
+			bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
+			left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
+		};
+	}
 };
 Array.prototype.inArray = function (obj) {
 	for (let x = 0; x < this.length; x++) {
@@ -150,13 +190,13 @@ Object.prototype.elementIndex = function (element) {
 	}
 	return -1;
 };
-Object.prototype.addStyles = function (s = {}) {
-	let p = [];
-	for(let k in s) {
-		if(s[k].isFunction()) continue;
-		p.push(String(k+":"+s[k]));
+Object.prototype.addStyles = function (styles = {}) {
+	let temp = [];
+	for(let style in styles) {
+		if(styles[style].isFunction()) continue;
+		temp.push(String(style+":"+styles[style]));
 	}
-	this.setAttribute("style", p.join(";"));
+	this.setAttribute("style", temp.join(";"));
 };
 Number.prototype.inRange = function (min, max) {
 	if (this >= parseInt(min) && this <= parseInt(max)) return true;
