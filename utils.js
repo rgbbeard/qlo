@@ -1,6 +1,10 @@
 const dom = document, win = window, body = dom.body, head = dom.head;
 const www = String(win.location.origin + "/");
 const ww = win.innerWidth, wh = win.innerHeight;
+//Add here your system functions to execute them when the document loads
+window.SystemExecution = [];
+window.onload = SystemExec;
+
 var debugActive = false;
 class Selection {
 	constructor(selector = "body") {

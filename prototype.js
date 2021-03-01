@@ -1,9 +1,6 @@
 const javascript = Object || String || Number || Array || Boolean;
 const element = Element || Switchbox || Slider || Interface || Confirm || Toast || TextSwitchbox;
 const axl = Object || element;
-//Add here your system functions to execute them when the document loads
-window.SystemExecution = [];
-//window.onload = SystemExec; //Will be implemented soon
 
 axl.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
 	this.parentHeight = this.parentNode.offsetHeight;
