@@ -156,6 +156,22 @@ Object.prototype.addId = function (id) {
 		if (hasId === false) this.setAttribute("id", ids.join(" "));
 	}
 };
+Object.prototype.elementIndex = function (element) {
+	for (let i = 0; i < this.length; i++) {
+		if (this[i] === element) {
+			return i;
+		}
+	}
+	return -1;
+};
+Object.prototype.addStyles = function (styles = {}) {
+	let temp = [];
+	for(let style in styles) {
+		if(styles[style].isFunction()) continue;
+		temp.push(String(style+":"+styles[style]));
+	}
+	this.setAttribute("style", temp.join(";"));
+};
 String.prototype.capitalize = function () {
 	let str = this.substr(1).toLowerCase();
 	let cap = this[0].toUpperCase();
@@ -184,22 +200,6 @@ Array.prototype.globalAction = function (listener, fn) {
 };
 Number.prototype.percentage = function (percentage) {
 	return percentage / 100 * this;
-};
-Object.prototype.elementIndex = function (element) {
-	for (let i = 0; i < this.length; i++) {
-		if (this[i] === element) {
-			return i;
-		}
-	}
-	return -1;
-};
-Object.prototype.addStyles = function (styles = {}) {
-	let temp = [];
-	for(let style in styles) {
-		if(styles[style].isFunction()) continue;
-		temp.push(String(style+":"+styles[style]));
-	}
-	this.setAttribute("style", temp.join(";"));
 };
 Number.prototype.inRange = function (min, max) {
 	if (this >= parseInt(min) && this <= parseInt(max)) return true;
