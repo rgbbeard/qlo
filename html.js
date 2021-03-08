@@ -622,7 +622,7 @@ class Menu {
 	}
 
 	closeMenus() {
-		document.querySelectorAll(".contextmenu").forEach(m => m.parentNode.removeChild(m));
+		_(".contextmenu").forEach(m => m.parentNode.removeChild(m));
 	}
 
 	setParams(data) {
