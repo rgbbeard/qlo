@@ -2,71 +2,97 @@
 class Element {
 	constructor(data = {
 		type: "",
-		properties: [],
+		id: [],
+		class: [],
+		style: [],
+		name: [],
 		text: "",
 		value: "",
 		src: "",
 		href: "",
 		placeholder: "",
+		for: "",
 		datasets: [],
 		children: [],
-		load: undefined,
-		dbclick: undefined,
-		click: undefined,
-		cmenu: undefined,
-		hover: undefined,
-		hout: undefined,
-		keydown: undefined
+		load: function() {},
+		dbclick: function() {},
+		click: function() {},
+		cmenu: function() {},
+		hover: function() {},
+		hout: function() {},
+		keydown: function() {}
 	}) {
+		isDeclared(data.type) && data.type.length > 0 ?
+			this.type = data.type:
+			error("HTML tag must be defined");
+
+		this.element = dom.createElement(this.type);
+
 		if(this.setParams(data)) {
-			this.element = dom.createElement(this.type);
+			this.addChildren(data.children);
 			return this.element;
 		}
 	}
 
 	setParams(data) {
-		/* HTML tag */
-		data.type !== undefined && data.type !== null && data.type.length > 0 ?
-			this.type = data.type:
-			error("");
 		/* Set properties */
-		if(data.properties !== undefined && data.type !== null && typeof data.type == "object" && !data.type.isFunction()) {
-			for(let property in data.properties) {
-				switch(String(property)) {
-					case "class":
-						this.element.addClasses(data.properties[property]);
-						break;
-					case "style":
-						this.element.addStyles(data.properties[property]);
-						break;
-				}
-			}
+		//IDs
+		if(isDeclared(data.id) && data.id.isArray() && data.id.length > 0) data.id.forEach(i => this.element.addId(i));
+		//Classes
+		if(isDeclared(data.class) && data.class.isArray() && data.class.length > 0) data.class.forEach(c => this.element.addClass(c));
+		//Names
+		if(isDeclared(data.name) && data.name.isArray() && data.name.length > 0) {
+			let temp = [];
+			data.name.forEach(n => temp.push(n));
+			this.element.setAttribute("name", temp.join(" "));
 		}
+		//Inline styles
+		if(isDeclared(data.style) && typeof data.style === "object") this.element.addStyles(data.style);
+		
 		/* Set attributes */
 		//Text content
-		if(data.text !== undefined && data.text !== null)
-			this.element.innerHTML = String(data.text);
+		if(isDeclared(data.text)) this.element.innerHTML = String(data.text);
 		//Value
-		if(data.value !== undefined && data.value !== null)
-			this.element.setAttribute("value", String(data.value));
+		if(isDeclared(data.value)) this.element.setAttribute("value", data.value);
 		//Source
-		data.src !== undefined && data.src !== null && data.src.length > 0 ?
-			this.element.setAttribute("src", String(data.src)):
-			error("");
+		if(isDeclared(data.src) && data.src.length) this.element.setAttribute("src", String(data.src))
 		//Header reference
-		if(data.href !== undefined && data.href !== null)
-			this.element.setAttribute("href", String(data.href));
+		if(isDeclared(data.href)) this.element.setAttribute("href", String(data.href));
 		//Placeholder
-		if(data.placeholder !== undefined && data.placeholder !== null)
-			this.element.setAttribute("placeholder", String(data.placeholder));
-		//Value
-		if(data.value !== undefined && data.value !== null)
-			this.element.setAttribute("value", String(data.value));
+		if(isDeclared(data.placeholder)) this.element.setAttribute("placeholder", String(data.placeholder));
+		//For
+		if(isDeclared(data.for) && data.for.length > 0) this.element.setAttribute("for", String(data.for));
+
+		/* Set events */
+		//Creation event
+		if(isDeclared(data.load) && data.load.isFunction()) this.element.addEventListener("load", data.load); 
+		//Click event
+		if(isDeclared(data.click) && data.click.isFunction()) this.element.addEventListener("click", data.click); 
+		//Double click event
+		if(isDeclared(data.dbclick) && data.dbclick.isFunction()) this.element.addEventListener("dblclick", data.dbclick); 
+		//Right click event
+		if(isDeclared(data.cmenu) && data.cmenu.isFunction()) this.element.addEventListener("contextmenu", data.cmenu); 
+		//Mouse over event
+		if(isDeclared(data.hover) && data.hover.isFunction()) this.element.addEventListener("mouseover", data.hover); 
+		//Mouse out event
+		if(isDeclared(data.hout) && data.hout.isFunction()) this.element.addEventListener("mouseout", data.hout); 
+		//Keyboard event
+		if(isDeclared(data.keydown) && data.keydown.isFunction()) this.element.addEventListener("keydown", data.keydown); 
 		return true;
 	}
 
 	setDataset(dset) {
 
+	}
+
+	addChildren(children) {
+		if(isDeclared(children) && children.isArray()) {
+			children.forEach(child => {
+				if(typeof child === "object") {
+					this.element.appendChild(child);
+				}
+			});
+		}
 	}
 }
 //Script tag
@@ -325,107 +351,80 @@ class TextSwitchbox {
 //Confirm window object
 class Confirm {
 	constructor(data = {
-		confirm: undefined,
-		cancel: undefined,
+		confirmAction: undefined,
+		cancelAction: undefined,
 		cancelText: "",
 		confirmText: "",
 		deleteOnConfirm: true,
 		deleteOnCancel: true,
 		title: ""
 	}) {
-		if (data.confirm.isFunction() === false && data.confirm !== null && data.confirm !== undefined) {
-			error("Confirm parameter must be a function.");
-		} else {
-			if (data.cancel.isFunction() === false && data.cancel !== null && data.cancel !== undefined) {
-				error("Cancel parameter must be a function.");
-			} else {
-				let confirmId = "#confirm_dialog_" + (_(".confirm-window-background").length + 1);
-				return new Element({
+		this.cancelText = "Annulla";
+		this.confirmText = "Conferma";
+		this.confirmAction = function() {};
+		this.cancelAction = function() {};
+		this.deleteOnCancel = true;
+		this.deleteOnConfirm = true;
+
+		this.setParams(data);
+
+		let confirmId = "#confirm_dialog_" + (_(".confirm-window-background").length + 1);
+		let confirm = new Element({
+			type: "div",
+			id: [confirmId],
+			class: ["confirm-window-background"],
+			children: [
+				new Element({
 					type: "div",
-					properties: [
-						"id@" + confirmId,
-						"class@confirm-window-background",
-					],
+					class: ["confirm-window-content"],
 					children: [
 						new Element({
-							type: "div",
-							properties: ["class@confirm-window-content"],
-							children: [
-								new Element({
-									type: "h3",
-									properties: ["class@confirm-window-title"],
-									text: String(data.title)
-								}),
-								new Element({
-									type: "span",
-									properties: ["class@btn-custom btn-white"],
-									text: String(data.cancelText),
-									onClick: () => {
-										if (data.cancel.isFunction()) data.cancel();
-										if (data.deleteOnCancel === true)
-											dom.getElementById(confirmId).parentNode.removeChild(dom.getElementById(confirmId));
-										//End if
-									}
-								}),
-								new Element({
-									type: "span",
-									properties: ["class@btn-custom btn-error"],
-									text: String(data.confirmText),
-									onClick: () => {
-										if (data.confirm.isFunction()) data.confirm();
-										if (data.deleteOnConfirm === true)
-											dom.getElementById(confirmId).parentNode.removeChild(dom.getElementById(confirmId));
-										//End if
-									}
-								})
-							]
+							type: "h3",
+							class: ["confirm-window-title"],
+							text: String(data.title)
+						}),
+						new Element({
+							type: "span",
+							class: ["btn-custom", "btn-white"],
+							text: this.cancelText,
+							click: () => {
+								this.cancelAction.call();
+								if (this.deleteOnCancel === true) this.deleteWindow();
+							}
+						}),
+						new Element({
+							type: "span",
+							class: ["btn-custom", "btn-error"],
+							text: String(data.confirmText),
+							click: () => {
+								this.confirmAction.call();
+								if (this.deleteOnConfirm === true) this.deleteWindow();
+							}
 						})
 					]
-				});
-			}
-		}
+				})
+			]
+		});
+		this.confirm = confirm;
+		return confirm;
 	}
-}
-//Slider object
-class Slider {
-	constructor(data = {
-		interval: 0,
-		autoscroll: false,
-		photos: [],
-		shadow: false,
-		dots: false
-	}) {
-		let ch = Array();
-		let props = Array("class@slider-container");
-		if (data.autoscroll === true && data.interval > 0) {
-			props.push("slider-autoscroll@true");
-			props.push(`scroll-interval@${data.interval}`);
-		}
-		let ph = Array();
-		data.photos.forEach(p => {
-			ph.push(new Element({
-				type: "img",
-				properties: [
-					"class@slider-item",
-					"src@" + p
-				]
-			}));
-		});
-		if (data.shadow === true) props.push("shadow@true");
-		if (data.photos.length > 0) ch.push(new Element({
-			type: "div",
-			properties: ["class@slider-sections"],
-			children: ph
-		}));
-		if (data.dots === true) ch.push(new Element({
-			type: "div",
-			properties: ["class@slider-dots"]
-		}));
-		return new Element({
-			type: "div",
-			properties: props,
-			children: ch
-		});
+
+	setParams(data) {
+		//Set cancel button text
+		if(isDeclared(data.cancelText)) this.cancelText = String(data.cancelText);
+		//Set confirm button text
+		if(isDeclared(data.confirmText)) this.confirmText = String(data.confirmText);
+		//Perform action on confirmation
+		if(isDeclared(data.confirmAction) && data.confirmAction.isFunction()) this.confirmAction = data.confirmAction;
+		//Perform action on cancelation
+		if(isDeclared(data.cancelAction) && data.cancelAction.isFunction()) this.cancelAction = data.cancelAction;
+		//Remove confirmation window on button click
+		if(isDeclared(data.deleteOnCancel) && Boolean(data.cancel) === false) this.deleteOnCancel = false;
+		if(isDeclared(data.deleteOnConfirm) && Boolean(data.deleteOnConfirm) === false) this.deleteOnConfirm = false;
+	}
+
+	deleteWindow() {
+		this.confirm.parentNode.removeChild(this.confirm);
 	}
 }
 //3D cube object
@@ -486,44 +485,62 @@ class Cube {
 		}
 		//Set default colors
 		var
-			topBg = "background-color:#00000088;",
-			rightBg = "background-color:#00000088;",
-			botBg = "background-color:#00000088;",
-			leftBg = "background-color:#00000088;",
-			frontBg = "background-color:#00000088;",
-			backBg = "background-color:#00000088;";
+			topBg = "#00000088;",
+			rightBg = "#00000088;",
+			botBg = "#00000088;",
+			leftBg = "#00000088;",
+			frontBg = "#00000088;",
+			backBg = "#00000088;";
 		if (data.colors !== undefined) {
-			topBg = `background-color:#${data.colors.top};`;
-			rightBg = `background-color:#${data.colors.right};`;
-			botBg = `background-color:#${data.colors.bottom};`;
-			leftBg = `background-color:#${data.colors.left};`;
-			frontBg = `background-color:#${data.colors.front};`;
-			backBg = `background-color:#${data.colors.back};`;
+			topBg = `#${data.colors.top}`;
+			rightBg = `#${data.colors.right}`;
+			botBg = `#${data.colors.bottom}`;
+			leftBg = `#${data.colors.left}`;
+			frontBg = `#${data.colors.front}`;
+			backBg = `#${data.colors.back}`;
 		}
 		else if (data.useGlobalColor === true && data.globalColor.length.inRange(6, 8) === true) {
-			topBg = `background-color:#${data.globalColor};`;
-			rightBg = `background-color:#${data.globalColor};`;
-			botBg = `background-color:#${data.globalColor};`;
-			leftBg = `background-color:#${data.globalColor};`;
-			frontBg = `background-color:#${data.globalColor};`;
-			backBg = `background-color:#${data.globalColor};`;
+			topBg = `#${data.globalColor}`;
+			rightBg = `#${data.globalColor}`;
+			botBg = `#${data.globalColor}`;
+			leftBg = `#${data.globalColor}`;
+			frontBg = `#${data.globalColor}`;
+			backBg = `#${data.globalColor}`;
 		}
-		let properties = [
-			"class@cube",
-			`style@display:inline-block;margin:40px;transition:all 1.5s;position:relative;transform-style:preserve-3d;width:${size}px;height:${size}px;user-select:none;`
-		];
+
 		if (data.randomRotate === true) properties.push(`autorotate@${data.rotationTimeout}`);
 		let b = new Element({
 			type: "div",
-			properties: properties,
+			class: ["cube"],
+			style: {
+				"display": "inline-block",
+				"margin": "40px",
+				"transition": "all 1.5s",
+				"position": "relative",
+				"transform-style": "preserve-3d",
+				"width": `${size}px`,
+				"height": `${size}px`,
+				"user-select": "none"
+			},
 			children: [
 				//Front face
 				new Element({
 					type: "div",
-					properties: [
-						"class@cube-face",
-						`style@border-radius:${data.borderRadius}px;border:solid ${data.borderWidth}px #000;${frontBg}position:absolute;width:100%;height:100%;font-size:${(size / 2) - 10}px;font-weight:bold;color:#fff;text-align:center;transform:rotateY(0deg) translateZ(${size / 2}px);line-height:${size}px;`
-					],
+					class:["cube-face"],
+					style: {
+						"border-radius": `${data.borderRadius}px`,
+						"border": `solid ${data.borderWidth}px #000`,
+						"background-color": `${frontBg}`,
+						"position": "absolute",
+						"width": "100%",
+						"height": "100%",
+						"font-size": `${(size / 2) - 10}px`,
+						"font-weight": "bold",
+						"color": "#fff",
+						"text-align": "center",
+						"transform": `rotateY(0deg) translateZ(${size / 2}px)`,
+						"line-height": `${size}px`
+					},
 					text: frontLabel.toString()
 				}),
 				//Back face
@@ -584,18 +601,23 @@ class Menu {
 		closeOnClickOut: true,
 		closeOnClickOver: true
 	}) {
-		this.data = data;
-		this.setParams();
-		let menu = new Element({
+		this.closeMenus();
+		this.title = isDeclared(data.title) ? String(data.title) : "Menu";
+		this.menuParams = {
 			type: "div",
-			properties: [
-				"id@contextmenu",
-				"class@contextmenu"
-			],
-			children: this.voices
-		});
-		this.menu = menu;
-		this.setMenuPos();
+			id: ["contextmenu"],
+			class: ["contextmenu"],
+			children: [
+				new Element({
+					type: "h4",
+					id: ["menu-title"],
+					text: this.title
+				})
+			]
+		};
+		this.setParams(data);
+		let menu = new Element(this.menuParams);
+		this.setMenuPos(menu);
 		return menu;
 	}
 
@@ -603,33 +625,101 @@ class Menu {
 		document.querySelectorAll(".contextmenu").forEach(m => m.parentNode.removeChild(m));
 	}
 
-	setParams() {
+	setParams(data) {
 		let temp = [];
-		let voices = this.data.voices;
-		if(voices !== null && voices !== undefined) {
-			if(typeof voices == "object" && !voices.isFunction() && voices.length > 0) {
-				voices.forEach(voice => {
-					let params = {
-						type: "a",
-						properties: ["class@contextmenu-item"]
-					};
-					if(voice.label !== undefined && voice.label !== null) params.text = String(voice.label);
-					if(voice.onClick !== undefined && voice.onClick !== null && voice.onClick.isFunction()) params.onClick = voice.onClick;
-					temp.push(new Element(params));
-				});
-			} else warn("");
-		} else warn("");
-		this.voices = temp;
+		let voices = data.voices;
+		if(isDeclared(voices)) {
+			
+		} else warn("Expected menu voices");
 	}
 
-	setMenuPos(e) {
-		if (e === undefined) e = win.event;
-		let top, left;
-		left =  dom.mousepos().x+"px";
-		top = dom.mousepos().y+"px";
-		this.menu.addStiles({
+	setMenuPos(menu, e) {
+		if (isUndefined(e)) e = win.event;
+		let top = document.body.mousepos().y+"px", left = document.body.mousepos().x+"px";
+		menu.addStyles({
 			"top": top,
 			"left": left
 		});
 	}
 }
+
+const element = Element || Interface || Confirm || Toast || TextSwitchbox;
+const axl = Object || element;
+
+axl.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
+	this.parentHeight = this.parentNode.offsetHeight;
+	this.parentWidth = this.parentNode.offsetWidth;
+
+	if(properties === "width" && mode !== "match_parent") {
+		if(mode[mode.length-1] == "%") {
+			let width = this.parentNode.offsetWidth;
+			width = width.percentage(parseInt(mode));
+			this.style.width = width+"px";
+		}
+		else if(mode[mode.length-1] == "px") {
+			let width = this.parentNode.style.width - parseInt(mode);
+			this.style.width = width+"px";
+		}
+	}
+	else if(properties == "width" && mode == "match_parent") {
+		this.style.width = this.parentWidth+"px";
+	}
+	
+	else if(properties.match(/height/i) && mode.split(",")[1].match(/match_parent/i)) {
+		this.style.height = this.parentHeight+"px";
+	}
+	
+	else if(properties.match(/all/i) && mode.match(/match_parent/i)) {
+		this.style.width = this.parentNode.offsetWidth+"px";
+		this.style.height = this.parentNode.offsetHeight+"px";
+	}
+};
+//Beta
+axl.prototype.focused = function (fn) {
+	let f = this.focus();
+	if (f === true) fn.call();
+};
+axl.prototype.instance = function(instance) {
+	return this instanceof instance ? true : false;
+};
+axl.prototype.mousepos = function (e) {
+	if (isUndefined(e)) e = win.event;
+	let
+		pos = this.getBoundingClientRect(),
+		posX = e.clientX - pos.left,
+		posY = e.clientY - pos.top;
+	return {
+		x: posX,
+		y: posY
+	};
+};
+axl.prototype.getPadding = function (padding = "global") {
+	let target = this;
+	if (padding !== "global") {
+		switch (padding) {
+			case "top":
+				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top"));
+			case "right":
+				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right"));
+			case "bottom":
+				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom"));
+			case "left":
+				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left"));
+		}
+	}
+	else if (padding.match(/(\,)+/)) {
+		let pads = padding.split(","), p = [];
+		for (let x = 0; x < pads.length; x++) {
+			p.push(pads[x].rmwhitesp(), parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-" + pads[x].rmwhitesp())));
+		}
+	}
+	//Default
+	else if (padding.match(/global/i)) {
+		return {
+			top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
+			right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
+			bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
+			left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
+		};
+	}
+};

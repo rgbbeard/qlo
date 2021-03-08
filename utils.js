@@ -1,11 +1,5 @@
-const dom = document, win = window, body = dom.body, head = dom.head;
-const www = String(win.location.origin + "/");
-const ww = win.innerWidth, wh = win.innerHeight;
-//Add here your system functions to execute them when the document loads
-window.SystemExecution = [];
-window.onload = SystemExec;
-
-var debugActive = false;
+const dom = document, win = window, www = String(win.location.origin + "/"), ww = win.innerWidth, wh = win.innerHeight;
+//Select html elements
 class Selection {
 	constructor(selector = "body") {
 		this.lastElement = selector;
@@ -33,100 +27,9 @@ class Selection {
 		return this.result;
 	}
 }
+//Alias of new Selection(selector)
 const _= selector => new Selection(selector);
-//Console functions 
-function log(...args) { console.log(...args); }
-function warn(msg, rep) { console.warn(msg, rep); }
-function error(msg) { console.error(msg); }
-//XHR requests
-class Request {
-	xhr = null;
-	headers = [];
-	data = [];
-	done = function() {};
-	debugger = false;
-	constructor(params = {
-		method: "get",
-		url: "",
-		headers: {},
-		data: {},
-		done: function () {},
-		async: true,
-		debugger: false
-	}) {
-		this.xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility
-		this.debugger = Boolean(params.debugger);
-		const methods = ["get", "post", "delete", "put"];
-		//Normalize method name
-		let method = params.method.toString().toLowerCase();
-		//Check essential variables
-		if(params.url.length > 0 && params.url !== undefined && params.url !== null && methods.inArray(method)) {
-			if(params.async !== undefined && typeof params.async == "boolean") asyncReq = bool(params.async); 
-
-			this.xhr.open(method.toUpperCase(), params.url, true);
-
-			if(params.headers !== undefined && params.headers.isArray() && params.headers.length > 0) {
-				this.headers = params.headers;
-				this.setHeaders();
-			} else {
-				this.headers = {
-					"Content-type": 'application/x-www-form-urlencoded'
-				};
-				this.setHeaders();
-			}
-
-			if(params.data !== undefined && params.data.isArray() && params.data.length > 0) this.data = params.data;
-
-			if(params.done !== null && params.done !== undefined && params.done.isFunction()) this.done = params.done;
-
-			switch(method.toString()) {
-				case "post":
-					this.post();
-					break;
-
-				case "get":
-					this.get();
-					break;
-			}
-		} else error("Method or Url parameters have not valid values.");
-	}
-
-	setHeaders() {
-		for(let name in this.headers) {
-			let header = String(name), value = String(this.headers[name]); 
-			this.xhr.setRequestHeader(header, value);
-		}
-	}
-
-	post() {
-		let post = new FormData();
-		for(let key in this.data) {
-			let name = String(key), value = this.data[key];
-			if(!name.isFunction() && !value.isFunction()) {
-				post.append(name, value);
-			}
-		}
-		this.this.send(post);
-	}
-
-	get() {
-		this.send();
-	}
-
-	send(content = null) {
-		if(content !== null) {
-			this.xhr.send(content);
-		}
-		let func = this.done;
-		this.xhr.onload = function() {
-			if(this.status == 200) func(this.responseText, this.responseXML);
-			else if(this.debugger == true && this.status !== 200) {
-				log("The request didn't succeed.\nMore infos below:", this);
-			}
-		};
-	}
-}
-//Converter functions
+//Convert: rgb->hex, hex->rgb, json->array
 class Converter {
 	rgb2Hex(r, g, b) {
 		r = r.toString(16);
@@ -140,6 +43,7 @@ class Converter {
 		b.length === 1 ? b = "0" + b : b;
 		return `#${r + g + b};`;
 	}
+
 	hex2Rgb(color) {
 		var result;
 		color = color.toUpperCase();
@@ -158,23 +62,108 @@ class Converter {
 		}
 		return result;
 	}
-}
-const hex2Rgb = new Converter().hex2Rgb;
-const rgb2Hex = new Converter().rgb2Hex;
-function checkFields(...args) {
-	for (let x = 0; x < args.length; x++) {
-		if (args[x].empty() === true) return false;
+
+	json2Array(jsonObject) {
+		let temp = [];
+		for(let object in jsonObject) {
+			if(typeof jsonObject[object] == "object" && !jsonObject[object].isFunction()) {
+				temp[object] = json2Array(jsonObject[object]);
+			} else temp[object] = jsonObject[object];
+		}
+		return temp;
 	}
-	return true;
 }
-function json2Array(jsonObject) {
-	let temp = [];
-    for(let object in jsonObject) {
-        if(typeof jsonObject[object] == "object" && !jsonObject[object].isFunction()) {
-            temp[object] = json2Array(jsonObject[object]);
-        } else temp[object] = jsonObject[object];
-    }
-    return temp;
+function log(...args) { console.log(...args); }
+function warn(msg, rep) { console.warn(msg, rep); }
+function error(msg) { console.error(msg); }
+function isNull(target) { return target == null ? true : false; }
+function isUndefined(target) { return target == undefined ? true : false; }
+function isDeclared(target) { return !isNull(target) && !isUndefined(target) ? true : false; }
+//Make ajax requests
+class Request {
+	methods = ["POST", "GET", "PUT", "DELETE"];
+
+	constructor(params = {
+		method: "",
+		url: "",
+		headers: {},
+		data: {},
+		done: function () { },
+		async: true,
+		debugger: false
+	}) {
+		this.method = "POST";
+		this.url = "";
+		this.headers = {
+			"Content-Type": "application/json"
+		};
+		this.data = null;
+		this.done = isDeclared(params.done) && params.done.isFunction() ? params.done : null;
+		log(this.done);
+		this.async = true;
+		this.debugger = false;
+
+		if (this.setParams(params)) {
+			this.xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility
+			this.xhr.open(this.method, this.url, this.async);
+			this.setHeaders();
+			this.setData(params.data);
+			//Send data
+			this.xhr.send(this.data);
+			this.xhr.onload = () => {
+				let result = [];
+				result["code"] = this.xhr.status;
+				result["response"] = this.xhr.statusText;
+				result["return"] = this.xhr.responseText;
+				result["xmlReturn"] = this.xhr.responseXML;
+				if(!isNull(this.done)) {
+					this.done(result);
+				}
+			};
+		} else error("Some parameters do not have valid values.");
+	}
+
+	setParams(data) {
+		//Set method
+		if (isDeclared(data.method) && this.methods.inArray(data.method.toUpperCase())) this.method = data.method.toUpperCase();
+		else error("Method parameter is not supported. Try using one of these methods: post, get, put, delete.");
+		//Set url
+		if (isDeclared(data.url) && data.url.toString().length >= 3) this.url = data.url.toString();
+		else error("Url parameter has a length of less than 3 characters.");
+		//Set async process
+		if (isDeclared(data.async) && Boolean(data.async) == false) this.async = false;
+		//Set debugging infos
+		if (isDeclared(data.debugger) && data.debugger.bool()) this.debugger = true;
+		return true;
+	}
+
+	setHeaders(headers) {
+		if (isDeclared(headers) && headers.length > 0) {
+			for (let header in headers) {
+				let value = headers[header];
+				this.xhr.setRequestHeader(header, value);
+			}
+		}
+	}
+
+	setData(data) {
+		if (isDeclared(data) && data.length > 0) {
+			let form = new FormData();
+			for (let key in data) {
+				let value = data[key];
+				form.append(key, value);
+			}
+			this.data = form;
+		}
+	}
+}
+//These functions will execute every thing is put inside the SystemExecution array
+//Works the same way of JQuery's $(document).ready(fn) as SystemFn(fn)
+window.SystemExecution = [];
+function SystemFn(fn) {
+	if(fn !== undefined && fn !== null && typeof fn === "function" && fn.isFunction()) {
+		win.SystemExecution.push(fn);
+	} else error("SystemFn expects 1 parameter and it must be a function.");
 }
 function SystemExec() {
 	let functions = win.SystemExecution, temp = [];
@@ -186,3 +175,4 @@ function SystemExec() {
 		log("SystemExec: Execution finished.");
 	} else log("SystemExec: No functions were found.");
 }
+window.onload = SystemExec;
