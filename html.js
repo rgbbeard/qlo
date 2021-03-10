@@ -4,7 +4,7 @@ class Element {
 		type: "",
 		id: [],
 		class: [],
-		style: [],
+		style: {},
 		name: [],
 		text: "",
 		value: "",
@@ -41,7 +41,7 @@ class Element {
 		//Classes
 		if(isDeclared(data.class) && data.class.isArray() && data.class.length > 0) data.class.forEach(c => this.element.addClass(c));
 		//Inline styles
-		if(isDeclared(data.style) && typeof data.style === "object" && data.styles.length() > 0) this.element.addStyles(data.style);
+		if(isDeclared(data.style) && typeof data.style === "object" && data.style.length() > 0) this.element.addStyles(data.style);
 		
 		/* Set attributes */
 		//Text content
@@ -150,6 +150,7 @@ class Interface {
 	}) {
 		let interfaceTitle = isDeclared(data.title) ? String(data.title) : "";
 		this.body = [];
+		this.setParams(data);
 		let element = new Element({
 			type: "div",
 			id: ["interface"+(_(".interface-background").length+1)],
@@ -190,13 +191,13 @@ class Interface {
 													bg.style.display = "none";
 													document.body.appendChild(new Element({
 														type: "span",
-														class: ["reduced-interface-btn", "btn-custom", "btn-white"],
-														text: "Finestra &#007;",
+														class: ["reduced-interface-btn", "btn-custom", "btn-success"],
+														text: "Finestra >",
 														attributes: {
 															title: ["Riprendi finestra: "+interfaceTitle]
 														},
 														click: function() {
-															_("#"+ID).style.display = "initial";
+															_("#"+ID).style.display = "flex";
 															this.parentNode.removeChild(this);
 														}
 													}));
@@ -231,8 +232,6 @@ class Interface {
 				})
 			]
 		});
-
-		this.setParams(data);
 		return element;
 	}
 
