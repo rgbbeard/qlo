@@ -79,6 +79,23 @@ function error(msg) { console.error(msg); }
 function isNull(target) { return target == null ? true : false; }
 function isUndefined(target) { return target == undefined ? true : false; }
 function isDeclared(target) { return !isNull(target) && !isUndefined(target) ? true : false; }
+function findElement(data = {}, from, fn = null) {
+	if(typeof from == "object" && typeof data == "object" && data.length() > 0) {
+		let parent = from.parentNode, success = false;
+		if(isDeclared(data.tag) && !data.tag.isFunction()) {
+			success = data.tag.toUpperCase() == parent.tagName ? true : false;
+		}
+		if(isDeclared(data.id) && !data.id.isFunction()) {
+			success = parent.hasId(data.id) ? true : false;
+		}
+		if(isDeclared(data.class) && !data.class.isFunction()) {
+			success = parent.hasClass(data.class) ? true : false;
+		}
+		//Loop function
+		if(success == true) return fn(parent);
+		else findElement(data, parent, fn);
+	} else error("Parameters must be object type.");
+}
 //Make ajax requests
 class Request {
 	methods = ["POST", "GET", "PUT", "DELETE"];

@@ -12,7 +12,7 @@ class Element {
 		href: "",
 		placeholder: "",
 		for: "",
-		datasets: [],
+		attributes: {},
 		children: [],
 		load: function() {},
 		dbclick: function() {},
@@ -40,14 +40,8 @@ class Element {
 		if(isDeclared(data.id) && data.id.isArray() && data.id.length > 0) data.id.forEach(i => this.element.addId(i));
 		//Classes
 		if(isDeclared(data.class) && data.class.isArray() && data.class.length > 0) data.class.forEach(c => this.element.addClass(c));
-		//Names
-		if(isDeclared(data.name) && data.name.isArray() && data.name.length > 0) {
-			let temp = [];
-			data.name.forEach(n => temp.push(n));
-			this.element.setAttribute("name", temp.join(" "));
-		}
 		//Inline styles
-		if(isDeclared(data.style) && typeof data.style === "object") this.element.addStyles(data.style);
+		if(isDeclared(data.style) && typeof data.style === "object" && data.styles.length() > 0) this.element.addStyles(data.style);
 		
 		/* Set attributes */
 		//Text content
@@ -62,6 +56,23 @@ class Element {
 		if(isDeclared(data.placeholder)) this.element.setAttribute("placeholder", String(data.placeholder));
 		//For
 		if(isDeclared(data.for) && data.for.length > 0) this.element.setAttribute("for", String(data.for));
+		//Names
+		if(isDeclared(data.name) && data.name.isArray() && data.name.length > 0) {
+			let temp = [];
+			data.name.forEach(n => temp.push(n));
+			this.element.setAttribute("name", temp.join(" "));
+		}
+		//Other attributes
+		if(isDeclared(data.attributes) && typeof data.attributes == "object" && data.attributes.length() > 0) {
+			for(let attribute in data.attributes) {
+				if(!attribute.isFunction()) {
+					let values = data.attributes[attribute];
+					if(!values.isFunction()) {
+						this.element.setAttribute(attribute, values.join(" "));
+					}
+				}
+			}
+		}
 
 		/* Set events */
 		//Creation event
@@ -79,10 +90,6 @@ class Element {
 		//Keyboard event
 		if(isDeclared(data.keydown) && data.keydown.isFunction()) this.element.addEventListener("keydown", data.keydown); 
 		return true;
-	}
-
-	setDataset(dset) {
-
 	}
 
 	addChildren(children) {
@@ -137,76 +144,101 @@ class Script {
 }
 //Interface object
 class Interface {
-	constructor(options = {
-		header: "Lorem ipsum",
-		body: [],
-		footer: []
+	constructor(data = {
+		title: "Lorem ipsum",
+		body: []
 	}) {
-		if (Array.isArray(options.body) === false) {
-			error("Body option must be an array.");
-		} else {
-			let body = options.body,
-				footer = options.footer;
-			if (Array.isArray(options.footer) === true && options.footer !== undefined && options.footer !== null) footer = options.footer;
-			return new Element({
-				type: "div",
-				properties: [
-					"id@interface",
-					"class@fixed adapt-all pad-all-l",
-					"style@background-color:rgba(0, 0, 0, 0.7);"
-				],
-				children: [
-					//Header
-					new Element({
-						type: "div",
-						properties: [
-							"id@interface-header",
-							"style@background-color:#0070aa;"
-						],
-						children: [
-							new Element({
-								type: "h3",
-								properties: ["class@width-100 whiteColor pad-all-m"],
-								text: options.header.toString(),
-								children: [
-									new Element({
-										type: "div",
-										properties: [
-											"class@btn-custom pad-all-s whiteBgColor blackColor pointing-cursor",
-											"style@float:right;"
-										],
-										text: "x",
-										onClick: function () {
-											_("#interface").parentNode.removeChild(_("#interface"));
-										}
-									})
-								]
-							})
-						]
-					}),
-					//Body
-					new Element({
-						type: "div",
-						properties: [
-							"id@interface-body",
-							"class@width-100 whiteBgColor pad-all-m no-border",
-							"style@min-height:70vh;"
-						],
-						children: body
-					}),
-					//Footer
-					new Element({
-						type: "div",
-						properties: [
-							"id@interface-footer",
-							"class@width-100 whiteBgColor pad-all-m no-border",
-							"style@min-height:15vh;"
-						],
-						children: footer
-					})
-				]
-			});
-		}
+		let interfaceTitle = isDeclared(data.title) ? String(data.title) : "";
+		this.body = [];
+		let element = new Element({
+			type: "div",
+			id: ["interface"+(_(".interface-background").length+1)],
+			class: ["interface-background"],
+			children: [
+				//Interface winow
+				new Element({
+					type: "div",
+					class: ["interface-window"],
+					children: [
+						//Header container
+						new Element({
+							type: "div",
+							class: ["interface-head"],
+							children: [
+								//Header title
+								new Element({
+									type: "span",
+									class: ["interface-head-title"],
+									text: interfaceTitle
+								}),
+								//Header actions container
+								new Element({
+									type: "span",
+									class: ["interface-head-actions-container"],
+									children: [
+										//Header reduce btn
+										new Element({
+											type: "span",
+											class: ["interface-head-reduce-btn", "btn-custom", "btn-warning"],
+											text: "&mdash;",
+											click: function() {
+												findElement({
+													tag: "div",
+													class: "interface-background"
+												}, this, bg => {
+													let ID = bg.getAttribute("id");
+													bg.style.display = "none";
+													document.body.appendChild(new Element({
+														type: "span",
+														class: ["reduced-interface-btn", "btn-custom", "btn-white"],
+														text: "Finestra &#007;",
+														attributes: {
+															title: ["Riprendi finestra: "+interfaceTitle]
+														},
+														click: function() {
+															_("#"+ID).style.display = "initial";
+															this.parentNode.removeChild(this);
+														}
+													}));
+												});
+											}
+										}),
+										//Header close btn
+										new Element({
+											type: "span",
+											class: ["interface-head-close-btn", "btn-custom", "btn-error"],
+											text: "X",
+											click: function() {
+												findElement({
+													tag: "div",
+													class: "interface-background"
+												}, this, interfaceWindow => {
+													interfaceWindow.parentNode.removeChild(interfaceWindow);
+												});
+											}
+										})
+									]
+								})
+							]
+						}),
+						//Body container
+						new Element({
+							type: "div",
+							class: ["interface-body"],
+							children: this.body
+						})
+					]
+				})
+			]
+		});
+
+		this.setParams(data);
+		return element;
+	}
+
+	setParams(data) {
+		//Check body
+		if(isDeclared(data.body) && data.body.isArray() && data.body.length > 0) this.body = data.body;
 	}
 }
 //Android-like toast object
@@ -622,15 +654,42 @@ class Menu {
 	}
 
 	closeMenus() {
-		document.querySelectorAll(".contextmenu").forEach(m => m.parentNode.removeChild(m));
+		_(".contextmenu").forEach(m => m.parentNode.removeChild(m));
 	}
 
 	setParams(data) {
-		let temp = [];
 		let voices = data.voices;
 		if(isDeclared(voices)) {
-			
-		} else warn("Expected menu voices");
+			if(typeof voices == "object" && !voices.isFunction()) {
+				//Add menu voices
+				for(let voice in voices) {
+					let value = voices[voice];
+					if(!value.isFunction() && typeof value == "object" && isDeclared(value.label)) {
+						let params = {
+							type: "a",
+							class: ["contextmenu-item"],
+							text: value.label
+						};
+						//Add action
+						if(isDeclared(value.click) && value.click.isFunction()) params.click = () => {
+							value.click.call();
+							this.closeMenus();
+						};
+						this.menuParams.children.push(new Element(params));
+					}
+				}
+			} else warn("Expected object.");
+		} else warn("Expected menu voices.");
+		
+		//Add close menu btn
+		this.menuParams.children.push(new Element({
+			type: "a",
+			class: ["contextmenu-item"],
+			text: "Chiudi",
+			click: () => {
+				this.closeMenus();
+			}
+		}));
 	}
 
 	setMenuPos(menu, e) {
@@ -643,7 +702,7 @@ class Menu {
 	}
 }
 
-const element = Element || Interface || Confirm || Toast || TextSwitchbox;
+const element = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu;
 const axl = Object || element;
 
 axl.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {

@@ -21,13 +21,21 @@ Object.prototype.appendChildren = function (...args) { args.forEach(child => thi
 Object.prototype.removeChildren = function (...args) { args.forEach(child => this.removeChild(child)); };
 Object.prototype.insertAfter = function (newElement) { this.parentNode.insertBefore(newElement, this.nextElementSibling); };
 Object.prototype.moveBefore = function() {
-    let parent = this.parentNode, siblings = parent.children;
-    if(siblings.length > 1) {
-        let i = siblings.elementIndex(this);
-        parent.insertBefore(siblings[i-1], siblings[i]);
-        return true;
-    }
-    return false;
+    let parent = this.parentNode, prev = this.previousElementSibling;
+	if(!isNull(prev)) {
+		parent.insertBefore(this, prev);
+	}
+};
+Object.prototype.moveAfter = function() {
+	let parent = this.parentNode, next = this.nextElementSibling, nextIsLast = isNull(next.nextElementSibling) ? true : false;
+	if(!isNull(next)) {
+		let index = parent.children.elementIndex(next);
+		if(!nextIsLast) {
+			parent.insertBefore(this, parent.children[index+1]);
+		} else {
+			parent.appendChild(this);
+		}
+	}
 };
 Object.prototype.removeId = function (id) {
 	if (this.getAttribute("id") !== null) {
@@ -53,6 +61,16 @@ Object.prototype.addId = function (id) {
 		if (hasId === false) this.setAttribute("id", ids.join(" "));
 	}
 };
+Object.prototype.hasId = function(id) {
+	let ids = this.getAttribute("id");
+	 if(!isNull(ids)) {
+		ids = ids.split(" ");
+		ids.forEach(i => {
+			if(i == id.toString()) return true;
+		});
+	 }
+	 return false;
+};
 Object.prototype.elementIndex = function (element) {
 	for (let i = 0; i < this.length; i++) {
 		if (this[i] === element) return i;
@@ -68,6 +86,7 @@ Object.prototype.addStyles = function (styles = {}) {
 	this.setAttribute("style", temp.join(";"));
 };
 Object.prototype.length = function() { return Object.keys(this).length; };
+Object.prototype.isDisabled = function() { return isNull(this.getAttribute("disabled")) ? false : true; };
 //Strings
 String.prototype.capitalize = function () {
 	let str = this.substr(1).toLowerCase(), cap = this[0].toUpperCase();
