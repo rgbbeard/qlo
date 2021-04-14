@@ -701,10 +701,10 @@ class Menu {
 	}
 }
 
-const element = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu;
-const axl = Object || element;
+const Elements = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu;
+const Objects = Object || Elements;
 
-axl.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
+Objects.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
 	this.parentHeight = this.parentNode.offsetHeight;
 	this.parentWidth = this.parentNode.offsetWidth;
 
@@ -733,14 +733,14 @@ axl.prototype.stretch = function(properties = "width, height", mode = "match_par
 	}
 };
 //Beta
-axl.prototype.focused = function (fn) {
+Objects.prototype.focused = function (fn) {
 	let f = this.focus();
 	if (f === true) fn.call();
 };
-axl.prototype.instance = function(instance) {
+Objects.prototype.instance = function(instance) {
 	return this instanceof instance ? true : false;
 };
-axl.prototype.mousepos = function (e) {
+Objects.prototype.mousepos = function (e) {
 	if (isUndefined(e)) e = win.event;
 	let
 		pos = this.getBoundingClientRect(),
@@ -751,7 +751,7 @@ axl.prototype.mousepos = function (e) {
 		y: posY
 	};
 };
-axl.prototype.getPadding = function (padding = "global") {
+Objects.prototype.getPadding = function (padding = "global") {
 	let target = this;
 	if (padding !== "global") {
 		switch (padding) {
