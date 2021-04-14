@@ -1,5 +1,4 @@
 const Javascript = Object || String || Number || Array || Boolean;
-//Arrays
 Array.prototype.inArray = function (obj) {
 	for (let x = 0; x < this.length; x++) {
 		if (this[x] === obj) return true;
@@ -8,7 +7,6 @@ Array.prototype.inArray = function (obj) {
 };
 Array.prototype.isArray = function() { return Array.isArray(this); };
 Array.prototype.globalAction = function (listener, fn) { this.forEach(a => _(a).addEventListener(listener, fn)); };
-//Objects
 Object.prototype.hasClass = function (c) { return this.classList.contains(c); };
 Object.prototype.toggleClass = function (c) { this.classList.toggle(c); };
 Object.prototype.toggleClasses = function (...args) { args.forEach(c => this.classList.toggle(c)); };
@@ -87,16 +85,13 @@ Object.prototype.addStyles = function (styles = {}) {
 };
 Object.prototype.length = function() { return Object.keys(this).length; };
 Object.prototype.isDisabled = function() { return isNull(this.getAttribute("disabled")) ? false : true; };
-//Strings
 String.prototype.capitalize = function () {
 	let str = this.substr(1).toLowerCase(), cap = this[0].toUpperCase();
 	return cap + str;
 };
 String.prototype.rmwhitesp = function () { return this.replace(/\s/g, ""); };
-//Numbers
 Number.prototype.percentage = function (percentage) { return percentage / 100 * this; };
 Number.prototype.inRange = function (min, max) { return this >= parseInt(min) && this <= parseInt(max) ? true : false; };
-//Javascript
 Javascript.prototype.isFunction = function () { return this && {}.toString.call(this) === '[object Function]'; };
 Javascript.prototype.bool = function () {
 	let str = String(this).replace(/[\s|\t|\n]+/gm, "");
