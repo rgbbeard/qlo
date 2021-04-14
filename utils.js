@@ -29,7 +29,6 @@ class Selection {
 }
 //Alias of new Selection(selector)
 const _= selector => new Selection(selector);
-//Convert: rgb->hex, hex->rgb, json->array
 class Converter {
 	rgb2Hex(r, g, b) {
 		r = r.toString(16);
@@ -99,7 +98,6 @@ function findElement(data = {}, from, fn = null) {
 //Make ajax requests
 class Request {
 	methods = ["POST", "GET", "PUT", "DELETE"];
-
 	constructor(params = {
 		method: "",
 		url: "",
