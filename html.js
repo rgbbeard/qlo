@@ -781,3 +781,24 @@ Objects.prototype.getPadding = function (padding = "global") {
 		};
 	}
 };
+Objects.prototype.gravity = function (endpoint = "parent", planet = "earth") {
+	let gravity = 0, target = this;
+	this.holded = false;
+	if (planet.match(/earth/i)) {
+		gravity = 9.81;
+	}
+	function doAttraction() {
+		target.style.top = parseFloat(target.style.top) + gravity + "px";
+	}
+	setInterval(() => {
+		if (target.holded !== true) {
+			if (endpoint.match(/parent/i)) {
+				if (target.style.top == "") target.style.top = "0px";
+				if ((parseFloat(target.style.top) + target.offsetHeight) < target.parentNode.offsetHeight - target.parentNode.getPadding("bottom")) {
+					doAttraction();
+					if ((parseFloat(target.style.top) + target.offsetHeight) > target.parentNode.offsetHeight - target.parentNode.getPadding("bottom")) target.style.top = target.parentNode.offsetHeight - target.parentNode.getPadding("bottom") - target.offsetHeight + "px";
+				}
+			}
+		}
+	}, 0);
+};
