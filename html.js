@@ -28,34 +28,51 @@ class Element {
 
 		this.element = dom.createElement(this.type);
 
-		if(this.setParams(data)) {
-			this.addChildren(data.children);
-			return this.element;
-		}
+		this.setParams(data);
+		this.addChildren(data.children);
+		return this.element;
 	}
 
 	setParams(data) {
 		/* Set properties */
 		//IDs
-		if(isDeclared(data.id) && data.id.isArray() && data.id.length > 0) data.id.forEach(i => this.element.addId(i));
+		if(isDeclared(data.id) && data.id.isArray() && data.id.length > 0) {
+			data.id.forEach(i => this.element.addId(i));
+		}
 		//Classes
-		if(isDeclared(data.class) && data.class.isArray() && data.class.length > 0) data.class.forEach(c => this.element.addClass(c));
+		if(isDeclared(data.class) && data.class.isArray() && data.class.length > 0) {
+			data.class.forEach(c => this.element.addClass(c));
+		}
 		//Inline styles
-		if(isDeclared(data.style) && typeof data.style === "object" && data.style.length() > 0) this.element.addStyles(data.style);
+		if(isDeclared(data.style) && typeof data.style === "object" && data.style.length() > 0) {
+			this.element.addStyles(data.style);
+		}
 		
 		/* Set attributes */
 		//Text content
-		if(isDeclared(data.text)) this.element.innerHTML = String(data.text);
+		if(isDeclared(data.text)) {
+			this.element.innerHTML = String(data.text);
+		}
 		//Value
-		if(isDeclared(data.value)) this.element.setAttribute("value", data.value);
+		if(isDeclared(data.value)) {
+			this.element.setAttribute("value", data.value);
+		}
 		//Source
-		if(isDeclared(data.src) && data.src.length) this.element.setAttribute("src", String(data.src))
+		if(isDeclared(data.src) && data.src.length) {
+			this.element.setAttribute("src", String(data.src));
+		}
 		//Header reference
-		if(isDeclared(data.href)) this.element.setAttribute("href", String(data.href));
+		if(isDeclared(data.href)) {
+			this.element.setAttribute("href", String(data.href));
+		}
 		//Placeholder
-		if(isDeclared(data.placeholder)) this.element.setAttribute("placeholder", String(data.placeholder));
+		if(isDeclared(data.placeholder)) {
+			this.element.setAttribute("placeholder", String(data.placeholder));
+		}
 		//For
-		if(isDeclared(data.for) && data.for.length > 0) this.element.setAttribute("for", String(data.for));
+		if(isDeclared(data.for) && data.for.length > 0) {
+			this.element.setAttribute("for", String(data.for));
+		}
 		//Names
 		if(isDeclared(data.name) && data.name.isArray() && data.name.length > 0) {
 			let temp = [];
@@ -76,20 +93,33 @@ class Element {
 
 		/* Set events */
 		//Creation event
-		if(isDeclared(data.load) && data.load.isFunction()) this.element.addEventListener("load", data.load); 
+		if(isDeclared(data.load) && data.load.isFunction()) {
+			this.element.addEventListener("load", data.load);
+		}
 		//Click event
-		if(isDeclared(data.click) && data.click.isFunction()) this.element.addEventListener("click", data.click); 
+		if(isDeclared(data.click) && data.click.isFunction()) {
+			this.element.addEventListener("click", data.click);
+		} 
 		//Double click event
-		if(isDeclared(data.dbclick) && data.dbclick.isFunction()) this.element.addEventListener("dblclick", data.dbclick); 
+		if(isDeclared(data.dbclick) && data.dbclick.isFunction()) {
+			this.element.addEventListener("dblclick", data.dbclick);
+		} 
 		//Right click event
-		if(isDeclared(data.cmenu) && data.cmenu.isFunction()) this.element.addEventListener("contextmenu", data.cmenu); 
+		if(isDeclared(data.cmenu) && data.cmenu.isFunction()) {
+			this.element.addEventListener("contextmenu", data.cmenu);
+		} 
 		//Mouse over event
-		if(isDeclared(data.hover) && data.hover.isFunction()) this.element.addEventListener("mouseover", data.hover); 
+		if(isDeclared(data.hover) && data.hover.isFunction()) {
+			this.element.addEventListener("mouseover", data.hover);
+		} 
 		//Mouse out event
-		if(isDeclared(data.hout) && data.hout.isFunction()) this.element.addEventListener("mouseout", data.hout); 
+		if(isDeclared(data.hout) && data.hout.isFunction()) {
+			this.element.addEventListener("mouseout", data.hout);
+		} 
 		//Keyboard event
-		if(isDeclared(data.keydown) && data.keydown.isFunction()) this.element.addEventListener("keydown", data.keydown); 
-		return true;
+		if(isDeclared(data.keydown) && data.keydown.isFunction()) {
+			this.element.addEventListener("keydown", data.keydown);
+		}
 	}
 
 	addChildren(children) {
@@ -248,19 +278,29 @@ class Toast {
 		timeout: 0
 	}) {
 		this.toastCentered = "";
-		this.timeout = data.timeout > 0 ? data.timeout : 5;
+		this.timeout = parseInt(data.timeout) > 0 ? data.timeout : 5;
+
 		switch (data.position) {
 			case "top-center":
 				this.toastPosition = "toast-top-center";
-				this.toastCentered = `left:${(ww / 2) - 150}px;right:${(ww / 2) - 150}px;`;
+				this.toastCentered = {
+					left: (ww / 2) - 150 + "px",
+					right: (ww / 2) - 150 + "px"
+				};
 				break;
 			case "center-center":
 				this.toastPosition = "toast-center-center";
-				this.toastCentered = `left:${(ww / 2) - 150}px;right:${(ww / 2) - 150}px;`;
+				this.toastCentered = {
+					left: (ww / 2) - 150 + "px",
+					right: (ww / 2) - 150 + "px"
+				};
 				break;
 			case "bot-center":
 				this.toastPosition = "toast-bottom-center";
-				this.toastCentered = `left:${(ww / 2) - 150}px;right:${(ww / 2) - 150}px;`;
+				this.toastCentered = {
+					left: (ww / 2) - 150 + "px",
+					right: (ww / 2) - 150 + "px"
+				};
 				break;
 			case "top-left":
 				this.toastPosition = "toast-top-left";
@@ -282,26 +322,29 @@ class Toast {
 				break;
 			default:
 				this.toastPosition = "toast-bottom-center";
-				this.toastCentered = `left:${(ww / 2) - 150}px;right:${(ww / 2) - 150}px;`;
+				this.toastCentered = {
+					left: (ww / 2) - 150 + "px",
+					right: (ww / 2) - 150 + "px"
+				};
 				break;
 		}
 		this.toast = new Element({
 			type: "div",
-			properties: [
-				`class@toast ${this.toastPosition}`,
-				`style@${this.toastCentered}`
-			],
+			class: ["toast", this.toastPosition],
+			style: this.toastCentered,
 			children: [
 				new Element({
 					type: "div",
-					properties: ["style@margin:0px auto;"],
+					style: {
+						margin: "0px auto"
+					},
 					text: data.text
 				})
 			]
 		});
-		dom.body.appendChild(this.toast);
+		document.body.appendChild(this.toast);
 		setTimeout(() => {
-			dom.body.removeChild(this.toast);
+			document.body.removeChild(this.toast);
 		}, this.timeout * 1000);
 	}
 }
