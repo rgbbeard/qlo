@@ -114,28 +114,26 @@ class Request {
 		};
 		this.data = null;
 		this.done = isDeclared(params.done) && params.done.isFunction() ? params.done : null;
-		log(this.done);
 		this.async = true;
 		this.debugger = false;
 
-		if (this.setParams(params)) {
-			this.xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility
-			this.xhr.open(this.method, this.url, this.async);
-			this.setHeaders();
-			this.setData(params.data);
-			//Send data
-			this.xhr.send(this.data);
-			this.xhr.onload = () => {
-				let result = [];
-				result["code"] = this.xhr.status;
-				result["response"] = this.xhr.statusText;
-				result["return"] = this.xhr.responseText;
-				result["xmlReturn"] = this.xhr.responseXML;
-				if(!isNull(this.done)) {
-					this.done(result);
-				}
-			};
-		} else error("Some parameters do not have valid values.");
+		this.setParams(params);
+		this.xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility
+		this.xhr.open(this.method, this.url, this.async);
+		this.setHeaders();
+		this.setData(params.data);
+		//Send data
+		this.xhr.send(this.data);
+		this.xhr.onload = () => {
+			let result = [];
+			result["code"] = this.xhr.status;
+			result["response"] = this.xhr.statusText;
+			result["return"] = this.xhr.responseText;
+			result["xmlReturn"] = this.xhr.responseXML;
+			if(!isNull(this.done)) {
+				this.done(result);
+			}
+		};
 	}
 
 	setParams(data) {
@@ -153,7 +151,7 @@ class Request {
 	}
 
 	setHeaders(headers) {
-		if (isDeclared(headers) && headers.length > 0) {
+		if(isDeclared(headers) && headers.length > 0) {
 			for (let header in headers) {
 				let value = headers[header];
 				this.xhr.setRequestHeader(header, value);
@@ -162,13 +160,12 @@ class Request {
 	}
 
 	setData(data) {
-		if (isDeclared(data) && data.length > 0) {
+		if(isDeclared(data) && data.length() > 0) {
 			let form = new FormData();
 			for (let key in data) {
 				let value = data[key];
 				form.append(key, value);
-			}
-			this.data = form;
+			}this.data = form;
 		}
 	}
 }
