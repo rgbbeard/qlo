@@ -11,17 +11,13 @@ class Selection {
 		this.selectBy = this.lastElement[0];
 		if(this.selectBy === "#") {
 			this.result = document.querySelector(selector);
-		}
-		else if(this.selectBy === ".") {
+		} else if(this.selectBy === ".") {
 			this.result = document.querySelectorAll(selector);
-		}
-		else if(this.selectBy.match(/[\d|\D]/)) {
+		} else if(this.selectBy.match(/[\d|\D]/)) {
 			this.result = document.querySelectorAll(selector);
-		}	
-		else if(this.selectBy === "[") {
+		} else if(this.selectBy === "[") {
 			this.result = document.querySelectorAll(selector);
-		}
-		else if(this.selectBy === "*") {
+		} else if(this.selectBy === "*") {
 			this.result = document.querySelectorAll(selector);
 		}
 		return this.result;
@@ -48,9 +44,8 @@ class Converter {
 		color = color.toUpperCase();
 		color.match(/\#?/) ? color = color.replace("#", "") : color;
 		if (color.length > 6 || color.length < 6) {
-			error("The written color does not match the requirements: color length must be exactly 6.");
-		}
-		else {
+			console.error("The written color does not match the requirements: color length must be exactly 6.");
+		} else {
 			var r = color.substring(0, 2);
 			r = parseInt(r, 16);
 			var g = color.substring(2, 4);
@@ -67,7 +62,9 @@ class Converter {
 		for(let object in jsonObject) {
 			if(typeof jsonObject[object] == "object" && !jsonObject[object].isFunction()) {
 				temp[object] = json2Array(jsonObject[object]);
-			} else temp[object] = jsonObject[object];
+			} else {
+				temp[object] = jsonObject[object];
+			}
 		}
 		return temp;
 	}
@@ -91,9 +88,14 @@ function findElement(data = {}, from, fn = null) {
 			success = parent.hasClass(data.class) ? true : false;
 		}
 		//Loop function
-		if(success == true) return fn(parent);
-		else findElement(data, parent, fn);
-	} else error("Parameters must be object type.");
+		if(success == true) {
+			return fn(parent);
+		} else {
+			findElement(data, parent, fn);
+		}
+	} else {
+		console.error("Parameters must be object type.");
+	}
 }
 //Make ajax requests
 class Request {
@@ -138,15 +140,25 @@ class Request {
 
 	setParams(data) {
 		//Set method
-		if (isDeclared(data.method) && this.methods.inArray(data.method.toUpperCase())) this.method = data.method.toUpperCase();
-		else error("Method parameter is not supported. Try using one of these methods: post, get, put, delete.");
+		if (isDeclared(data.method) && this.methods.inArray(data.method.toUpperCase())) {
+			this.method = data.method.toUpperCase();
+		} else {
+			console.error("Method parameter is not supported. Try using one of these methods: post, get, put, delete.");
+		}
 		//Set url
-		if (isDeclared(data.url) && data.url.toString().length >= 3) this.url = data.url.toString();
-		else error("Url parameter has a length of less than 3 characters.");
+		if (isDeclared(data.url) && data.url.toString().length >= 3) {
+			this.url = data.url.toString();
+		} else {
+			console.error("Url parameter has a length of less than 3 characters.");
+		}
 		//Set async process
-		if (isDeclared(data.async) && Boolean(data.async) == false) this.async = false;
+		if (isDeclared(data.async) && Boolean(data.async) == false) {
+			this.async = false;
+		}
 		//Set debugging infos
-		if (isDeclared(data.debugger) && data.debugger.bool()) this.debugger = true;
+		if (isDeclared(data.debugger) && data.debugger.bool()) {
+			this.debugger = true;
+		}
 		return true;
 	}
 
@@ -174,8 +186,10 @@ class Request {
 window.SystemExecution = [];
 function SystemFn(fn) {
 	if(fn !== undefined && fn !== null && typeof fn === "function" && fn.isFunction()) {
-		win.SystemExecution.push(fn);
-	} else error("SystemFn expects 1 parameter and it must be a function.");
+		window.SystemExecution.push(fn);
+	} else {
+		console.error("SystemFn expects 1 parameter and it must be a function.");
+	}
 }
 function SystemExec() {
 	let functions = win.SystemExecution, temp = [];
@@ -184,7 +198,9 @@ function SystemExec() {
 	});
 	if(temp.length > 0) {
 		temp.forEach(fn => fn.call());
-		log("SystemExec: Execution finished.");
-	} else log("SystemExec: No functions were found.");
+		console.log("SystemExec: Execution finished.");
+	} else {
+		console.log("SystemExec: No functions were found.");
+	}
 }
 window.onload = SystemExec;
