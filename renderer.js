@@ -43,5 +43,25 @@ function elementsRenderer() {
         VerifyValue(input);
         input.onkeyup = VerifyValue(input);
     });
+    //Show/hide password
+    _(".input-group.password-input").forEach(pi => {
+        let
+            password_shown = false,
+            password_field = pi.querySelector("input");
+
+        if(!isNull(pi.querySelector("span"))) {
+            pi.querySelector("span").onclick = function() {
+                if(password_shown) {
+                    this.removeAttribute("password-shown");
+                    password_field.setAttribute("type", "password");
+                    password_shown = false;
+                } else {
+                    this.setAttribute("password-shown", "true");
+                    password_field.setAttribute("type", "text");
+                    password_shown = true;
+                }
+            };
+        }
+    });
 }
 SystemFn(elementsRenderer);
