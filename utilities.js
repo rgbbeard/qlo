@@ -174,10 +174,18 @@ class Request {
 	setData(data) {
 		if(isDeclared(data) && data.length() > 0) {
 			let form = new FormData();
-			for (let key in data) {
+			for(let key in data) {
 				let value = data[key];
-				form.append(key, value);
-			}this.data = form;
+
+				if(!value.isFunction()) {
+					if(isDeclared(value.type)) { //This one for file upload
+						form.append(value.name, value);
+					} else {
+						form.append(key, value);
+					}
+				}
+			}
+			this.data = form;
 		}
 	}
 }
@@ -185,7 +193,7 @@ class Request {
 //Works the same way of JQuery's $(document).ready(fn) as SystemFn(fn)
 window.SystemExecution = [];
 function SystemFn(fn) {
-	if(fn !== undefined && fn !== null && typeof fn === "function" && fn.isFunction()) {
+	if(isDeclared(fn) && typeof fn === "function" && fn.isFunction()) {
 		window.SystemExecution.push(fn);
 	} else {
 		console.error("SystemFn expects 1 parameter and it must be a function.");
@@ -193,8 +201,11 @@ function SystemFn(fn) {
 }
 function SystemExec() {
 	let functions = win.SystemExecution, temp = [];
+
 	functions.forEach(fn => {
-		if(fn.isFunction()) temp.push(fn);
+		if(fn.isFunction()) {
+			temp.push(fn);
+		}
 	});
 	if(temp.length > 0) {
 		temp.forEach(fn => fn.call());
