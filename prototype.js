@@ -6,6 +6,7 @@ Array.prototype.inArray = function (obj) {
 	return false;
 };
 Array.prototype.globalAction = function (listener, fn) { this.forEach(a => _(a).addEventListener(listener, fn)); };
+//Array.prototype.last = this.reverse()[0];
 Object.prototype.hasClass = function (c) { return this.classList.contains(c); };
 Object.prototype.toggleClass = function (c) { this.classList.toggle(c); };
 Object.prototype.toggleClasses = function (...args) { args.forEach(c => this.classList.toggle(c)); };
@@ -84,6 +85,11 @@ Object.prototype.addStyles = function (styles = {}) {
 };
 Object.prototype.length = function() { return Object.keys(this).length; };
 Object.prototype.isDisabled = function() { return isNull(this.getAttribute("disabled")) ? false : true; };
+Object.prototype.onenter = function(e, fn) {
+	if(e.key == "Enter" || e.which == 13 || e.code == "Enter") {
+		fn.call();
+	}
+};
 String.prototype.capitalize = function () {
 	let str = this.substr(1).toLowerCase(), cap = this[0].toUpperCase();
 	return cap + str;
@@ -101,6 +107,8 @@ Javascript.prototype.bool = function () {
 	return str.match(/true/i) || str.match(/yes/i) || str.match(/y/i) || str === "1" ? true : false;
 };
 Javascript.prototype.empty = function () {
-	let target = String(this);
-	return target.match(/[\s|\t|\n]+/gm) || target === "" || target === "null" || target === "undefined" || (this.isArray() === true && this.length < 1) ? true : false;
+	let
+		target = String(this),
+		is_empty = (target.match(/[\s|\t|\n]+/gm) || target === "" || target === "null" || target === "undefined" || (this.isArray() === true && this.length < 1)) ? true : false;
+	return is_empty;
 };
