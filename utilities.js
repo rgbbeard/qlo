@@ -179,7 +179,7 @@ class Request {
 
 				if(!value.isFunction()) {
 					if(isDeclared(value.type)) { //This one for file upload
-						form.append(value.name, value);
+						form.append(key, value, value.name);
 					} else {
 						form.append(key, value);
 					}
