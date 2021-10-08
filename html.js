@@ -83,10 +83,9 @@ class Element {
 		if(isDeclared(data.attributes) && typeof data.attributes == "object" && data.attributes.length() > 0) {
 			for(let attribute in data.attributes) {
 				if(!attribute.isFunction()) {
-					let values = data.attributes[attribute];
-
-					if(!values.isFunction()) {
-						this.element.setAttribute(attribute, values);
+					let value = data.attributes[attribute];
+					if(!value.isFunction()) {
+						this.element.setAttribute(attribute, value);
 					}
 				}
 			}
