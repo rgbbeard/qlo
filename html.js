@@ -84,11 +84,28 @@ class Element {
 			for(let attribute in data.attributes) {
 				if(!attribute.isFunction()) {
 					let values = data.attributes[attribute];
+
 					if(!values.isFunction()) {
-						this.element.setAttribute(attribute, values.join(" "));
+						this.element.setAttribute(attribute, values);
 					}
 				}
 			}
+		}
+                //Inline style
+                if(isDeclared(data.style) && typeof data.style == "object" && data.style.length() > 0) {
+                        let styles = "";
+
+			for(let attribute in data.style) {
+				if(!attribute.isFunction()) {
+					let values = data.style[attribute];
+
+					if(!values.isFunction()) {
+                                                styles += `${attribute}:${values};`;
+					}
+				}
+			}
+
+                        this.element.setAttribute("style", styles);
 		}
 
 		/* Set events */
@@ -133,142 +150,72 @@ class Element {
 		}
 	}
 }
-//Script tag
-class Script {
-	constructor(data = {
-		type: "",
-		src: "",
-		defer: false,
-		async: false,
-		charset: ""
-	}) {
-		let props = [];
-		if (data.src === null && data.src === undefined) {
-			if (data.src.length < 1 || data.src.empty() === true) error("File path must be declared.");
-		}
-		else {
-			this.src = data.src.toString();
-			//Force type attribute to avoid Element.properties error
-			if (data.type !== null && data.type !== undefined) {
-				if (data.type.empty() === false && data.type.length > 0) props.push("type@" + data.type.toString());
-			}
-			else {
-				props.push("type@text/javascript");
-			}
-			//Search for other options
-			if (data.defer !== null && data.defer !== undefined && data.defer !== false) {
-				if (data.defer === true) props.push("defer@true");
-			}
-			if (data.async !== null && data.async !== undefined && data.async !== false) {
-				if (data.async === true) props.push("async@true");
-			}
-			if (data.charset !== null && data.charset !== undefined) {
-				if (data.charset > 0) props.push("charset@" + data.charset);
-			}
-		}
-		return new Element({
-			type: "script",
-			properties: props,
-			src: this.src
-		});
-	}
-}
 //Interface object
 class Interface {
 	constructor(data = {
 		title: "Lorem ipsum",
 		body: []
 	}) {
-		let interfaceTitle = isDeclared(data.title) ? String(data.title) : "";
-		this.body = [];
-		this.setParams(data);
-		let element = new Element({
-			type: "div",
-			id: ["interface"+(_(".interface-background").length+1)],
-			class: ["interface-background"],
-			children: [
-				//Interface winow
-				new Element({
-					type: "div",
-					class: ["interface-window"],
-					children: [
-						//Header container
-						new Element({
-							type: "div",
-							class: ["interface-head"],
-							children: [
-								//Header title
-								new Element({
-									type: "span",
-									class: ["interface-head-title"],
-									text: interfaceTitle
-								}),
-								//Header actions container
-								new Element({
-									type: "span",
-									class: ["interface-head-actions-container"],
-									children: [
-										//Header reduce btn
-										new Element({
-											type: "span",
-											class: ["interface-head-reduce-btn", "btn-custom", "btn-warning"],
-											text: "&mdash;",
-											click: function() {
-												findElement({
-													tag: "div",
-													class: "interface-background"
-												}, this, bg => {
-													let ID = bg.getAttribute("id");
-													bg.style.display = "none";
-													document.body.appendChild(new Element({
-														type: "span",
-														class: ["reduced-interface-btn", "btn-custom", "btn-success"],
-														text: "Finestra >",
-														attributes: {
-															title: ["Riprendi finestra: "+interfaceTitle]
-														},
-														click: function() {
-															_("#"+ID).style.display = "flex";
-															this.parentNode.removeChild(this);
-														}
-													}));
-												});
-											}
-										}),
-										//Header close btn
-										new Element({
-											type: "span",
-											class: ["interface-head-close-btn", "btn-custom", "btn-error"],
-											text: "X",
-											click: function() {
-												findElement({
-													tag: "div",
-													class: "interface-background"
-												}, this, interfaceWindow => {
-													interfaceWindow.parentNode.removeChild(interfaceWindow);
-												});
-											}
-										})
-									]
-								})
-							]
-						}),
-						//Body container
-						new Element({
-							type: "div",
-							class: ["interface-body"],
-							children: this.body
-						})
-					]
-				})
-			]
-		});
-		return element;
-	}
+                this.interface_components = [];
 
-	setParams(data) {
-		//Check body
-		if(isDeclared(data.body) && data.body.isArray() && data.body.length > 0) this.body = data.body;
+                if(isDeclared(data.title) && isDeclared(data.body)) {
+                        if(data.body.isArray() && data.body.length > 0) {
+                                data.body.forEach(c => {
+                                        this.interface_components.push(c);
+                                });
+
+                                let interface_id = "interface-" + _(".interface-background").length + 1;
+                                let close_btn = new Element({
+                                        type: "span",
+                                        id: [interface_id],
+                                        class: ["interface-close-btn", "btn-ripple", "round", "error"],
+                                        text: "x"
+                                });
+
+                                let interface_title_bar = new Element({
+                                        type: "div",
+                                        class: ["interface-title-bar"],
+                                        children: [
+                                                close_btn,
+                                                new Element({
+                                                        type: "h4",
+                                                        text: String(data.title)
+                                                })
+                                        ]
+                                });
+
+                                let interface_body = new Element({
+                                        type:  "div",
+                                        class: ["interface-body"],
+                                        children: this.interface_components
+                                });
+
+                                let element = new Element({
+                                        type: "div",
+                                        class: ["interface"],
+                                        children: [
+                                                interface_title_bar,
+                                                interface_body
+                                        ]
+                                });
+
+                                let interface_background = new Element({
+                                        type: "div",
+                                        class: ["interface-background"],
+                                        children: [element]
+                                });
+                                
+                                document.body.appendChild(interface_background);
+
+                                close_btn.onclick = function() {
+                                        document.body.removeChild(interface_background);
+                                };
+                        } else {
+                                console.error("Body parameter expected to be not an empty array");
+                        }
+                } else {
+                        console.error("Interface object expects 2 parameters");
+                }
 	}
 }
 //Android-like toast object
@@ -276,74 +223,66 @@ class Toast {
 	constructor(data = {
 		text: "",
 		position: "",
-		timeout: 0
+		timeout: 0,
+                appearance: ""
 	}) {
-		this.toastCentered = "";
 		this.timeout = parseInt(data.timeout) > 0 ? data.timeout : 5;
+		this.classes = ["toast"];
 
 		switch (data.position) {
 			case "top-center":
-				this.toastPosition = "toast-top-center";
-				this.toastCentered = {
-					left: (ww / 2) - 150 + "px",
-					right: (ww / 2) - 150 + "px"
-				};
+				this.classes.push("top");
+				this.classes.push("center");
 				break;
-			case "center-center":
-				this.toastPosition = "toast-center-center";
-				this.toastCentered = {
-					left: (ww / 2) - 150 + "px",
-					right: (ww / 2) - 150 + "px"
-				};
+                        case "center-top":
+				this.classes.push("top");
+				this.classes.push("center");
 				break;
 			case "bot-center":
-				this.toastPosition = "toast-bottom-center";
-				this.toastCentered = {
-					left: (ww / 2) - 150 + "px",
-					right: (ww / 2) - 150 + "px"
-				};
+				this.classes.push("bot");
+				this.classes.push("center");
 				break;
 			case "bottom-center":
-				this.toastPosition = "toast-bottom-center";
-				this.toastCentered = {
-					left: (ww / 2) - 150 + "px",
-					right: (ww / 2) - 150 + "px"
-				};
+				this.classes.push("bot");
+				this.classes.push("center");
 				break;
 			case "top-left":
-				this.toastPosition = "toast-top-left";
+				this.classes.push("top");
+				this.classes.push("left");
 				break;
 			case "top-right":
-				this.toastPosition = "toast-top-right";
+				this.classes.push("top");
+				this.classes.push("right");
 				break;
 			case "center-left":
-				this.toastPosition = "toast-center-left";
+				this.classes.push("left");
+				this.classes.push("center");
 				break;
 			case "center-right":
-				this.toastPosition = "toast-center-right";
+				this.classes.push("right");
+				this.classes.push("center");
 				break;
 			case "bot-left":
-				this.toastPosition = "toast-bot-left";
+				this.classes.push("bot");
+				this.classes.push("left");
 				break;
 			case "bot-right":
-				this.toastPosition = "toast-bot-right";
+				this.classes.push("bot");
+				this.classes.push("right");
 				break;
 			case "bottom-left":
-				this.toastPosition = "toast-bot-left";
+				this.classes.push("bot");
+				this.classes.push("left");
 				break;
 			case "bottom-right":
-				this.toastPosition = "toast-bot-right";
+				this.classes.push("bot");
+				this.classes.push("right");
 				break;
 			default:
-				this.toastPosition = "toast-bottom-center";
-				this.toastCentered = {
-					left: (ww / 2) - 150 + "px",
-					right: (ww / 2) - 150 + "px"
-				};
+				this.classes.push("bot");
+				this.classes.push("center");
 				break;
 		}
-
-		this.classes = ["toast", this.toastPosition];
 
 		if(isDeclared(data.appearance) && !data.appearance.isFunction()) {
 			switch(String(data.appearance)) {
@@ -374,13 +313,9 @@ class Toast {
 		this.toast = new Element({
 			type: "div",
 			class: this.classes,
-			style: this.toastCentered,
 			children: [
 				new Element({
 					type: "div",
-					style: {
-						margin: "0px auto"
-					},
 					text: data.text
 				})
 			]
