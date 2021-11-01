@@ -83,7 +83,7 @@ Object.prototype.addStyles = function (styles = {}) {
 	}
 	this.setAttribute("style", temp.join(";"));
 };
-Object.prototype.length = function() { return Object.keys(this).length; };
+Object.prototype.length = Object.keys(this).length;
 Object.prototype.isDisabled = function() { return isNull(this.getAttribute("disabled")) ? false : true; };
 Object.prototype.onenter = function(e, fn) {
 	if(e.key == "Enter" || e.which == 13 || e.code == "Enter") {
