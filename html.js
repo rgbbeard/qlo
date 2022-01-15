@@ -314,7 +314,7 @@ class Toast {
 			class: this.classes,
 			attributes: {
 				"script-generated": "true"
-			}
+			},
 			children: [
 				new Element({
 					type: "div",
