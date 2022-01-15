@@ -23,6 +23,7 @@ Array.prototype.prepend = function(o) {
 	temp.unshift(o);
 	return temp;
 };
+Array.prototype.getLast = function() { return this[this.length - 1]; };
 Object.prototype.hasClass = function (c) { return this.classList.contains(String(c)); };
 Object.prototype.toggleClass = function (c) { this.classList.toggle(String(c)); };
 Object.prototype.toggleClasses = function (...args) { args.forEach(c => this.classList.toggle(String(c))); };
@@ -124,7 +125,16 @@ Object.prototype.addStyles = function (styles = {}) {
 		}
 		temp.push(String(style+":"+styles[style]));
 	}
-	this.setAttribute("style", temp.join(";"));
+	let
+		prev_styles = this.getAttribute("style"),
+		new_styles = temp.join(";");
+	let style = prev_styles + ";" + new_styles;
+
+	if(isNull(prev_styles)) {
+		style = new_styles;
+	}
+
+	this.setAttribute("style", style);
 };
 Object.prototype.length = function() { return Object.keys(this).length; };
 Object.prototype.isDisabled = function() { return isNull(this.getAttribute("disabled")) ? false : true; };
