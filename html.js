@@ -1048,3 +1048,19 @@ Objects.prototype.attachTo = function(element) {
 		});
 	}
 };
+Objects.prototype.isHidden = function() {
+	return this.hasAttribute("hidden") ? true : false;
+};
+Objects.prototype.hide = function() {
+	if(!this.isHidden()) {
+		this.setAttribute("hidden", "");
+	}
+};
+Objects.prototype.show = function() {
+	if(this.isHidden()) {
+		this.removeAttribute("hidden");
+	}
+};
+Objects.prototype.clearUp = function() {
+	this.innerHTML = "";
+};
