@@ -76,10 +76,12 @@ function elementsRenderer() {
 
         //Toasts
         _(".toast").forEach(t => {
-                setTimeout(() => {
-                        let parent = t.parentNode;
-                        parent.removeChild(t);
-                }, 3000);
+                if(!t.hasAttribute("script-generated")) {
+                        setTimeout(() => {
+                                let parent = t.parentNode;
+                                parent.removeChild(t);
+                        }, 3000);
+                }
         });
 }
 SystemFn(elementsRenderer);
