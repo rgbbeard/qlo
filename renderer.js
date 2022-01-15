@@ -1,18 +1,3 @@
-Objects.prototype.rippleAnimation = function(e) {
-        e = window.event;
-        let t = e.target;
-
-        t.removeClass("animated");
-
-        if(!t.hasClass("animated")) {
-                t.addClass("animated");
-        }
-
-        setTimeout(function() {
-                t.removeClass("animated");
-        }, 700);
-};
-
 function elementsRenderer() {
         //Validate addresses
         _('[validateaddress]').forEach(input => {
@@ -87,6 +72,14 @@ function elementsRenderer() {
                 b.onclick = () => {
                         this.rippleAnimation();
                 };
+        });
+
+        //Toasts
+        _(".toast").forEach(t => {
+                setTimeout(() => {
+                        let parent = t.parentNode;
+                        parent.removeChild(t);
+                }, 3000);
         });
 }
 SystemFn(elementsRenderer);
