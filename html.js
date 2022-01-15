@@ -312,6 +312,9 @@ class Toast {
 		this.toast = new Element({
 			type: "div",
 			class: this.classes,
+			attributes: {
+				"script-generated": "true"
+			}
 			children: [
 				new Element({
 					type: "div",
