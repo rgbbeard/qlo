@@ -977,32 +977,42 @@ Objects.prototype.mousepos = function (e) {
 };
 Objects.prototype.getPadding = function (padding = "global") {
 	let target = this;
-	if (padding !== "global") {
-		switch (padding) {
-			case "top":
-				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top"));
-			case "right":
-				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right"));
-			case "bottom":
-				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom"));
-			case "left":
-				return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left"));
-		}
-	}
-	else if (padding.match(/(\,)+/)) {
-		let pads = padding.split(","), p = [];
-		for (let x = 0; x < pads.length; x++) {
-			p.push(pads[x].rmwhitesp(), parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-" + pads[x].rmwhitesp())));
-		}
-	}
-	//Default
-	else if (padding.match(/global/i)) {
-		return {
-			top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
-			right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
-			bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
-			left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
-		};
+	if(!isDeclared(padding) || padding.empty()) {
+		padding = "global";
+	}	
+	switch(String(padding).toLowerCase()) {
+		case (padding.match(/(\,)+/)): 
+			let pads = padding.split(","), p = [];
+			for (let x = 0; x < pads.length; x++) {
+				p.push(pads[x].rmwhitesp(), parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-" + pads[x].rmwhitesp())));
+			}
+			return p;
+		case (padding.rmwhitesp() == "global"):
+			return {
+				top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
+				right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
+				bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
+				left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
+			};
+		case (["top", "right", "bottom", "left"].inArray(padding)):
+			switch(padding) {
+				case "top":
+					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top"));
+				case "right":
+					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right"));
+				case "bottom":
+					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom"));
+				case "left":
+					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left"));
+			}
+		default:
+			return {
+				top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
+				right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
+				bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
+				left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
+			};
+
 	}
 };
 Objects.prototype.gravity = function (endpoint = "parent", planet = "earth") {
@@ -1025,4 +1035,16 @@ Objects.prototype.gravity = function (endpoint = "parent", planet = "earth") {
 			}
 		}
 	}, 0);
+};
+Objects.prototype.isObject = function() {
+	return this.instance(Objects);
+};
+Objects.prototype.attachTo = function(element) {
+	if(element.isObject() || element.instance(Objects)) {
+		let ot = element.getBoundingClientRect().top, ep = element.getPadding(), eh = element.offsetHeight, top = ot + ep.top + (eh/2);
+
+		this.addStyles({
+			"top": top + "px",
+		});
+	}
 };
