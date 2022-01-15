@@ -1064,3 +1064,17 @@ Objects.prototype.show = function() {
 Objects.prototype.clearUp = function() {
 	this.innerHTML = "";
 };
+Objects.prototype.rippleAnimation = function(e) {
+        e = window.event;
+        let t = e.target;
+
+        t.removeClass("animated");
+
+        if(!t.hasClass("animated")) {
+                t.addClass("animated");
+        }
+
+        setTimeout(function() {
+                t.removeClass("animated");
+        }, 700);
+};
