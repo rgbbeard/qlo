@@ -1,5 +1,5 @@
 //Create new document element
-class Element {
+class E {
 	constructor(data = {
 		type: "",
 		id: [],
@@ -164,32 +164,32 @@ class Interface {
                                 });
 
                                 let interface_id = "interface-" + _(".interface-background").length + 1;
-                                let close_btn = new Element({
+                                let close_btn = new E({
                                         type: "span",
                                         id: [interface_id],
                                         class: ["interface-close-btn", "btn-ripple", "round", "error"],
                                         text: "x"
                                 });
 
-                                let interface_title_bar = new Element({
+                                let interface_title_bar = new E({
                                         type: "div",
                                         class: ["interface-title-bar"],
                                         children: [
                                                 close_btn,
-                                                new Element({
+                                                new E({
                                                         type: "h4",
                                                         text: String(data.title)
                                                 })
                                         ]
                                 });
 
-                                let interface_body = new Element({
+                                let interface_body = new E({
                                         type:  "div",
                                         class: ["interface-body"],
                                         children: this.interface_components
                                 });
 
-                                let element = new Element({
+                                let element = new E({
                                         type: "div",
                                         class: ["interface"],
                                         children: [
@@ -198,7 +198,7 @@ class Interface {
                                         ]
                                 });
 
-                                let interface_background = new Element({
+                                let interface_background = new E({
                                         type: "div",
                                         class: ["interface-background"],
                                         children: [element]
@@ -309,14 +309,14 @@ class Toast {
 			}
 		}
 
-		this.toast = new Element({
+		this.toast = new E({
 			type: "div",
 			class: this.classes,
 			attributes: {
 				"script-generated": "true"
 			},
 			children: [
-				new Element({
+				new E({
 					type: "div",
 					text: data.text
 				})
@@ -355,13 +355,13 @@ class TextSwitchbox {
 			children = [],
 			btnProps = ["for@" + data.name];
 		if (data.description.empty() === false) children.push(
-			new Element({
+			new E({
 				type: "p",
 				text: data.description
 			})
 		);
 		children.push(
-			new Element({
+			new E({
 				type: "input",
 				properties: [
 					"id@" + name,
@@ -381,7 +381,7 @@ class TextSwitchbox {
 		if (data.valueOn.empty() === false) btnProps.push("value-on@" + data.valueOn);
 		if (data.valueOff.empty() === false) btnProps.push("value-on@" + data.valueOff);
 		if (data.checked === false && data.checked.bool() === true) btnProps.push("button-checked@true");
-		let btn = new Element({
+		let btn = new E({
 			type: "label",
 			properties: btnProps
 		});
@@ -394,7 +394,7 @@ class TextSwitchbox {
 			});
 		}
 		children.push(btn);
-		let i = new Element({
+		let i = new E({
 			type: "div",
 			properties: ["class@text-switchbox"],
 			children: children
@@ -423,21 +423,21 @@ class Confirm {
 		this.setParams(data);
 
 		let confirmId = "#confirm_dialog_" + (_(".confirm-window-background").length + 1);
-		let confirm = new Element({
+		let confirm = new E({
 			type: "div",
 			id: [confirmId],
 			class: ["confirm-window-background"],
 			children: [
-				new Element({
+				new E({
 					type: "div",
 					class: ["confirm-window-content"],
 					children: [
-						new Element({
+						new E({
 							type: "h3",
 							class: ["confirm-window-title"],
 							text: String(data.title)
 						}),
-						new Element({
+						new E({
 							type: "span",
 							class: ["btn-custom", "btn-white"],
 							text: this.cancelText,
@@ -446,7 +446,7 @@ class Confirm {
 								if (this.deleteOnCancel === true) this.deleteWindow();
 							}
 						}),
-						new Element({
+						new E({
 							type: "span",
 							class: ["btn-custom", "btn-error"],
 							text: String(data.confirmText),
@@ -492,7 +492,7 @@ class Popup {
 		this.title = isDeclared(data.title) ? data.title : "Messaggio";
 		this.setParams(data);
 
-		this.popupWindow = new Element({
+		this.popupWindow = new E({
 			type: "div",
 			class: ["confirm-window-background"],
 			children: [this.element]
@@ -503,7 +503,7 @@ class Popup {
 
 	setParams(data) {
 		let	element_children = [
-			new Element({
+			new E({
 				type: "h3",
 				class: ["confirm-window-title"],
 				text: this.title
@@ -582,12 +582,12 @@ class Popup {
 					}
 				}
 
-				element_children.push(new Element(compiled_button_options));
+				element_children.push(new E(compiled_button_options));
 				button_count++;
 			}
 		}
 
-		this.element = new Element({
+		this.element = new E({
 			type: "div",
 			class: ["confirm-window-content"],
 			children: element_children
@@ -676,7 +676,7 @@ class Cube {
 		}
 
 		if (data.randomRotate === true) properties.push(`autorotate@${data.rotationTimeout}`);
-		let b = new Element({
+		let b = new E({
 			type: "div",
 			class: ["cube"],
 			style: {
@@ -691,7 +691,7 @@ class Cube {
 			},
 			children: [
 				//Front face
-				new Element({
+				new E({
 					type: "div",
 					class:["cube-face"],
 					style: {
@@ -711,7 +711,7 @@ class Cube {
 					text: frontLabel.toString()
 				}),
 				//Back face
-				new Element({
+				new E({
 					type: "div",
 					properties: [
 						"class@cube-face",
@@ -720,7 +720,7 @@ class Cube {
 					text: backLabel.toString()
 				}),
 				//Top face
-				new Element({
+				new E({
 					type: "div",
 					properties: [
 						"class@cube-face",
@@ -729,7 +729,7 @@ class Cube {
 					text: topLabel.toString()
 				}),
 				//Right face
-				new Element({
+				new E({
 					type: "div",
 					properties: [
 						"class@cube-face",
@@ -738,7 +738,7 @@ class Cube {
 					text: rightLabel.toString()
 				}),
 				//Bottom face
-				new Element({
+				new E({
 					type: "div",
 					properties: [
 						"class@cube-face",
@@ -747,7 +747,7 @@ class Cube {
 					text: botLabel.toString()
 				}),
 				//Left face
-				new Element({
+				new E({
 					type: "div",
 					properties: [
 						"class@cube-face",
@@ -775,7 +775,7 @@ class Menu {
 			id: ["contextmenu"],
 			class: ["contextmenu"],
 			children: [
-				new Element({
+				new E({
 					type: "h4",
 					id: ["menu-title"],
 					text: this.title
@@ -783,7 +783,7 @@ class Menu {
 			]
 		};
 		this.setParams(data);
-		let menu = new Element(this.menuParams);
+		let menu = new E(this.menuParams);
 		this.setMenuPos(menu);
 		return menu;
 	}
@@ -810,14 +810,14 @@ class Menu {
 							value.click.call();
 							this.closeMenus();
 						};
-						this.menuParams.children.push(new Element(params));
+						this.menuParams.children.push(new E(params));
 					}
 				}
 			} else warn("Expected object.");
 		} else warn("Expected menu voices.");
 		
 		//Add close menu btn
-		this.menuParams.children.push(new Element({
+		this.menuParams.children.push(new E({
 			type: "a",
 			class: ["contextmenu-item"],
 			text: "Chiudi",
@@ -865,7 +865,7 @@ class SpinnerRing{
 		return this.result;
 	}
 	generateContainer() {
-		return new Element({
+		return new E({
 			type: "spinner-container"
 		});
 	}
@@ -911,24 +911,24 @@ class SpinnerRing{
 		}
 		if(!this.message.empty()) {
 			let text = this.message;
-			this.result = new Element({
+			this.result = new E({
 				type: "p",
 				text: text,
 				children: [
-					new Element({
+					new E({
 						type: "br"
 					}),
-					new Element(this.spinnerParams)
+					new E(this.spinnerParams)
 				]
 			});
 		} else {
-			let spinnerRing = new Element(this.spinnerParams);
+			let spinnerRing = new E(this.spinnerParams);
 			this.result = spinnerRing;
 		}
 	}
 }
 
-const Elements = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu;
+const Elements = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu || E;
 const Objects = Object || Elements;
 
 Objects.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
