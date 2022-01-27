@@ -47,7 +47,7 @@ SystemFn(function() {
 			let max = Number(s.getAttribute("max"));
 
 			for(let x = 0;max>x;max--) {
-				s.prepend(new Element({
+				s.prepend(new E({
 					type: "div",
 					class: ["dot"],
 					text: max
@@ -58,7 +58,7 @@ SystemFn(function() {
 		let dots = s.querySelectorAll(".dot"), dotslen = dots.length, input = s.querySelector('input'), zero = null;
 
 		if(s.hasAttribute("add-zero")) {
-			zero = new Element({
+			zero = new E({
 				type: "div",
 				class: ["zero"],
 				text: "0"
