@@ -3,12 +3,12 @@ Javascript.prototype.isArray = function() { return Array.isArray(this); };
 Javascript.prototype.isFunction = function () { return this && {}.toString.call(this) === '[object Function]'; };
 Javascript.prototype.bool = function () {
 	let str = String(this).replace(/[\s|\t|\n]+/gm, "");
-	return str.match(/^true$/i) || str.match(/^yes$/i) || str.match(/^y$/i) || str === "1" ? true : false;
+	return str.match(/^true$/i) || str.match(/^yes$/i) || str.match(/^y$/i) || str === "1" || str == "true" ? true : false;
 };
 Javascript.prototype.empty = function () {
 	let
 		target = String(this).toLowerCase(),
-		is_empty = target.match(/[\s|\t|\n]+/gm) || target === "" || target === "null" || target === "undefined" || this.length == 0 ? true : false;
+		is_empty = target.match(/^[\s|\t|\n]+$/gm) || target === "" || target === "null" || target === "undefined" || this.length == 0 ? true : false;
 	return is_empty;
 };
 Array.prototype.inArray = function (obj) {
@@ -48,12 +48,8 @@ Object.prototype.isLastChild = function() {
 		ls = parent.children[c.length - 1];
 	return this == ls ? true : false;	
 };
-Object.prototype.previousSibling = function() {
-	return this.isFirstChild() ? null : this.previousElementSibling;
-};
-Object.prototype.nextSibling = function() {
-	return this.isLastChild() ? null : this.nextElementSibling;
-}
+Object.prototype.previousSibling = function() { return this.isFirstChild() ? null : this.previousElementSibling; };
+Object.prototype.nextSibling = function() {	return this.isLastChild() ? null : this.nextElementSibling; }
 Object.prototype.moveBefore = function() {
     let parent = this.parentNode, prev = this.previousElementSibling;
 	if(!isNull(prev)) {
