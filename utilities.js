@@ -24,7 +24,7 @@ class Selection {
 	}
 }
 //Alias of new Selection(selector)
-const _= selector => new Selection(selector);
+const _ = selector => new Selection(selector);
 class Converter {
 	rgb2Hex(r, g, b) {
 		r = r.toString(16);
@@ -69,13 +69,10 @@ class Converter {
 		return temp;
 	}
 }
-function log(...args) { console.log(...args); }
-function warn(msg, rep) { console.warn(msg, rep); }
-function error(msg) { console.error(msg); }
-function isNull(target) { return target == null ? true : false; }
-function isUndefined(target) { return target == undefined ? true : false; }
-function isDeclared(target) { return !isNull(target) && !isUndefined(target) ? true : false; }
-function findElement(data = {}, from, fn = null) {
+const isNull = function(target) { return target == null ? true : false; };
+const isUndefined = function(target) { return target == undefined ? true : false; };
+const isDeclared = function(target) { return !isNull(target) && !isUndefined(target) ? true : false; };
+const findElement = function(data = {}, from, fn = null) {
 	if(typeof from == "object" && typeof data == "object" && data.length() > 0) {
 		let parent = from.parentNode, success = false;
 		if(isDeclared(data.tag) && !data.tag.isFunction()) {
@@ -96,7 +93,7 @@ function findElement(data = {}, from, fn = null) {
 	} else {
 		console.error("Parameters must be object type.");
 	}
-}
+};
 //Make ajax requests
 class Request {
 	methods = ["POST", "GET", "PUT", "DELETE"];
@@ -192,14 +189,14 @@ class Request {
 //These functions will execute every thing is put inside the SystemExecution array
 //Works the same way of JQuery's $(document).ready(fn) as SystemFn(fn)
 window.SystemExecution = [];
-function SystemFn(fn) {
+const SystemFn = function(fn) {
 	if(isDeclared(fn) && typeof fn === "function" && fn.isFunction()) {
 		window.SystemExecution.push(fn);
 	} else {
 		console.error("SystemFn expects 1 parameter and it must be a function.");
 	}
-}
-function SystemExec() {
+};
+const SystemExec = function() {
 	let functions = win.SystemExecution, temp = [];
 
 	functions.forEach(fn => {
@@ -213,5 +210,5 @@ function SystemExec() {
 	} else {
 		console.log("SystemExec: No functions were found.");
 	}
-}
+};
 window.onload = SystemExec;
