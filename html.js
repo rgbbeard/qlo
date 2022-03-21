@@ -28,12 +28,12 @@ class E {
 
 		this.element = dom.createElement(this.type);
 
-		this.setParams(data);
+		this.#setParams(data);
 		this.addChildren(data.children);
 		return this.element;
 	}
 
-	setParams(data) {
+	#setParams(data) {
 		/* Set properties */
 		//IDs
 		if(isDeclared(data.id) && data.id.isArray() && data.id.length > 0) {
@@ -439,7 +439,7 @@ class Confirm {
 						}),
 						new E({
 							type: "span",
-							class: ["btn-custom", "btn-white"],
+							class: ["btn-ripple", "error"],
 							text: this.cancelText,
 							click: () => {
 								this.cancelAction.call();
@@ -448,7 +448,7 @@ class Confirm {
 						}),
 						new E({
 							type: "span",
-							class: ["btn-custom", "btn-error"],
+							class: ["btn-ripple", "success"],
 							text: String(data.confirmText),
 							click: () => {
 								this.confirmAction.call();
@@ -928,8 +928,274 @@ class SpinnerRing{
 	}
 }
 
-const Elements = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu || E;
-const Objects = Object || Elements;
+//Calendar and date utilities
+class Calendar {
+	display_language = "it";
+	calendar = null;
+	#months_popup = null;
+	#years_range = [(Calendar.current_year - 10), (Calendar.current_year + 10)];
+	#years_popup = null;
+	#selected_day = null;
+	#selected_month = null;
+	#selected_year = null;
+	#calendar_days = [];
+	#bond_container = null;
+	#bond_label = null;
+	#bond_input = null;
+
+	static get it_months() {
+		return {1:"Gennaio",2:"Febbraio",3:"Marzo",4:"Aprile",5:"Maggio",6:"Giugno",7:"Luglio",8:"Agosto",9:"Settembre",10:"Ottobre",11:"Novembre",12:"Dicembre"};
+	}
+
+	static get en_months() {
+		return {1:"January",2:"February",3:"March",4:"April",5:"May",6:"June",7:"July",8:"August",9:"September",10:"October",11:"November",12:"December"};
+	}
+
+	get months() {
+		switch(String(this.display_language).toLowerCase()) {
+			case "it":
+				return Calendar.it_months;
+			case "en":
+				return Calendar.en_months;
+			default:
+				return Calendar.it_months;
+		}
+	}
+
+	static get date() { return new Date(); }
+
+	static get today() { return Calendar.date.getDate(); }
+
+	static get current_month() { return Calendar.date.getMonth(); }
+
+	static get current_year() { return Calendar.date.getFullYear(); }
+
+	static days_in_month(month, year) {
+		if(!isDeclared(year)) {
+			year = Calendar.current_year;
+		}
+
+		if(!isDeclared(month)) {
+			month = Calendar.current_month;
+		}
+
+		return new Date(year, month, 0).getDate();
+	}
+
+	constructor(bind_element) {
+		if(!isDeclared(bind_element)) {
+			throw "Missing DOMNode element to bind Calendar to.";
+			return;
+		}
+
+		this.#bond_container = bind_element;
+		this.#bond_label = bind_element.querySelector("label");
+		this.#bond_input = bind_element.querySelector("input[type='text']");
+	}
+
+	#previous_month() {
+
+	}
+
+	#next_month() {
+
+	}
+
+	#previous_year() {
+
+	}
+
+	#next_year() {
+
+	}
+
+	create_header(smonth, syear) {
+		if(!String(sday).empty() || !String(smonth).empty() || !String(syear).empty()) {
+			//code
+		} else {
+			this.#set_default_selection();
+		}
+	}
+
+	create_body(sday, smonth, syear) {
+		if(!String(sday).empty() || !String(smonth).empty() || !String(syear).empty()) {
+			//code
+		} else {
+			this.#set_default_selection();
+		}
+
+		for(let x = 1;x <= Calendar.days_in_month(this.#selected_month, this.#selected_year);x++) {
+			let t = this.#normalize_date(x);
+
+			this.#calendar_days.push(new E({
+				type: "span",
+				class: ["calendar-day"],
+				text: t,
+				click: () => {
+					let d = `${t}/${this.#normalize_date(Calendar.current_month)}/${Calendar.current_year}`;
+					this.#bond_label.textContent = d;
+					this.#bond_input.value = d;
+					this.close();
+				}
+			}));
+		}
+
+		this.#build_calendar();
+	}
+
+	#build_calendar() {
+		this.calendar = new E({
+			type: "div",
+			class: ["calendar"],
+			children: [
+				new E({
+					type: "div",
+					class: ["calendar-header"],
+					children: [
+						new E({
+							type: "span",
+							class: ["calendar-close-btn"],
+							text: "x",
+							click: () => {
+								this.close();
+							}	
+						}),
+						new E({
+							type: "span",
+							class: ["calendar-arrow", "calendar-left-arrow"],
+							text: "&larr;",
+							click: () => {
+								console.log("lclick");
+							}
+						}),
+						new E({
+							type: "span",
+							class: ["calendar-month-selector"],
+							text: this.months[Calendar.current_month],
+							click: () => {
+								this.#open_months_popup();
+							}
+						}),
+						new E({
+							type: "span",
+							class: ["calendar-year-selector"],
+							text: Calendar.current_year,
+							click: () => {
+								this.#open_years_popup();
+							}
+						}),
+						new E({
+							type: "span",
+							class: ["calendar-arrow", "calendar-right-arrow"],
+							text: "&rarr;",
+							click: () => {
+								console.log("rclick");
+							}
+						})
+					]
+				}),
+				new E({
+					type: "div",
+					class: ["calendar-body"],
+					children: this.#calendar_days
+				})
+			]
+		});
+	}
+
+	#set_default_selection() {
+		this.#selected_day = Calendar.today;
+		this.#selected_month = Calendar.current_month;
+		this.#selected_year = Calendar.current_year;
+	}
+
+	#normalize_date(target, chiphers = 2, fill_with = 0) {
+		target = String(target);
+
+		if(target.empty()) {
+			target = "";
+		}
+
+		if(chiphers.empty()) {
+			chiphers = 2;
+		}
+
+		if(String(fill_with).empty()) {
+			fill_with = "0";
+		}	
+
+		while(target.length < chiphers) {
+			target = `${fill_with}${target}`;
+		}
+
+		return target;
+	}
+
+	#open_years_popup() {
+		let years = [];
+
+		for(let x = this.#years_range[0];x<=this.#years_range[1];x++) {
+			years.push(new E({
+				type: "span",
+				text: x,
+				click: () => {
+					this.#close_years_popup();
+				}
+			}));
+		}
+
+		this.#years_popup = new E({
+			type: "div",
+			class: ["calendar-years-popup"],
+			children: years
+		});
+
+		this.calendar.querySelector(".calendar-body").appendChild(this.#years_popup);
+	}
+
+	#close_years_popup() {
+		this.#years_popup.parentNode.removeChild(this.#years_popup);
+	}
+
+	#open_months_popup() {
+		let months = [];
+
+		for(let x = 1;x<=this.months.length();x++) {
+			months.push(new E({
+				type: "span",
+				text: this.months[x],
+				click: () => {
+					this.#close_months_popup();
+				}
+			}));
+		}
+
+		this.#months_popup = new E({
+			type: "div",
+			class: ["calendar-months-popup"],
+			children: months
+		});
+
+		this.calendar.querySelector(".calendar-body").appendChild(this.#months_popup);
+	}
+
+	#close_months_popup() {
+		this.#months_popup.parentNode.removeChild(this.#months_popup);
+	}
+
+	open() {
+		document.body.appendChild(this.calendar);
+	}
+
+	close() {
+		this.calendar.parentNode.removeChild(this.calendar);
+		delete this;
+	}
+}
+
+const
+	Elements = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu || E || Calendar,
+	Objects = Object || Elements;
 
 Objects.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
 	this.parentHeight = this.parentNode.offsetHeight;
@@ -962,11 +1228,9 @@ Objects.prototype.stretch = function(properties = "width, height", mode = "match
 //Beta
 Objects.prototype.focused = function (fn) {
 	let f = this.focus();
-	if (f === true) fn.call();
+	if(f === true) fn.call();
 };
-Objects.prototype.instance = function(instance) {
-	return this instanceof instance ? true : false;
-};
+Objects.prototype.instance = function(instance) { return this instanceof instance ? true : false; };
 Objects.prototype.mousepos = function (e) {
 	if (isUndefined(e)) e = win.event;
 	let
@@ -1039,9 +1303,7 @@ Objects.prototype.gravity = function (endpoint = "parent", planet = "earth") {
 		}
 	}, 0);
 };
-Objects.prototype.isObject = function() {
-	return this.instance(Objects);
-};
+Objects.prototype.isObject = function() { return this.instance(Objects); };
 Objects.prototype.attachTo = function(element) {
 	if(element.isObject() || element.instance(Objects)) {
 		let ot = element.getBoundingClientRect().top, ep = element.getPadding(), eh = element.offsetHeight, top = ot + ep.top + (eh/2);
@@ -1051,9 +1313,7 @@ Objects.prototype.attachTo = function(element) {
 		});
 	}
 };
-Objects.prototype.isHidden = function() {
-	return this.hasAttribute("hidden") ? true : false;
-};
+Objects.prototype.isHidden = function() { return this.hasAttribute("hidden") ? true : false; };
 Objects.prototype.hide = function() {
 	if(!this.isHidden()) {
 		this.setAttribute("hidden", "");
@@ -1064,9 +1324,7 @@ Objects.prototype.show = function() {
 		this.removeAttribute("hidden");
 	}
 };
-Objects.prototype.clearUp = function() {
-	this.innerHTML = "";
-};
+Objects.prototype.clearUp = function() { this.innerHTML = ""; };
 Objects.prototype.rippleAnimation = function(e) {
         e = window.event;
         let t = e.target;
@@ -1081,3 +1339,4 @@ Objects.prototype.rippleAnimation = function(e) {
                 t.removeClass("animated");
         }, 700);
 };
+Objects.prototype.tag = function(name) { return isDeclared(name) ? (this.tagName.toLowerCase() === name.toLowerCase()) : this.tagName; };
