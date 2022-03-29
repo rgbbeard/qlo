@@ -1,4 +1,4 @@
-const dom = document, win = window, www = String(win.location.origin + "/"), ww = win.innerWidth, wh = win.innerHeight;
+const dom = document, win = window, www = String(window.location.origin + "/AssociazioneQuartiereCorva"), ww = window.innerWidth, wh = window.innerHeight;
 //Select html elements
 class Selection {
 	constructor(selector = "body") {
@@ -102,7 +102,7 @@ class Request {
 		url: "",
 		headers: {},
 		data: {},
-		done: function () { },
+		done: function () {},
 		async: true,
 		debugger: false
 	}) {
@@ -175,7 +175,7 @@ class Request {
 				let value = data[key];
 
 				if(!value.isFunction()) {
-					if(isDeclared(value.type)) { //This one for file upload
+					if(isDeclared(value.type) && value.type === "file") { //This one for file upload
 						form.append(key, value, value.name);
 					} else {
 						form.append(key, value);
