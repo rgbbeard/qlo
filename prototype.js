@@ -3,7 +3,7 @@ Javascript.prototype.isArray = function() { return Array.isArray(this); };
 Javascript.prototype.isFunction = function () { return this && {}.toString.call(this) === '[object Function]'; };
 Javascript.prototype.bool = function () {
 	let str = String(this).replace(/[\s|\t|\n]+/gm, "");
-	return str.match(/^true$/i) || str.match(/^yes$/i) || str.match(/^y$/i) || str === "1" || str == "true" ? true : false;
+	return str.match(/^true|yes|y|1$/i) ? true : false;
 };
 Javascript.prototype.empty = function () {
 	let
@@ -34,7 +34,11 @@ Object.prototype.addClasses = function (...args) { args.forEach(c => this.addCla
 Object.prototype.removeAttributes = function (...args) { args.forEach(a => this.removeAttribute(String(a))); };
 Object.prototype.appendChildren = function (...args) { args.forEach(child => this.appendChild(child)); };
 Object.prototype.removeChildren = function (...args) { args.forEach(child => this.removeChild(child)); };
-Object.prototype.insertAfter = function (newElement) { this.parentNode.insertBefore(newElement, this.nextElementSibling); };
+Object.prototype.insertAfter = function (...args) { 
+	args.forEach(a => {
+		this.parentNode.insertBefore(a, this.nextElementSibling);
+	});
+};
 Object.prototype.isFirstChild = function() {
 	let
 		parent = this.parentNode,
@@ -57,7 +61,7 @@ Object.prototype.moveBefore = function() {
 	}
 };
 Object.prototype.moveAfter = function() {
-	let parent = this.parentNode, next = this.nextElementSibling, nextIsLast = isNull(next.nextElementSibling) ? true : false;
+	let parent = this.parentNode, next = this.nextElementSibling, nextIsLast = isNull(next.nextElementSibling);
 	if(!isNull(next)) {
 		let index = parent.children.elementIndex(next);
 		if(!nextIsLast) {
