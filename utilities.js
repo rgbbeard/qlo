@@ -211,4 +211,4 @@ const SystemExec = function() {
 		console.log("SystemExec: No functions were found.");
 	}
 };
-window.onload = SystemExec;
+window.addEventListener("load", SystemExec);
