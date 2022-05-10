@@ -1,13 +1,13 @@
-function elementsRenderer() {
+function elementsRender() {
         //Validate addresses
         _('[validateaddress]').forEach(input => {
-                input.onkeyup = function() {
+                input.on("keyup", function() {
                         //Remove commas
                         if(this.value.match(/\,+/i)) {
                                 let v = this.value.replaceAll(",", "");
                                 this.value = v;
                         }
-                };
+                });
         });
     
         //Validate email
@@ -53,7 +53,7 @@ function elementsRenderer() {
                 password_field = pi.querySelector("input");
 
                 if(!isNull(pi.querySelector("span"))) {
-                        pi.querySelector("span").onclick = function() {
+                        pi.querySelector("span").on("click", function() {
                                 if(password_shown) {
                                         this.removeAttribute("password-shown");
                                         password_field.setAttribute("type", "password");
@@ -63,15 +63,15 @@ function elementsRenderer() {
                                         password_field.setAttribute("type", "text");
                                         password_shown = true;
                                 }
-                        };
+                        });
                 }
         });
 
         //Ripple animate button
         _(".btn-ripple").forEach(b => {
-                b.onclick = () => {
+                b.on("click", () => {
                         this.rippleAnimation();
-                };
+                });
         });
 
         //Toasts
@@ -84,4 +84,5 @@ function elementsRenderer() {
                 }
         });
 }
-SystemFn(elementsRenderer);
+SystemFn(elementsRender);
+setInterval(elementsRender, 1000); // Auto render
