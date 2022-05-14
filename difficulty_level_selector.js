@@ -76,8 +76,8 @@ SystemFn(function() {
 		dots[0].addClass("selected");
 
 		dots.forEach(d => {
-			d.onmouseover = function() {selectLevel(s, d, input);};
-			d.onclick = function() {selectLevel(s, d, input);};
+			d.on("mouseover", function() {selectLevel(s, d, input);});
+			d.on("click", function() {selectLevel(s, d, input);});
 		});
 	});
 });
