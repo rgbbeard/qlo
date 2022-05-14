@@ -14,7 +14,6 @@ function elementsRender() {
                         setMapping(input, "validateaddress");
 
                         input.on("keyup", function() {
-                                //Remove commas
                                 if(this.value.match(/\,+/i)) {
                                         this.value = this.value.replaceAll(",", "");
                                 }
