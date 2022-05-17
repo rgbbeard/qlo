@@ -523,61 +523,48 @@ class Popup {
 				let	compiled_button_options = {
 					type: "span",
 					id: [`popup_button_${button_count}`],
-					class: ["popup-button", "btn-custom"],
+					class: ["popup-button", "btn-ripple"],
 					text: (isDeclared(button.text) ? button.text : `Button ${button_count}`)
 				};
 
 				if(isDeclared(button.click) && button.click.isFunction()) {
 					compiled_button_options.click = function() {
 						button.click.call();
-						this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);
 					};
 				}
 
 				if(isDeclared(button.appearance)) {
 					switch(String(button.appearance)) {
-						case "default":
-							compiled_button_options.class.push("btn-white");
-							break;
-
-						case "white":
-							compiled_button_options.class.push("btn-white");
-							break;
-
 						case "danger":
-							compiled_button_options.class.push("btn-warning");
+							compiled_button_options.class.push("warning");
 							break;	
 
 						case "orange":
-							compiled_button_options.class.push("btn-warning");
+							compiled_button_options.class.push("warning");
 							break;	
 
 						case "success":
-							compiled_button_options.class.push("btn-default");
+							compiled_button_options.class.push("success");
 							break;	
 
 						case "green":
-							compiled_button_options.class.push("btn-default");
+							compiled_button_options.class.push("success");
 							break;	
 
 						case "info":
-							compiled_button_options.class.push("btn-success");
+							compiled_button_options.class.push("info");
 							break;
 
 						case "blue":
-							compiled_button_options.class.push("btn-success");
+							compiled_button_options.class.push("info");
 							break;
 
 						case "error":
-							compiled_button_options.class.push("btn-error");
+							compiled_button_options.class.push("error");
 							break;
 
 						case "red":
-							compiled_button_options.class.push("btn-error");
-							break;
-
-						default:
-							compiled_button_options.class.push("btn-white");
+							compiled_button_options.class.push("error");
 							break;
 					}
 				}
