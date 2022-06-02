@@ -100,6 +100,7 @@ class Request {
 	constructor(params = {
 		method: "",
 		url: "",
+		send_files: false,
 		headers: {},
 		data: {},
 		done: function () {},
@@ -108,9 +109,6 @@ class Request {
 	}) {
 		this.method = "POST";
 		this.url = "";
-		this.headers = {
-			"Content-Type": "application/json"
-		};
 		this.data = null;
 		this.done = isDeclared(params.done) && params.done.isFunction() ? params.done : null;
 		this.async = true;
@@ -119,8 +117,25 @@ class Request {
 		this.setParams(params);
 		this.xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility
 		this.xhr.open(this.method, this.url, this.async);
-		this.setHeaders();
+
+		if(!isDeclared(params.headers) || params.headers.length() < 1) {
+			params.headers = {};
+		}
+
+		params.headers["Content-Type"] = "application/json";
+		if(isDeclared(params.headers) && params.headers.length > 0) {
+			for (let header in params.headers) {
+				let value = params.headers[header];
+				this.xhr.setRequestHeader(header, value);
+			}
+		}
+
 		this.setData(params.data);
+
+		if(isDeclared(params.send_files) && params.send_files == true) {
+			this.xhr.overrideMimeType("multipart/form-data");
+		}
+
 		//Send data
 		this.xhr.send(this.data);
 		this.xhr.onload = () => {
@@ -159,24 +174,18 @@ class Request {
 		return true;
 	}
 
-	setHeaders(headers) {
-		if(isDeclared(headers) && headers.length > 0) {
-			for (let header in headers) {
-				let value = headers[header];
-				this.xhr.setRequestHeader(header, value);
-			}
-		}
-	}
-
 	setData(data) {
 		if(isDeclared(data) && data.length() > 0) {
 			let form = new FormData();
+
 			for(let key in data) {
 				let value = data[key];
 
 				if(!value.isFunction()) {
 					if(isDeclared(value.type) && value.type === "file") { //This one for file upload
-						form.append(key, value, value.name);
+						for(let f = 0;f<value.files.length;f++) {
+							form.append(`${key}[]`, value.files[f], value.files[f].name);
+						}
 					} else {
 						form.append(key, value);
 					}
