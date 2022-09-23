@@ -23,7 +23,7 @@ class E {
 		keydown: function() {}
 	}) {
 		isDeclared(data.type) && data.type.length > 0 ?
-			this.type = data.type:
+			this.type = data.type :
 			console.error("HTML tag must be defined");
 
 		this.element = dom.createElement(this.type);
@@ -36,113 +36,113 @@ class E {
 	setParams(data) {
 		/* Set properties */
 		//IDs
-		if(isDeclared(data.id) && data.id.isArray() && data.id.length > 0) {
+		if (isDeclared(data.id) && data.id.isArray() && data.id.length > 0) {
 			data.id.forEach(i => this.element.addId(i));
 		}
 		//Classes
-		if(isDeclared(data.class) && data.class.isArray() && data.class.length > 0) {
+		if (isDeclared(data.class) && data.class.isArray() && data.class.length > 0) {
 			data.class.forEach(c => this.element.addClass(c));
 		}
 		//Inline styles
-		if(isDeclared(data.style) && typeof data.style === "object" && data.style.length() > 0) {
+		if (isDeclared(data.style) && typeof data.style === "object" && data.style.length() > 0) {
 			this.element.addStyles(data.style);
 		}
-		
+
 		/* Set attributes */
 		//Text content
-		if(isDeclared(data.text)) {
+		if (isDeclared(data.text)) {
 			this.element.innerHTML = data.text;
 		}
 		//Value
-		if(isDeclared(data.value)) {
+		if (isDeclared(data.value)) {
 			this.element.setAttribute("value", data.value);
 		}
 		//Source
-		if(isDeclared(data.src) && data.src.length) {
+		if (isDeclared(data.src) && data.src.length) {
 			this.element.setAttribute("src", String(data.src));
 		}
 		//Header reference
-		if(isDeclared(data.href)) {
+		if (isDeclared(data.href)) {
 			this.element.setAttribute("href", String(data.href));
 		}
 		//Placeholder
-		if(isDeclared(data.placeholder)) {
+		if (isDeclared(data.placeholder)) {
 			this.element.setAttribute("placeholder", String(data.placeholder));
 		}
 		//For
-		if(isDeclared(data.for) && data.for.length > 0) {
+		if (isDeclared(data.for) && data.for.length > 0) {
 			this.element.setAttribute("for", String(data.for));
 		}
 		//Names
-		if(isDeclared(data.name) && data.name.isArray() && data.name.length > 0) {
+		if (isDeclared(data.name) && data.name.isArray() && data.name.length > 0) {
 			let temp = [];
 			data.name.forEach(n => temp.push(n));
 			this.element.setAttribute("name", temp.join(" "));
 		}
 		//Other attributes
-		if(isDeclared(data.attributes) && typeof data.attributes == "object" && data.attributes.length() > 0) {
-			for(let attribute in data.attributes) {
-				if(!attribute.isFunction()) {
+		if (isDeclared(data.attributes) && typeof data.attributes == "object" && data.attributes.length() > 0) {
+			for (let attribute in data.attributes) {
+				if (!attribute.isFunction()) {
 					let value = data.attributes[attribute];
-					if(!value.isFunction()) {
+					if (!value.isFunction()) {
 						this.element.setAttribute(attribute, value);
 					}
 				}
 			}
 		}
-                //Inline style
-                if(isDeclared(data.style) && typeof data.style == "object" && data.style.length() > 0) {
-                        let styles = "";
+		//Inline style
+		if (isDeclared(data.style) && typeof data.style == "object" && data.style.length() > 0) {
+			let styles = "";
 
-			for(let attribute in data.style) {
-				if(!attribute.isFunction()) {
+			for (let attribute in data.style) {
+				if (!attribute.isFunction()) {
 					let values = data.style[attribute];
 
-					if(!values.isFunction()) {
-                                                styles += `${attribute}:${values};`;
+					if (!values.isFunction()) {
+						styles += `${attribute}:${values};`;
 					}
 				}
 			}
 
-                        this.element.setAttribute("style", styles);
+			this.element.setAttribute("style", styles);
 		}
 
 		/* Set events */
 		//Creation event
-		if(isDeclared(data.load) && data.load.isFunction()) {
+		if (isDeclared(data.load) && data.load.isFunction()) {
 			this.element.addEventListener("load", data.load);
 		}
-		
+
 		//Click event
-		if(isDeclared(data.click) && data.click.isFunction()) {
+		if (isDeclared(data.click) && data.click.isFunction()) {
 			this.element.addEventListener("click", data.click);
-		} 
+		}
 		//Double click event
-		if(isDeclared(data.dbclick) && data.dbclick.isFunction()) {
+		if (isDeclared(data.dbclick) && data.dbclick.isFunction()) {
 			this.element.addEventListener("dblclick", data.dbclick);
-		} 
+		}
 		//Right click event
-		if(isDeclared(data.cmenu) && data.cmenu.isFunction()) {
+		if (isDeclared(data.cmenu) && data.cmenu.isFunction()) {
 			this.element.addEventListener("contextmenu", data.cmenu);
-		} 
+		}
 		//Mouse over event
-		if(isDeclared(data.hover) && data.hover.isFunction()) {
+		if (isDeclared(data.hover) && data.hover.isFunction()) {
 			this.element.addEventListener("mouseover", data.hover);
-		} 
+		}
 		//Mouse out event
-		if(isDeclared(data.hout) && data.hout.isFunction()) {
+		if (isDeclared(data.hout) && data.hout.isFunction()) {
 			this.element.addEventListener("mouseout", data.hout);
-		} 
+		}
 		//Keyboard event
-		if(isDeclared(data.keydown) && data.keydown.isFunction()) {
+		if (isDeclared(data.keydown) && data.keydown.isFunction()) {
 			this.element.addEventListener("keydown", data.keydown);
 		}
 	}
 
 	addChildren(children) {
-		if(isDeclared(children) && children.isArray()) {
+		if (isDeclared(children) && children.isArray()) {
 			children.forEach(child => {
-				if(typeof child === "object") {
+				if (typeof child === "object") {
 					this.element.appendChild(child);
 				}
 			});
@@ -155,66 +155,66 @@ class Interface {
 		title: "Lorem ipsum",
 		body: []
 	}) {
-                this.interface_components = [];
+		this.interface_components = [];
 
-                if(isDeclared(data.title) && isDeclared(data.body)) {
-                        if(data.body.isArray() && data.body.length > 0) {
-                                data.body.forEach(c => {
-                                        this.interface_components.push(c);
-                                });
+		if (isDeclared(data.title) && isDeclared(data.body)) {
+			if (data.body.isArray() && data.body.length > 0) {
+				data.body.forEach(c => {
+					this.interface_components.push(c);
+				});
 
-                                let interface_id = "interface-" + _(".interface-background").length + 1;
-                                let close_btn = new E({
-                                        type: "span",
-                                        id: [interface_id],
-                                        class: ["interface-close-btn", "btn-ripple", "round", "error"],
-                                        text: "x"
-                                });
+				let interface_id = "interface-" + _(".interface-background").length + 1;
+				let close_btn = new E({
+					type: "span",
+					id: [interface_id],
+					class: ["interface-close-btn", "btn-ripple", "round", "error", "mini"],
+					text: "x"
+				});
 
-                                let interface_title_bar = new E({
-                                        type: "div",
-                                        class: ["interface-title-bar"],
-                                        children: [
-                                                close_btn,
-                                                new E({
-                                                        type: "h4",
-                                                        text: String(data.title)
-                                                })
-                                        ]
-                                });
+				let interface_title_bar = new E({
+					type: "div",
+					class: ["interface-title-bar"],
+					children: [
+						close_btn,
+						new E({
+							type: "h4",
+							text: String(data.title)
+						})
+					]
+				});
 
-                                let interface_body = new E({
-                                        type:  "div",
-                                        class: ["interface-body"],
-                                        children: this.interface_components
-                                });
+				let interface_body = new E({
+					type: "div",
+					class: ["interface-body"],
+					children: this.interface_components
+				});
 
-                                let element = new E({
-                                        type: "div",
-                                        class: ["interface"],
-                                        children: [
-                                                interface_title_bar,
-                                                interface_body
-                                        ]
-                                });
+				let element = new E({
+					type: "div",
+					class: ["interface"],
+					children: [
+						interface_title_bar,
+						interface_body
+					]
+				});
 
-                                let interface_background = new E({
-                                        type: "div",
-                                        class: ["interface-background"],
-                                        children: [element]
-                                });
-                                
-                                document.body.appendChild(interface_background);
+				let interface_background = new E({
+					type: "div",
+					class: ["interface-background"],
+					children: [element]
+				});
 
-                                close_btn.onclick = function() {
-                                        document.body.removeChild(interface_background);
-                                };
-                        } else {
-                                console.error("Body parameter expected to be not an empty array");
-                        }
-                } else {
-                        console.error("Interface object expects 2 parameters");
-                }
+				document.body.appendChild(interface_background);
+
+				close_btn.onclick = function() {
+					document.body.removeChild(interface_background);
+				};
+			} else {
+				console.error("Body parameter expected to be not an empty array");
+			}
+		} else {
+			console.error("Interface object expects 2 parameters");
+		}
 	}
 }
 //Android-like toast object
@@ -223,7 +223,7 @@ class Toast {
 		text: "",
 		position: "",
 		timeout: 0,
-                appearance: ""
+		appearance: ""
 	}) {
 		this.timeout = parseInt(data.timeout) > 0 ? data.timeout : 5;
 		this.classes = ["toast"];
@@ -233,7 +233,7 @@ class Toast {
 				this.classes.push("top");
 				this.classes.push("center");
 				break;
-                        case "center-top":
+			case "center-top":
 				this.classes.push("top");
 				this.classes.push("center");
 				break;
@@ -283,8 +283,8 @@ class Toast {
 				break;
 		}
 
-		if(isDeclared(data.appearance) && !data.appearance.isFunction()) {
-			switch(String(data.appearance)) {
+		if (isDeclared(data.appearance) && !data.appearance.isFunction()) {
+			switch (String(data.appearance)) {
 				case "success":
 					this.classes.push("success");
 					break;
@@ -342,7 +342,7 @@ class TextSwitchbox {
 		valueOn: 1,
 		valueOff: 0,
 		checked: null,
-		onCheck: function () {}
+		onCheck: function() {}
 	}) {
 		let name = data.name.empty() ?
 			"tsb-" + _(".text-switchbox").length :
@@ -402,6 +402,81 @@ class TextSwitchbox {
 		return i;
 	}
 }
+//Input file
+class FileInput {
+	constructor(data = {
+		input_text: "Upload",
+		input_name: "",
+		label_text: "Upload a file",
+		list_placeholder: "No file in the queue",
+		required: false,
+		multiple: false,
+		parent_classes: []
+	}) {
+		let input_id = _("div.input-group.file").length + 1;
+
+		this.input_attrs = {
+			"type": "file"
+		};
+
+		if (data.label_text.empty()) {
+			data.label_text = "Upload a file";
+		}
+
+		if (data.list_placeholder.empty()) {
+			data.list_placeholder = "No file in the queue";
+		}
+
+		if (data.input_name.empty()) {
+			data.input_name = "input-file-" + input_id;
+		}
+
+		if (!isDeclared(data.parent_classes) ||data.parent_classes.empty() || !data.parent_classes.isArray()) {
+			data.parent_classes = [];
+		}
+
+		data.parent_classes.push("input-group");
+		data.parent_classes.push("file");
+
+		if (data.multiple == true) {
+			this.input_attrs["multiple"] = true;
+		}
+
+		if (data.required == true) {
+			this.input_attrs["required"] = true;
+		}
+
+		this.element = new E({
+			type: "div",
+			class: data.parent_classes,
+			children: [
+				new E({
+					type: "p",
+					text: data.label_text
+				}),
+				new E({
+					type: "input",
+					id: ["input-" + input_id],
+					name: [data.input_name],
+					attributes: this.input_attrs
+				}),
+				new E({
+					type: "label",
+					for: "input-" + input_id,
+					class: ["btn-ripple", "info"],
+					text: data.input_text
+				}),
+				new E({
+					type: "div",
+					class: ["files-list"],
+					text: data.list_placeholder
+				})
+			]
+		});
+
+		return this.element;
+	}
+}
 //Confirm window object
 class Confirm {
 	constructor(data = {
@@ -439,7 +514,7 @@ class Confirm {
 						}),
 						new E({
 							type: "span",
-							class: ["btn-custom", "btn-white"],
+							class: ["btn-ripple", "secondary"],
 							text: this.cancelText,
 							click: () => {
 								this.cancelAction.call();
@@ -448,7 +523,7 @@ class Confirm {
 						}),
 						new E({
 							type: "span",
-							class: ["btn-custom", "btn-error"],
+							class: ["btn-ripple", "warning"],
 							text: String(data.confirmText),
 							click: () => {
 								this.confirmAction.call();
@@ -465,16 +540,16 @@ class Confirm {
 
 	setParams(data) {
 		//Set cancel button text
-		if(isDeclared(data.cancelText)) this.cancelText = String(data.cancelText);
+		if (isDeclared(data.cancelText)) this.cancelText = String(data.cancelText);
 		//Set confirm button text
-		if(isDeclared(data.confirmText)) this.confirmText = String(data.confirmText);
+		if (isDeclared(data.confirmText)) this.confirmText = String(data.confirmText);
 		//Perform action on confirmation
-		if(isDeclared(data.confirmAction) && data.confirmAction.isFunction()) this.confirmAction = data.confirmAction;
+		if (isDeclared(data.confirmAction) && data.confirmAction.isFunction()) this.confirmAction = data.confirmAction;
 		//Perform action on cancelation
-		if(isDeclared(data.cancelAction) && data.cancelAction.isFunction()) this.cancelAction = data.cancelAction;
+		if (isDeclared(data.cancelAction) && data.cancelAction.isFunction()) this.cancelAction = data.cancelAction;
 		//Remove confirmation window on button click
-		if(isDeclared(data.deleteOnCancel) && Boolean(data.deleteOnConfirm) === false) this.deleteOnCancel = false;
-		if(isDeclared(data.deleteOnConfirm) && Boolean(data.deleteOnConfirm) === false) this.deleteOnConfirm = false;
+		if (isDeclared(data.deleteOnCancel) && Boolean(data.deleteOnConfirm) === false) this.deleteOnCancel = false;
+		if (isDeclared(data.deleteOnConfirm) && Boolean(data.deleteOnConfirm) === false) this.deleteOnConfirm = false;
 	}
 
 	deleteWindow() {
@@ -502,7 +577,7 @@ class Popup {
 	}
 
 	setParams(data) {
-		let	element_children = [
+		let element_children = [
 			new E({
 				type: "h3",
 				class: ["confirm-window-title"],
@@ -510,61 +585,74 @@ class Popup {
 			})
 		];
 
-		if(isDeclared(data.buttons) && !data.buttons.isFunction() && data.buttons.length() > 0) {
+		if (isDeclared(data.buttons) && !data.buttons.isFunction() && data.buttons.length() > 0) {
 			let button_count = 1;
 
-			for(let button in data.buttons) {
+			for (let button in data.buttons) {
 				button = data.buttons[button];
 
-				if(button.isFunction()) {
+				if (button.isFunction()) {
 					continue;
 				}
 
-				let	compiled_button_options = {
+				let compiled_button_options = {
 					type: "span",
 					id: [`popup_button_${button_count}`],
-					class: ["popup-button", "btn-ripple"],
+					class: ["popup-button", "btn-custom"],
 					text: (isDeclared(button.text) ? button.text : `Button ${button_count}`)
 				};
 
-				if(isDeclared(button.click) && button.click.isFunction()) {
+				if (isDeclared(button.click) && button.click.isFunction()) {
 					compiled_button_options.click = function() {
 						button.click.call();
+						this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);
 					};
 				}
 
-				if(isDeclared(button.appearance)) {
-					switch(String(button.appearance)) {
+				if (isDeclared(button.appearance)) {
+					switch (String(button.appearance)) {
+						case "default":
+							compiled_button_options.class.push("btn-white");
+							break;
+
+						case "white":
+							compiled_button_options.class.push("btn-white");
+							break;
+
 						case "danger":
-							compiled_button_options.class.push("warning");
-							break;	
+							compiled_button_options.class.push("btn-warning");
+							break;
 
 						case "orange":
-							compiled_button_options.class.push("warning");
-							break;	
+							compiled_button_options.class.push("btn-warning");
+							break;
 
 						case "success":
-							compiled_button_options.class.push("success");
-							break;	
+							compiled_button_options.class.push("btn-default");
+							break;
 
 						case "green":
-							compiled_button_options.class.push("success");
-							break;	
+							compiled_button_options.class.push("btn-default");
+							break;
 
 						case "info":
-							compiled_button_options.class.push("info");
+							compiled_button_options.class.push("btn-success");
 							break;
 
 						case "blue":
-							compiled_button_options.class.push("info");
+							compiled_button_options.class.push("btn-success");
 							break;
 
 						case "error":
-							compiled_button_options.class.push("error");
+							compiled_button_options.class.push("btn-error");
 							break;
 
 						case "red":
-							compiled_button_options.class.push("error");
+							compiled_button_options.class.push("btn-error");
+							break;
+
+						default:
+							compiled_button_options.class.push("btn-white");
 							break;
 					}
 				}
@@ -652,8 +740,7 @@ class Cube {
 			leftBg = `#${data.colors.left}`;
 			frontBg = `#${data.colors.front}`;
 			backBg = `#${data.colors.back}`;
-		}
-		else if (data.useGlobalColor === true && data.globalColor.length.inRange(6, 8) === true) {
+		} else if (data.useGlobalColor === true && data.globalColor.length.inRange(6, 8) === true) {
 			topBg = `#${data.globalColor}`;
 			rightBg = `#${data.globalColor}`;
 			botBg = `#${data.globalColor}`;
@@ -680,7 +767,7 @@ class Cube {
 				//Front face
 				new E({
 					type: "div",
-					class:["cube-face"],
+					class: ["cube-face"],
 					style: {
 						"border-radius": `${data.borderRadius}px`,
 						"border": `solid ${data.borderWidth}px #000`,
@@ -781,19 +868,19 @@ class Menu {
 
 	setParams(data) {
 		let voices = data.voices;
-		if(isDeclared(voices)) {
-			if(typeof voices == "object" && !voices.isFunction()) {
+		if (isDeclared(voices)) {
+			if (typeof voices == "object" && !voices.isFunction()) {
 				//Add menu voices
-				for(let voice in voices) {
+				for (let voice in voices) {
 					let value = voices[voice];
-					if(!value.isFunction() && typeof value == "object" && isDeclared(value.label)) {
+					if (!value.isFunction() && typeof value == "object" && isDeclared(value.label)) {
 						let params = {
 							type: "a",
 							class: ["contextmenu-item"],
 							text: value.label
 						};
 						//Add action
-						if(isDeclared(value.click) && value.click.isFunction()) params.click = () => {
+						if (isDeclared(value.click) && value.click.isFunction()) params.click = () => {
 							value.click.call();
 							this.closeMenus();
 						};
@@ -806,7 +893,7 @@ class Menu {
 		} else {
 			console.warn("Expected menu voices.");
 		}
-		
+
 		//Add close menu btn
 		this.menuParams.children.push(new E({
 			type: "a",
@@ -820,7 +907,8 @@ class Menu {
 
 	setMenuPos(menu, e) {
 		if (isUndefined(e)) e = win.event;
-		let top = document.body.mousepos().y+"px", left = document.body.mousepos().x+"px";
+		let top = document.body.mousepos().y + "px",
+			left = document.body.mousepos().x + "px";
 		menu.addStyles({
 			"top": top,
 			"left": left
@@ -847,12 +935,12 @@ class SpinnerRing {
 		this.classes = [];
 		this.setAttributes(data);
 
-		if(isDeclared(data.generateContainer) && !data.generateContainer.isFunction() && data.generateContainer.bool()) {
+		if (isDeclared(data.generateContainer) && !data.generateContainer.isFunction() && data.generateContainer.bool()) {
 			this.container = this.generateContainer();
 			this.container.setAttribute("waiter", "waiter");
 			this.container.appendChild(this.result);
 			return this.container;
-		} 
+		}
 		return this.result;
 	}
 	generateContainer() {
@@ -861,11 +949,11 @@ class SpinnerRing {
 		});
 	}
 	setAttributes(data) {
-		if(isDeclared(data.message) && !data.message.isFunction() && !data.message.empty()) {
+		if (isDeclared(data.message) && !data.message.isFunction() && !data.message.empty()) {
 			this.message = String(data.message);
 		}
-		if(isDeclared(data.style) && !data.style.isFunction() && !data.style.empty()) {
-			switch(data.style.toString()) {
+		if (isDeclared(data.style) && !data.style.isFunction() && !data.style.empty()) {
+			switch (data.style.toString()) {
 				case "coin":
 					this.classes.push("gold");
 					break;
@@ -880,8 +968,8 @@ class SpinnerRing {
 					break;
 			}
 		}
-		if(isDeclared(data.size) && !data.size.isFunction() && !data.size.empty()) {
-			switch(data.size.toString()) {
+		if (isDeclared(data.size) && !data.size.isFunction() && !data.size.empty()) {
+			switch (data.size.toString()) {
 				case "small":
 					this.classes.push("small");
 					break;
@@ -897,10 +985,10 @@ class SpinnerRing {
 			}
 		}
 
-		if(this.classes.length > 0) {
+		if (this.classes.length > 0) {
 			this.spinnerParams.class = this.classes;
 		}
-		if(!this.message.empty()) {
+		if (!this.message.empty()) {
 			let text = this.message;
 			this.result = new E({
 				type: "p",
@@ -926,34 +1014,28 @@ Objects.prototype.stretch = function(properties = "width, height", mode = "match
 	this.parentHeight = this.parentNode.offsetHeight;
 	this.parentWidth = this.parentNode.offsetWidth;
 
-	if(properties === "width" && mode !== "match_parent") {
-		if(mode[mode.length-1] == "%") {
+	if (properties === "width" && mode !== "match_parent") {
+		if (mode[mode.length - 1] == "%") {
 			let width = this.parentNode.offsetWidth;
 			width = width.percentage(parseInt(mode));
-			this.style.width = width+"px";
-		}
-		else if(mode[mode.length-1] == "px") {
+			this.style.width = width + "px";
+		} else if (mode[mode.length - 1] == "px") {
 			let width = this.parentNode.style.width - parseInt(mode);
-			this.style.width = width+"px";
+			this.style.width = width + "px";
 		}
-	}
-	else if(properties == "width" && mode == "match_parent") {
-		this.style.width = this.parentWidth+"px";
-	}
-	
-	else if(properties.match(/height/i) && mode.split(",")[1].match(/match_parent/i)) {
-		this.style.height = this.parentHeight+"px";
-	}
-	
-	else if(properties.match(/all/i) && mode.match(/match_parent/i)) {
-		this.style.width = this.parentNode.offsetWidth+"px";
-		this.style.height = this.parentNode.offsetHeight+"px";
+	} else if (properties == "width" && mode == "match_parent") {
+		this.style.width = this.parentWidth + "px";
+	} else if (properties.match(/height/i) && mode.split(",")[1].match(/match_parent/i)) {
+		this.style.height = this.parentHeight + "px";
+	} else if (properties.match(/all/i) && mode.match(/match_parent/i)) {
+		this.style.width = this.parentNode.offsetWidth + "px";
+		this.style.height = this.parentNode.offsetHeight + "px";
 	}
 };
 Objects.prototype.instance = function(instance) {
 	return this instanceof instance ? true : false;
 };
-Objects.prototype.mousepos = function (e) {
+Objects.prototype.mousepos = function(e) {
 	if (isUndefined(e)) e = win.event;
 	let
 		pos = this.getBoundingClientRect(),
@@ -964,14 +1046,15 @@ Objects.prototype.mousepos = function (e) {
 		y: posY
 	};
 };
-Objects.prototype.getPadding = function (padding = "global") {
+Objects.prototype.getPadding = function(padding = "global") {
 	let target = this;
-	if(!isDeclared(padding) || padding.empty()) {
+	if (!isDeclared(padding) || padding.empty()) {
 		padding = "global";
-	}	
-	switch(String(padding).toLowerCase()) {
-		case (padding.match(/(\,)+/)): 
-			let pads = padding.split(","), p = [];
+	}
+	switch (String(padding).toLowerCase()) {
+		case (padding.match(/(\,)+/)):
+			let pads = padding.split(","),
+				p = [];
 			for (let x = 0; x < pads.length; x++) {
 				p.push(pads[x].rmwhitesp(), parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-" + pads[x].rmwhitesp())));
 			}
@@ -979,12 +1062,12 @@ Objects.prototype.getPadding = function (padding = "global") {
 		case (padding.rmwhitesp() == "global"):
 			return {
 				top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
-				right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
-				bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
-				left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
+					right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
+					bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
+					left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
 			};
 		case (["top", "right", "bottom", "left"].inArray(padding)):
-			switch(padding) {
+			switch (padding) {
 				case "top":
 					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top"));
 				case "right":
@@ -997,19 +1080,21 @@ Objects.prototype.getPadding = function (padding = "global") {
 		default:
 			return {
 				top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
-				right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
-				bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
-				left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
+					right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
+					bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
+					left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
 			};
 
 	}
 };
-Objects.prototype.gravity = function (endpoint = "parent", planet = "earth") {
-	let gravity = 0, target = this;
+Objects.prototype.gravity = function(endpoint = "parent", planet = "earth") {
+	let gravity = 0,
+		target = this;
 	this.held = false;
 	if (planet.match(/earth/i)) {
 		gravity = 9.81;
 	}
+
 	function doAttraction() {
 		target.style.top = parseFloat(target.style.top) + gravity + "px";
 	}
@@ -1029,12 +1114,12 @@ Objects.prototype.isObject = function() {
 	return this.instance(Objects);
 };
 Objects.prototype.attachTo = function(element) {
-	if(element.isObject() || element.instance(Objects)) {
+	if (element.isObject() || element.instance(Objects)) {
 		let
 			ot = element.getBoundingClientRect().top,
 			ep = element.getPadding(),
 			eh = element.offsetHeight,
-			top = ot + ep.top + (eh/2);
+			top = ot + ep.top + (eh / 2);
 
 		this.addStyles({
 			"top": top + "px",
@@ -1045,12 +1130,12 @@ Objects.prototype.isHidden = function() {
 	return this.hasAttribute("hidden") ? true : false;
 };
 Objects.prototype.hide = function() {
-	if(!this.isHidden()) {
+	if (!this.isHidden()) {
 		this.setAttribute("hidden", "");
 	}
 };
 Objects.prototype.show = function() {
-	if(this.isHidden()) {
+	if (this.isHidden()) {
 		this.removeAttribute("hidden");
 	}
 };
@@ -1058,28 +1143,28 @@ Objects.prototype.clearUp = function() {
 	this.innerHTML = "";
 };
 Objects.prototype.rippleAnimation = function(e) {
-        e = window.event;
-        let t = e.target;
+	e = window.event;
+	let t = e.target;
 
-        t.removeClass("animated");
+	t.removeClass("animated");
 
-        if(!t.hasClass("animated")) {
-                t.addClass("animated");
-        }
+	if (!t.hasClass("animated")) {
+		t.addClass("animated");
+	}
 
-        setTimeout(function() {
-                t.removeClass("animated");
-        }, 700);
+	setTimeout(function() {
+		t.removeClass("animated");
+	}, 700);
 };
 Objects.prototype.txt = function(t) {
-	if(isDeclared(t)) {
+	if (isDeclared(t)) {
 		this.innerHTML = t;
 	}
 	return this.innerText;
 };
 Objects.prototype.on = function(listener, fn) {
 	listener = String(listener);
-	if(!fn.isFunction()) {
+	if (!fn.isFunction()) {
 		console.error("Parameter fn must be a function");
 		return;
 	}

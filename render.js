@@ -1,19 +1,20 @@
-function setMapping(t, a) {
+const setMapping = function(t, a) {
         Object.defineProperty(t, a, {
                 value: true,
                 writable: false
         });
 
         // eval("console.log('"+a+":' + t." +a+")"); // Debug
-}
+};
 
-function elementsRender() {
+const elementsRender = function() {
         //Validate addresses
         _('[validateaddress]').forEach(input => {
                 if(!isDeclared(input?.validateaddress)) {
                         setMapping(input, "validateaddress");
 
                         input.on("keyup", function() {
+                                //Remove commas
                                 if(this.value.match(/\,+/i)) {
                                         this.value = this.value.replaceAll(",", "");
                                 }
@@ -109,9 +110,42 @@ function elementsRender() {
 
                         setTimeout(function() {
                                 t.parentNode.removeChild(t);
-                        }, 3000);
+                        }, 5000);
                 }
         });
-}
+
+        //Input file
+        _("div.input-group.file").forEach(i => {
+                let
+                        input = i.querySelector("input"),
+                        files_list = i.querySelector("div.files-list"),
+                        attached_files = [];
+
+                if(!isDeclared(input?.inputfile)) {
+                        setMapping(input, "inputfile");
+                        input.value = null;
+
+                        input.on("change", function() {
+                                files_list.clearUp();
+
+                                if(!this.files.empty()) {
+                                        for(let x = 0;x<this.files.length;x++) {
+                                                let file = this.files[x];
+
+                                                if(file.size > 0 && !attached_files.inArray(file.name)) {
+                                                        files_list.appendChild(new E({
+                                                                type: "a",
+                                                                class: ["pending-file", "btn-ripple"],
+                                                                text: file.name
+                                                        }));
+                                                        attached_files.push(file.name);
+                                                }
+                                        }
+                                }
+                        });
+                }        
+
+        });
+};
 SystemFn(elementsRender);
-setInterval(elementsRender, 1000); // Auto render
+setInterval(elementsRender, 1000); // Auto rendering and mapping
