@@ -1,30 +1,82 @@
-const dom = document, win = window, www = String(window.location.origin + "/AssociazioneQuartiereCorva"), ww = window.innerWidth, wh = window.innerHeight;
+const dom = document, win = window, www = String(window.location.origin + "/"), ww = window.innerWidth, wh = window.innerHeight;
 //Select html elements
-class Selection {
-	constructor(selector = "body") {
-		this.lastElement = selector;
-		this.result = null;
-		if(selector.match(/\s+/)) {
-			this.elements = selector.split(" ");
-			this.lastElement = this.elements[this.elements.length -1];
+class Select {
+	#node = null;
+	#nodelist = null;
+	#multiple = false;
+
+	constructor(selector = document.body) {
+		if(selector === document.body) {
+			this.#node = selector;
+		} else if((typeof selector) === "string") {
+			this.#node = document.querySelector(selector);
 		}
-		this.selectBy = this.lastElement[0];
-		if(this.selectBy === "#") {
-			this.result = document.querySelector(selector);
-		} else if(this.selectBy === ".") {
-			this.result = document.querySelectorAll(selector);
-		} else if(this.selectBy.match(/[\d|\D]/)) {
-			this.result = document.querySelectorAll(selector);
-		} else if(this.selectBy === "[") {
-			this.result = document.querySelectorAll(selector);
-		} else if(this.selectBy === "*") {
-			this.result = document.querySelectorAll(selector);
+
+		return this;
+	}
+
+	getIfExists(element) {
+		if(!(element === null || element === undefined)) {
+			if(element instanceof HTMLElement) {
+				this.#node = this.#node.children.hasElement(element) ? this.#node.children[this.#node.children.indexOf(element)] : null;
+			} else if(element instanceof String) {
+				let selection = this.#node.querySelector(element);
+
+				if(selection.length === 1) {
+					this.#node = selection;
+					this.#nodelist = null;
+				} else {
+					this.#node = null;
+					this.#multiple = true;
+					this.#nodelist = selection;
+				}
+			}
 		}
-		return this.result;
+
+		return this;
+	}
+
+	value(value = "") {
+		if(value.empty()) {
+			if(!this.#multiple) {
+				return this.#nodelist?.value;
+			} else if(this.#multiple && this.#nodelist.length > 0) {
+				this.#nodelist.forEach(n => {
+					// not yet implemented
+				});
+			}
+		}
+	}
+
+	children(push_child = null) {
+		if(push_child?.isObject()) {
+			this.#node.appendChild(push_child);
+		} else {
+			if(!this.#multiple) {
+				return this.#node.children;
+			} else {
+				// not yet implemented
+			}
+		}
+	}
+
+	length() {
+		return this.#multiple ? this.#nodelist.length : 1;
+	}
+
+	#resetValues() {
+		this.#node = null;
+		this.#nodelist = null;
+		this.#multiple = false;
+
+		return this;
+	}
+
+	static isUsable(target) {
+		return this.constructor.name === target?.constructor.name;
 	}
 }
-//Alias of new Selection(selector)
-const _ = selector => new Selection(selector);
+const $ = selector => new Select(selector);
 class Converter {
 	rgb2Hex(r, g, b) {
 		r = r.toString(16);
