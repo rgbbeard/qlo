@@ -80,17 +80,17 @@ class Select {
 		}
 	}
 
-	attribute(name, value = null) {
-		if(!name?.empty()) {
+	attr(name, value = null) {
+		if(name && !name.empty()) {
 			if(this.#multiple) {
-				if(value?.empty()) {
+				if(value && value.empty()) {
 					return this.#current.getAttribute(name);
 				} else {
 					this.#current.setAttribute(name, value);
 					return value;
 				}
 			} else {
-				if(value?.empty()) {
+				if(value && value.empty()) {
 					return this.#node.getAttribute(name);
 				} else {
 					this.#node.setAttribute(name, value);
@@ -103,9 +103,7 @@ class Select {
 		}
 	}
 
-	/*
-	NOT WORKING
-	property(name, value = null, editable = false) {
+	prop(name, value = null, editable = false) {
 		if(!name?.empty()) {
 			if(this.#multiple) {
 				if(!value) {
@@ -136,7 +134,6 @@ class Select {
 			return;
 		}
 	}
-	*/
 
 	#getPropertyByName(name) {
 		let result = null;
@@ -202,7 +199,7 @@ class Select {
 			    for(let x = 0;x<this.#nodelist.length;x++) {
 			        const n = this.#nodelist[x];
 			        this.#current = n;
-					fn(n);
+					fn(this);
 				}
 			} else {
 				fn(this);
@@ -219,11 +216,17 @@ class Select {
 		if(this.#multiple) {
 			for(let x = 0;x<this.#nodelist.length;x++) {
 				const n = this.#nodelist[x];
-				if(this.isInput(n)) {
+				if(Select.isInput(n)) {
 					n.value = "";
 				} else {
 					n.innerHTML = "";
 				}
+			}
+		} else {
+			if(Select.isInput(this.#node)) {
+				this.#node.value = "";
+			} else {
+				this.#node.innerHTML = "";
 			}
 		}
 
@@ -237,7 +240,6 @@ class Select {
 				n.parentNode.removeChild(n);
 			}
 		} else {
-			console.log(this.#node.parentNode);
 			this.#node.parentNode.removeChild(this.#node);
 		}
 	}
@@ -278,12 +280,12 @@ class Select {
 
 	static isInput(target) {
 		const t = target.tagName.toLowerCase(); 
-		return t === "input" || t === "textarea" || t === "button";
+		return t === "input" || t === "textarea" || t === "button" || t === "select";
 	}
 }
 const $ = selector => new Select(selector);
 class Converter {
-	rgb2Hex(r, g, b) {
+	static rgb2Hex(r, g, b) {
 		r = r.toString(16).toUpperCase();
 		r.length === 1 ? r = "0" + r : r;
 		g = g.toString(16).toUpperCase();
@@ -293,7 +295,7 @@ class Converter {
 		return `#${r}${g}${b};`;
 	}
 
-	hex2Rgb(color) {
+	static hex2Rgb(color) {
 		color = color.trim().toUpperCase();
 		color.match(/^\#?/) ? color = color.replace("#", "") : color;
 
@@ -308,6 +310,21 @@ class Converter {
 			
 			return `rgb(${r}, ${g}, ${b});`;
 		}
+	}
+
+	static json2Array(jsonObject) {
+		let temp = [];
+		for(let object in jsonObject) {
+			if(!jsonObject[object].isFunction()) {
+				temp.push(object);
+				if(typeof jsonObject[object] === "object") {
+					temp[object] = this.json2Array(jsonObject[object]);
+				} else {
+					temp[object] = jsonObject[object];
+				}
+			}
+		}
+		return temp;
 	}
 }
 const isNull = function(target) { return target === null; };

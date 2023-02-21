@@ -837,6 +837,9 @@ class Cube {
 }
 //Menu object
 class Menu {
+	title = "Menu";
+	menuParams = {};
+
 	constructor(data = {
 		title: null,
 		voices: {},
@@ -844,13 +847,15 @@ class Menu {
 		closeOnClickOver: true
 	}) {
 		this.closeMenus();
-		this.title = isDeclared(data.title) ? String(data.title) : "Menu";
+		if(isDeclared(data.title) && String(data.title)) {
+			this.title = data.title;
+		}
 		this.menuParams = {
 			type: "div",
 			id: ["contextmenu"],
 			class: ["contextmenu"],
 			children: [
-				new E({
+				element({
 					type: "h4",
 					id: ["menu-title"],
 					text: this.title
@@ -858,13 +863,15 @@ class Menu {
 			]
 		};
 		this.setParams(data);
-		let menu = new E(this.menuParams);
+		let menu = element(this.menuParams);
 		this.setMenuPos(menu);
 		return menu;
 	}
 
 	closeMenus() {
-		_(".contextmenu").forEach(m => m.parentNode.removeChild(m));
+		$(".contextmenu").each(m => {
+			m.remove();
+		});
 	}
 
 	setParams(data) {
@@ -885,7 +892,7 @@ class Menu {
 							value.click.call();
 							this.closeMenus();
 						};
-						this.menuParams.children.push(new E(params));
+						this.menuParams.children.push(element(params));
 					}
 				}
 			} else {
@@ -896,10 +903,10 @@ class Menu {
 		}
 
 		//Add close menu btn
-		this.menuParams.children.push(new E({
+		this.menuParams.children.push(element({
 			type: "a",
 			class: ["contextmenu-item"],
-			text: "Chiudi",
+			text: "Annulla",
 			click: () => {
 				this.closeMenus();
 			}
@@ -1169,4 +1176,21 @@ Objects.prototype.on = function(listener, fn) {
 		return;
 	}
 	this.addEventListener(listener, fn);
+};
+
+Objects.prototype.parentUntil = function(param, value, element = null) {
+	if(param && value) {
+		let target = element ?? this;
+		if(!isDeclared(target) && !target.getAttribute(param).split(" ").inArray(value)) {
+			if(target?.parentNode && !target.parentNode.getAttribute(param).split(" ").inArray(value)) {
+				target.parentUntil(param, value, target);
+			} else {
+				return target.parentNode;
+			}
+		} else {
+			return target;
+		}		
+	} else {
+		console.warn("Cannot to find without param => value");
+	}
 };

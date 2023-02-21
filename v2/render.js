@@ -96,10 +96,11 @@ const elementsRender = function() {
 
         //Toasts
         $(".toast").each(t => {
-                if(!isDeclared(t?.autoremove) && !t.attribute("script-generated")) {
-                        setTimeout(function() {
+                if(!isDeclared(t?.autoremove) /*&& !t?.attribute("script-generated")*/) {
+                        const s = setTimeout(() => {
                                 t.parentNode.removeChild(t);
                         }, 5000);
+                        clearTimeout(s);
                 }
         });
 
