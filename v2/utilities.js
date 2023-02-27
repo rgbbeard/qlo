@@ -1,30 +1,37 @@
 const dom = document, win = window, www = String(window.location.origin + "/"), ww = window.innerWidth, wh = window.innerHeight;
 //Select html elements
 class Select {
-	#current = null;
-	#node = null;
-	#nodelist = null;
-	#multiple = false;
+	current = null;
+	node = null;
+	nodelist = null;
+	multiple = false;
 
 	constructor(selector = document.body) {
 		if(selector === document.body) {
-			this.#node = selector;
+			this.node = selector;
 		} else if((typeof selector) === "string") {
-			if(this.#node === null) {
-				this.#node = document.body;
+			if(this.node === null) {
+				this.node = document.body;
 			}
 
-			const selection = this.#node.querySelectorAll(selector);
+			const selection = this.node.querySelectorAll(selector);
 
 			if(selection.length === 1) {
-				this.#node = selection[0];
-				this.#nodelist = null;
+				this.node = selection[0];
+				this.nodelist = null;
 			} else {
-				this.#multiple = true;
-				this.#nodelist = selection;
+				this.multiple = true;
+				this.nodelist = selection;
 			}
 		} else if(selector instanceof HTMLElement && selector?.length() === 0) {
-			this.#node = selector;
+			this.node = selector;
+		} else if (selector instanceof Select) {
+			if(selector.multiple) {
+				this.current = selector.current;
+				this.node = selector.current;
+			} else {
+				this.node = selector.node;
+			}
 		}
 
 		return this;
@@ -33,20 +40,24 @@ class Select {
 	getIfExists(element) {
 		if(isDeclared(element)) {
 			if(element instanceof HTMLElement) {
-				this.#node = this.#node.children.hasElement(element) ? this.#node.children[this.#node.children.indexOf(element)] : null;
+				if(!this.multiple) {
+					this.node = this.node.children.hasElement(element) ? this.node.children[this.node.children.indexOf(element)] : null;
+				} else {
+					this.current = this.current.children.hasElement(element) ? this.current.children[this.current.children.indexOf(element)] : null;
+				}
 			} else if((typeof element) === "string") {
-				const selection = this.#node.querySelectorAll(element);
+				const selection = this.multiple ? this.current.querySelectorAll(element) : this.node.querySelectorAll(element);
 
 				if(selection.length === 1) {
-					this.#node = selection[0];
-					this.#current = null;
-					this.#multiple = false;
-					this.#nodelist = null;
+					this.node = selection[0];
+					this.current = null;
+					this.multiple = false;
+					this.nodelist = null;
 				} else {
-					this.#node = null;
-					this.#current = null;
-					this.#multiple = true;
-					this.#nodelist = selection;
+					this.node = null;
+					this.current = null;
+					this.multiple = true;
+					this.nodelist = selection;
 				}
 			}
 		}
@@ -55,35 +66,43 @@ class Select {
 	}
 
 	first() {
-		if(this.#multiple) {
-			this.#node = this.#multiple[0];
-			this.#multiple = false;
-			this.#nodelist = null;
-			this.#current = null;
+		if(this.multiple) {
+			this.node = this.multiple[0];
+			this.multiple = false;
+			this.nodelist = null;
+			this.current = null;
+		}
+
+		return this;
+	}
+
+	parent() {
+		if(!this.multiple) {
+			this.node = this.node.parentNode;
 		}
 
 		return this;
 	}
 
 	value(value = "") {
-		if(this.#multiple) {
+		if(this.multiple) {
 			if(value.empty()) {
-				return Select.isInput(this.#current) ? this.#current.value : this.#current.textContent;
+				return Select.isInput(this.current) ? this.current.value : this.current.textContent;
 			} else {
-				if(Select.isInput(this.#current)) {
-					this.#current.value = value;
+				if(Select.isInput(this.current)) {
+					this.current.value = value;
 				} else {
-					this.#current.textContent = value;
+					this.current.textContent = value;
 				}
 			}
 		} else {
 			if(value.empty()) {
-				return Select.isInput(this.#node) ? this.#node.value : this.#node.textContent;
+				return Select.isInput(this.node) ? this.node.value : this.node.textContent;
 			} else {
-				if(Select.isInput(this.#node)) {
-					this.#node.value = value;
+				if(Select.isInput(this.node)) {
+					this.node.value = value;
 				} else {
-					this.#node.textContent = value;
+					this.node.textContent = value;
 				}
 			}
 		}
@@ -91,18 +110,18 @@ class Select {
 
 	attr(name, value = null) {
 		if(name && !name.empty()) {
-			if(this.#multiple) {
+			if(this.multiple) {
 				if(value && value.empty()) {
-					return this.#current.getAttribute(name);
+					return this.current.getAttribute(name);
 				} else {
-					this.#current.setAttribute(name, value);
+					this.current.setAttribute(name, value);
 					return value;
 				}
 			} else {
 				if(value && value.empty()) {
-					return this.#node.getAttribute(name);
+					return this.node.getAttribute(name);
 				} else {
-					this.#node.setAttribute(name, value);
+					this.node.setAttribute(name, value);
 					return value;
 				}
 			}
@@ -114,11 +133,11 @@ class Select {
 
 	prop(name, value = null, editable = false) {
 		if(!name?.empty()) {
-			if(this.#multiple) {
+			if(this.multiple) {
 				if(!value) {
 					return this.#getPropertyByName(name);
 				} else {
-					Object.defineProperty(this.#current, name, {
+					Object.defineProperty(this.current, name, {
 			                value: value,
 			                writable: editable,
 			                configurable: true
@@ -130,7 +149,7 @@ class Select {
 					const property_value = this.#getPropertyByName(name);
 					return property_value;
 				} else {
-					Object.defineProperty(this.#node, name, {
+					Object.defineProperty(this.node, name, {
 			                value: value,
 			                writable: editable,
 			                configurable: true
@@ -147,7 +166,7 @@ class Select {
 	#getPropertyByName(name) {
 		let result = null;
 		const
-			target = this.#multiple ? this.#current : this.#node,
+			target = this.multiple ? this.current : this.node,
 			properties = Object.getOwnPropertyNames(target);
 
 		for(let x = 0;x<properties.length;x++) {
@@ -164,18 +183,18 @@ class Select {
 	WIP
 	attributes(attributes = null) {
 		if(attributes && attributes.length() > 0) {
-			if(this.#multiple) {
-				if(this.#current.getAttribute(value)) {
-					return this.#current.getAttribute(name);
+			if(this.multiple) {
+				if(this.current.getAttribute(value)) {
+					return this.current.getAttribute(name);
 				} else {
-					this.#current.setAttribute(name, value);
+					this.current.setAttribute(name, value);
 					return value;
 				}
 			} else {
-				if(this.#node.getAttribute(value)) {
-					return this.#node.getAttribute(name);
+				if(this.node.getAttribute(value)) {
+					return this.node.getAttribute(name);
 				} else {
-					this.#node.setAttribute(name, value);
+					this.node.setAttribute(name, value);
 					return value;
 				}
 			}
@@ -187,27 +206,27 @@ class Select {
 	*/
 
 	children(push_child = null) {
-		if(!this.#multiple) {
+		if(!this.multiple) {
 			if(push_child?.isObject()) {
-				this.#current.appendChild(push_child);
+				this.current.appendChild(push_child);
 			} else {
-				return this.#node.children;
+				return this.node.children;
 			}
 		} else {
-			return this.#current.children;
+			return this.current.children;
 		}
 	}
 
 	length() {
-		return this.#multiple ? this.#nodelist.length : 1;
+		return this.multiple ? this.nodelist.length : 1;
 	}
 
 	each(fn) {
 		if(fn.isFunction()) {
-			if(this.#multiple) {
-			    for(let x = 0;x<this.#nodelist.length;x++) {
-			        const n = this.#nodelist[x];
-			        this.#current = n;
+			if(this.multiple) {
+			    for(let x = 0;x<this.nodelist.length;x++) {
+			        const n = this.nodelist[x];
+			        this.current = n;
 					fn(this);
 				}
 			} else {
@@ -222,9 +241,9 @@ class Select {
 	}
 
 	reset() {
-		if(this.#multiple) {
-			for(let x = 0;x<this.#nodelist.length;x++) {
-				const n = this.#nodelist[x];
+		if(this.multiple) {
+			for(let x = 0;x<this.nodelist.length;x++) {
+				const n = this.nodelist[x];
 				if(Select.isInput(n)) {
 					n.value = "";
 				} else {
@@ -232,10 +251,10 @@ class Select {
 				}
 			}
 		} else {
-			if(Select.isInput(this.#node)) {
-				this.#node.value = "";
+			if(Select.isInput(this.node)) {
+				this.node.value = "";
 			} else {
-				this.#node.innerHTML = "";
+				this.node.innerHTML = "";
 			}
 		}
 
@@ -243,31 +262,31 @@ class Select {
 	}
 
 	remove() {
-		if(this.#multiple) {
-			for(let x = 0;x<this.#nodelist.length;x++) {
-				const n = this.#nodelist[x];
+		if(this.multiple) {
+			for(let x = 0;x<this.nodelist.length;x++) {
+				const n = this.nodelist[x];
 				n.parentNode.removeChild(n);
 			}
 		} else {
-			this.#node.parentNode.removeChild(this.#node);
+			this.node.parentNode.removeChild(this.node);
 		}
 	}
 
 	on(listener_name, fn) {
-		if(this.#multiple && fn.isFunction()) {
-		    for(let x = 0;x<this.#nodelist.length;x++) {
-		        const n = this.#nodelist[x];
-		        this.#current = n;
+		if(this.multiple && fn.isFunction()) {
+		    for(let x = 0;x<this.nodelist.length;x++) {
+		        const n = this.nodelist[x];
+		        this.current = n;
 		        n.addEventListener(listener_name, (n = n) => {fn(n);});
 			}
 		} else {
-			this.#node?.addEventListener(listener_name, (n = n) => {fn(n);});
+			this.node?.addEventListener(listener_name, (n = n) => {fn(n);});
 		}
 	}
 
 	appendChild(child) {
-		if(!this.#multiple && child.isObject()) {
-			this.#node.appendChild(child);
+		if(!this.multiple && child.isObject()) {
+			this.node.appendChild(child);
 		} else {
 			console.warn("You cannot append the given variable");
 			return;
@@ -276,9 +295,9 @@ class Select {
 	}
 
 	appendChildren(...children) {
-		if(!this.#multiple) {
+		if(!this.multiple) {
 			children.forEach(child => {
-				this.#node.appendChild(child);
+				this.node.appendChild(child);
 			});
 		} else {
 			console.warn("You cannot append to the current target");
