@@ -152,64 +152,61 @@ class E {
 const element = options => new E(options);
 //Interface object
 class Interface {
+	interface_components = [];
+	
 	constructor(data = {
 		title: "Lorem ipsum",
 		body: []
 	}) {
-		this.interface_components = [];
-
-		if (isDeclared(data.title) && isDeclared(data.body)) {
+		if (data.title && data.body) {
 			if (data.body.isArray() && data.body.length > 0) {
 				data.body.forEach(c => {
 					this.interface_components.push(c);
 				});
 
-				let interface_id = "interface-" + _(".interface-background").length + 1;
-				let close_btn = new E({
-					type: "span",
-					id: [interface_id],
-					class: ["interface-close-btn", "btn-ripple", "round", "error", "mini"],
-					text: "x"
-				});
-
-				let interface_title_bar = new E({
-					type: "div",
-					class: ["interface-title-bar"],
-					children: [
-						close_btn,
-						new E({
-							type: "h4",
-							text: String(data.title)
-						})
-					]
-				});
-
-				let interface_body = new E({
-					type: "div",
-					class: ["interface-body"],
-					children: this.interface_components
-				});
-
-				let element = new E({
-					type: "div",
-					class: ["interface"],
-					children: [
-						interface_title_bar,
-						interface_body
-					]
-				});
-
-				let interface_background = new E({
-					type: "div",
-					class: ["interface-background"],
-					children: [element]
-				});
+				let
+					interface_id = "interface-" + $(".interface-background").length() + 1,
+					close_btn = element({
+						type: "span",
+						id: [interface_id],
+						class: ["interface-close-btn", "btn-ripple", "round", "error", "mini"],
+						text: "x"
+					}),
+					interface_title_bar = element({
+						type: "div",
+						class: ["interface-title-bar"],
+						children: [
+							close_btn,
+							element({
+								type: "h4",
+								text: String(data.title)
+							})
+						]
+					}),
+					interface_body = element({
+						type: "div",
+						class: ["interface-body"],
+						children: this.interface_components
+					}),
+					e = element({
+						type: "div",
+						class: ["interface"],
+						children: [
+							interface_title_bar,
+							interface_body
+						]
+					}),
+					interface_background = element({
+						type: "div",
+						class: ["interface-background"],
+						children: [e]
+					});
 
 				document.body.appendChild(interface_background);
 
-				close_btn.onclick = function() {
+				close_btn.on("click", function() {
 					document.body.removeChild(interface_background);
-				};
+				});
 			} else {
 				console.error("Body parameter expected to be not an empty array");
 			}
@@ -1178,19 +1175,14 @@ Objects.prototype.on = function(listener, fn) {
 	this.addEventListener(listener, fn);
 };
 
-Objects.prototype.parentUntil = function(param, value, element = null) {
-	if(param && value) {
+Objects.prototype.parentUntilClass = function(value, element = null) {
+	if(value && !value.empty()) {
 		let target = element ?? this;
-		if(!isDeclared(target) && !target.getAttribute(param).split(" ").inArray(value)) {
-			if(target?.parentNode && !target.parentNode.getAttribute(param).split(" ").inArray(value)) {
-				target.parentUntil(param, value, target);
-			} else {
-				return target.parentNode;
-			}
-		} else {
+
+		if(target.hasClass(value)) {
 			return target;
-		}		
-	} else {
-		console.warn("Cannot to find without param => value");
+		}
+
+		return target.parentUntilClass(value, target.parentNode);
 	}
 };

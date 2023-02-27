@@ -23,20 +23,18 @@ class Select {
 				this.#multiple = true;
 				this.#nodelist = selection;
 			}
+		} else if(selector instanceof HTMLElement && selector?.length() === 0) {
+			this.#node = selector;
 		}
 
 		return this;
 	}
 
 	getIfExists(element) {
-		if(!(element === null || element === undefined)) {
+		if(isDeclared(element)) {
 			if(element instanceof HTMLElement) {
 				this.#node = this.#node.children.hasElement(element) ? this.#node.children[this.#node.children.indexOf(element)] : null;
-			} else if(element instanceof String) {
-				if(this.#node === null) {
-					this.#node = document.body;
-				}
-
+			} else if((typeof element) === "string") {
 				const selection = this.#node.querySelectorAll(element);
 
 				if(selection.length === 1) {
@@ -51,6 +49,17 @@ class Select {
 					this.#nodelist = selection;
 				}
 			}
+		}
+
+		return this;
+	}
+
+	first() {
+		if(this.#multiple) {
+			this.#node = this.#multiple[0];
+			this.#multiple = false;
+			this.#nodelist = null;
+			this.#current = null;
 		}
 
 		return this;
