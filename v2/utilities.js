@@ -7,7 +7,7 @@ class Select {
 	multiple = false;
 
 	constructor(selector = document.body) {
-		if(selector === document.body) {
+		if(selector === document.body || selector === document) {
 			this.node = selector;
 		} else if((typeof selector) === "string") {
 			if(this.node === null) {
@@ -38,7 +38,7 @@ class Select {
 	}
 
 	getIfExists(element) {
-		if(isDeclared(element)) {
+		if(element) {
 			if(element instanceof HTMLElement) {
 				if(!this.multiple) {
 					this.node = this.node.children.hasElement(element) ? this.node.children[this.node.children.indexOf(element)] : null;
@@ -63,6 +63,10 @@ class Select {
 		}
 
 		return this;
+	}
+
+	getObject() {
+		return this.multiple ? this.current : this.node;
 	}
 
 	first() {
@@ -227,17 +231,20 @@ class Select {
 			    for(let x = 0;x<this.nodelist.length;x++) {
 			        const n = this.nodelist[x];
 			        this.current = n;
-					fn(this);
+			        if(!this.hasHashFunction(n, "each", fn)) {
+						this.hashFunction(n, "each", fn);
+						fn(n);
+					}
 				}
 			} else {
-				fn(this);
+				if(!this.hasHashFunction(this.node, "each", fn)) {
+					this.hashFunction(this.node, "each", fn);
+					fn(this.node);
+				}
 			}
 		} else {
 			console.warn("Missing function to evaluate");
-			return this;
 		}
-
-		return this;
 	}
 
 	reset() {
@@ -277,10 +284,18 @@ class Select {
 		    for(let x = 0;x<this.nodelist.length;x++) {
 		        const n = this.nodelist[x];
 		        this.current = n;
-		        n.addEventListener(listener_name, (n = n) => {fn(n);});
+		        if(!this.hasHashFunction(n, listener_name, fn)) {
+					const fun = (n = n) => {fn(n);};
+					this.hashFunction(n, listener_name, fn);
+		        	n.addEventListener(listener_name, fun);
+				}
 			}
 		} else {
-			this.node?.addEventListener(listener_name, (n = n) => {fn(n);});
+			if(!this.hasHashFunction(this.node, listener_name, fn)) {
+				const fun = (n = this.node) => {fn(this.node);};
+				this.hashFunction(this.node, listener_name, fn);
+				this.node?.addEventListener(listener_name, fun);
+			}
 		}
 	}
 
@@ -309,6 +324,42 @@ class Select {
 	static isInput(target) {
 		const t = target.tagName.toLowerCase(); 
 		return t === "input" || t === "textarea" || t === "button" || t === "select";
+	}
+
+	hashFunction(target, event, fn) {
+		const hash = btoa(fn);
+
+		if(target instanceof Select) {
+			target = target.getObject();
+		}
+
+		if(!target?.hashes) {
+			target.hashes = {};
+		}
+
+		if(!target.hashes[event]) {
+			target.hashes[event] = [];	
+		}
+
+		if(!target.hashes[event][hash]) {
+			target.hashes[event].push(hash);
+		}
+	}
+
+	hasHashFunction(target, event, fn) {
+		const hash = btoa(fn);
+
+		if(target instanceof Select) {
+			target = target.getObject();
+		}
+
+		if(!event.empty() && fn.empty()) {
+			return target.hashes[event];
+		} else if(!event.empty() && !fn.empty()) {
+			return target.hashes[event][hash];
+		}
+
+		return target.hashes;
 	}
 }
 const $ = selector => new Select(selector);
