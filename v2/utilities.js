@@ -1,4 +1,9 @@
-const dom = document, win = window, www = String(window.location.origin + "/"), ww = window.innerWidth, wh = window.innerHeight;
+const 
+	dom = document, 
+	win = window, 
+	www = String(window.location.origin + "/"), 
+	ww = window.innerWidth, 
+	wh = window.innerHeight;
 //Select html elements
 class Select {
 	current = null;
@@ -41,14 +46,20 @@ class Select {
 		if(element) {
 			if(element instanceof HTMLElement) {
 				if(!this.multiple) {
-					this.node = this.node.children.hasElement(element) ? this.node.children[this.node.children.indexOf(element)] : null;
+					this.node = this.node.children.hasElement(element) ? 
+						this.node.children[this.node.children.indexOf(element)] 
+						: null;
 				} else {
-					this.current = this.current.children.hasElement(element) ? this.current.children[this.current.children.indexOf(element)] : null;
+					this.current = this.current.children.hasElement(element) ? 
+						this.current.children[this.current.children.indexOf(element)] 
+						: null;
 				}
 			} else if((typeof element) === "string") {
-				const selection = this.multiple ? this.current.querySelectorAll(element) : this.node.querySelectorAll(element);
+				const selection = this.multiple ? 
+						this.current?.querySelectorAll(element) 
+						: this.node?.querySelectorAll(element);
 
-				if(selection.length === 1) {
+				if(selection && selection.length === 1) {
 					this.node = selection[0];
 					this.current = null;
 					this.multiple = false;
@@ -101,7 +112,7 @@ class Select {
 			}
 		} else {
 			if(value.empty()) {
-				return Select.isInput(this.node) ? this.node.value : this.node.textContent;
+				return Select.isInput(this.node) ? this.node?.value : this.node?.textContent;
 			} else {
 				if(Select.isInput(this.node)) {
 					this.node.value = value;
@@ -322,7 +333,7 @@ class Select {
 	}
 
 	static isInput(target) {
-		const t = target.tagName.toLowerCase(); 
+		const t = target && target.tagName.toLowerCase(); 
 		return t === "input" || t === "textarea" || t === "button" || t === "select";
 	}
 
@@ -353,10 +364,12 @@ class Select {
 			target = target.getObject();
 		}
 
-		if(!event.empty() && fn.empty()) {
-			return target.hashes[event];
-		} else if(!event.empty() && !fn.empty()) {
-			return target.hashes[event][hash];
+		if(target.hashes) {
+			if(!event.empty() && fn.empty()) {
+				return target.hashes[event];
+			} else if(!event.empty() && !fn.empty()) {
+				return target.hashes[event][hash];
+			}
 		}
 
 		return target.hashes;
