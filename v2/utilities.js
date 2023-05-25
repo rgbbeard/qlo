@@ -4,6 +4,7 @@ const
 	www = String(window.location.origin + "/"), 
 	ww = window.innerWidth, 
 	wh = window.innerHeight;
+
 //Select html elements
 class Select {
 	current = null;
@@ -77,7 +78,16 @@ class Select {
 	}
 
 	getObject() {
-		return this.multiple ? this.current : this.node;
+		const e = win.event;
+		if(this.multiple) {
+			for(let n = 0;n<this.nodelist.length;n++) {
+				if(e.target === this.nodelist[n]) {
+					return this.nodelist[n];
+				}
+			}
+		}
+
+		return this.node;
 	}
 
 	first() {
@@ -244,13 +254,13 @@ class Select {
 			        this.current = n;
 			        if(!Select.hasHashFunction(n, "each", fn)) {
 						this.#hashFunction(n, "each", fn);
-						fn(this);
+						fn(n);
 					}
 				}
 			} else {
 				if(!Select.hasHashFunction(this.node, "each", fn)) {
 					this.#hashFunction(this.node, "each", fn);
-					fn(this);
+					fn(this.node);
 				}
 			}
 		} else {
@@ -297,13 +307,17 @@ class Select {
 		        this.current = n;
 		        if(!Select.hasHashFunction(n, listener_name, fn)) {
 					this.#hashFunction(n, listener_name, fn);
-		        	n.addEventListener(listener_name, fn);
+		        	n.addEventListener(listener_name, function(e) {
+		        		e.target === n & fn.call();
+		        	});
 				}
 			}
 		} else {
 			if(!Select.hasHashFunction(this.node, listener_name, fn)) {
 				this.#hashFunction(this.node, listener_name, fn);
-				this.node?.addEventListener(listener_name, fn);
+				this.node?.addEventListener(listener_name, function(e) {
+	        		e.target === this.node & fn.call();
+	        	});
 			}
 		}
 	}
@@ -338,11 +352,15 @@ class Select {
 	#hashFunction(target, event, fn) {
 		const hash = btoa(fn);
 
+		if(!target) {
+			return;
+		}
+
 		if(target instanceof Select) {
 			target = target.getObject();
 		}
 
-		if(!target?.hashes) {
+		if(!target.hashes) {
 			target.hashes = {};
 		}
 
@@ -362,15 +380,15 @@ class Select {
 			target = target.getObject();
 		}
 
-		if(target.hashes) {
+		if(target?.hashes) {
 			if(!event && fn.empty()) {
 				return target.hashes[event];
-			} else if(!event.empty() && !fn.empty()) {
+			} else if(!event?.empty() && !fn.empty()) {
 				return target?.hashes[event] && target?.hashes[event][hash];
 			}
 		}
 
-		return target.hashes;
+		return target?.hashes;
 	}
 }
 const $ = selector => new Select(selector);
