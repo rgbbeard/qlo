@@ -242,15 +242,15 @@ class Select {
 			    for(let x = 0;x<this.nodelist.length;x++) {
 			        const n = this.nodelist[x];
 			        this.current = n;
-			        if(!this.hasHashFunction(n, "each", fn)) {
-						this.hashFunction(n, "each", fn);
-						fn(n);
+			        if(!Select.hasHashFunction(n, "each", fn)) {
+						this.#hashFunction(n, "each", fn);
+						fn(this);
 					}
 				}
 			} else {
-				if(!this.hasHashFunction(this.node, "each", fn)) {
-					this.hashFunction(this.node, "each", fn);
-					fn(this.node);
+				if(!Select.hasHashFunction(this.node, "each", fn)) {
+					this.#hashFunction(this.node, "each", fn);
+					fn(this);
 				}
 			}
 		} else {
@@ -295,17 +295,15 @@ class Select {
 		    for(let x = 0;x<this.nodelist.length;x++) {
 		        const n = this.nodelist[x];
 		        this.current = n;
-		        if(!this.hasHashFunction(n, listener_name, fn)) {
-					const fun = (n = n) => {fn(n);};
-					this.hashFunction(n, listener_name, fn);
-		        	n.addEventListener(listener_name, fun);
+		        if(!Select.hasHashFunction(n, listener_name, fn)) {
+					this.#hashFunction(n, listener_name, fn);
+		        	n.addEventListener(listener_name, fn);
 				}
 			}
 		} else {
-			if(!this.hasHashFunction(this.node, listener_name, fn)) {
-				const fun = (n = this.node) => {fn(this.node);};
-				this.hashFunction(this.node, listener_name, fn);
-				this.node?.addEventListener(listener_name, fun);
+			if(!Select.hasHashFunction(this.node, listener_name, fn)) {
+				this.#hashFunction(this.node, listener_name, fn);
+				this.node?.addEventListener(listener_name, fn);
 			}
 		}
 	}
@@ -337,7 +335,7 @@ class Select {
 		return t === "input" || t === "textarea" || t === "button" || t === "select";
 	}
 
-	hashFunction(target, event, fn) {
+	#hashFunction(target, event, fn) {
 		const hash = btoa(fn);
 
 		if(target instanceof Select) {
@@ -357,7 +355,7 @@ class Select {
 		}
 	}
 
-	hasHashFunction(target, event, fn) {
+	static hasHashFunction(target, event, fn) {
 		const hash = btoa(fn);
 
 		if(target instanceof Select) {
@@ -365,10 +363,10 @@ class Select {
 		}
 
 		if(target.hashes) {
-			if(!event.empty() && fn.empty()) {
+			if(!event && fn.empty()) {
 				return target.hashes[event];
 			} else if(!event.empty() && !fn.empty()) {
-				return target.hashes[event][hash];
+				return target?.hashes[event] && target?.hashes[event][hash];
 			}
 		}
 
