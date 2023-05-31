@@ -1015,26 +1015,30 @@ class SpinnerRing {
 const Elements = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu || E;
 const Objects = Object || Elements;
 
+// WIP
 Objects.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
 	this.parentHeight = this.parentNode.offsetHeight;
 	this.parentWidth = this.parentNode.offsetWidth;
 
-	if (properties === "width" && mode !== "match_parent") {
-		if (mode[mode.length - 1] == "%") {
-			let width = this.parentNode.offsetWidth;
-			width = width.percentage(parseInt(mode));
-			this.style.width = width + "px";
-		} else if (mode[mode.length - 1] == "px") {
-			let width = this.parentNode.style.width - parseInt(mode);
-			this.style.width = width + "px";
+	if(properties && properties.length >= 3) {
+		if(!properties.match(/\,/)) {
+			switch(properties) {
+				case "all":
+					this.style.width = this.parentNode.offsetWidth + "px";
+					this.style.height = this.parentNode.offsetHeight + "px";
+					break;
+				case "height":
+					this.style.height = this.parentHeight + "px";
+					break;
+				case "width":
+					this.style.width = this.parentWidth + "px";
+					break;
+			}
+		} else if(properties.match(/((\w+)\,?\s?){2}/)) {
+			const 
+				width = properties.split(",")[0].trim(), 
+				height = properties.split(",")[1].trim();
 		}
-	} else if (properties == "width" && mode == "match_parent") {
-		this.style.width = this.parentWidth + "px";
-	} else if (properties.match(/height/i) && mode.split(",")[1].match(/match_parent/i)) {
-		this.style.height = this.parentHeight + "px";
-	} else if (properties.match(/all/i) && mode.match(/match_parent/i)) {
-		this.style.width = this.parentNode.offsetWidth + "px";
-		this.style.height = this.parentNode.offsetHeight + "px";
 	}
 };
 Objects.prototype.instance = function(instance) {

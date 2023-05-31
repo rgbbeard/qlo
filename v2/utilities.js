@@ -16,16 +16,13 @@ class Select {
 		if(selector === document.body || selector === document) {
 			this.node = selector;
 		} else if((typeof selector) === "string") {
-			if(this.node === null) {
-				this.node = document.body;
-			}
-
-			const selection = this.node.querySelectorAll(selector);
+			const selection = this.node === null ?
+				document.body.querySelectorAll(selector):
+				this.node.querySelectorAll(selector);
 
 			if(selection.length === 1) {
 				this.node = selection[0];
-				this.nodelist = null;
-			} else {
+			} else if(selection.length > 1) {
 				this.multiple = true;
 				this.nodelist = selection;
 			}
@@ -301,23 +298,25 @@ class Select {
 	}
 
 	on(listener_name, fn) {
-		if(this.multiple && fn.isFunction()) {
-		    for(let x = 0;x<this.nodelist.length;x++) {
-		        const n = this.nodelist[x];
-		        this.current = n;
-		        if(!Select.hasHashFunction(n, listener_name, fn)) {
-					this.#hashFunction(n, listener_name, fn);
-		        	n.addEventListener(listener_name, function(e) {
-		        		e.target === n & fn.call();
+		if(fn.isFunction()) {
+			if(this.multiple) {
+			    for(let x = 0;x<this.nodelist.length;x++) {
+			        const n = this.nodelist[x];
+			        this.current = n;
+			        if(!Select.hasHashFunction(n, listener_name, fn)) {
+						this.#hashFunction(n, listener_name, fn);
+			        	n.addEventListener(listener_name, function(e) {
+			        		e.target === n & fn.call();
+			        	});
+					}
+				}
+			} else {
+				if(!Select.hasHashFunction(this.node, listener_name, fn)) {
+					this.#hashFunction(this.node, listener_name, fn);
+					this.node?.addEventListener(listener_name, function(e) {
+		        		e.target === this.node & fn.call();
 		        	});
 				}
-			}
-		} else {
-			if(!Select.hasHashFunction(this.node, listener_name, fn)) {
-				this.#hashFunction(this.node, listener_name, fn);
-				this.node?.addEventListener(listener_name, function(e) {
-	        		e.target === this.node & fn.call();
-	        	});
 			}
 		}
 	}
