@@ -55,14 +55,9 @@ class Select {
 						this.current?.querySelectorAll(element) 
 						: this.node?.querySelectorAll(element);
 
-				if(selection && selection.length === 1) {
+				if(selection.length === 1) {
 					this.node = selection[0];
-					this.current = null;
-					this.multiple = false;
-					this.nodelist = null;
-				} else {
-					this.node = null;
-					this.current = null;
+				} else if(selection.length > 1) {
 					this.multiple = true;
 					this.nodelist = selection;
 				}
@@ -75,7 +70,7 @@ class Select {
 	getObject() {
 		const e = window.event;
 		if(this.multiple) {
-			for(let n = 0;n<this.nodelist.length;n++) {
+			for(let n = 0;n < this.nodelist.length;n++) {
 				if(e.target === this.nodelist[n]) {
 					return this.nodelist[n];
 				}
@@ -87,13 +82,10 @@ class Select {
 
 	first() {
 		if(this.multiple) {
-			this.node = this.multiple[0];
-			this.multiple = false;
-			this.nodelist = null;
-			this.current = null;
+			return this.nodelist[0];
 		}
 
-		return this;
+		return this.node;
 	}
 
 	parent() {

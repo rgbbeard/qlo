@@ -1,3 +1,5 @@
+import { isDeclared, isNull, isUndefined } from "../utilities.js";
+
 const Elements = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu || E;
 const Objects = Object || Elements;
 
