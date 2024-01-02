@@ -24,7 +24,7 @@ class Select {
 				this.multiple = true;
 				this.nodelist = selection;
 			}
-		} else if(selector instanceof HTMLElement && selector?.length() === 1) {
+		} else if(selector instanceof HTMLElement) {
 			this.node = selector;
 		} else if(selector instanceof Select) {
 			if(selector.multiple) {
@@ -39,32 +39,33 @@ class Select {
 	}
 
 	getIfExists(element) {
+		let s = null;
+
 		if(element) {
 			if(element instanceof HTMLElement) {
 				if(!this.multiple) {
-					this.node = this.node.children.hasElement(element) ? 
-						this.node.children[this.node.children.indexOf(element)] 
-						: null;
+					if(this.node.children.hasElement(element)) {
+						s = new Select(this.node.children[this.node.children.indexOf(element)]);
+					}
 				} else {
-					this.current = this.current.children.hasElement(element) ? 
-						this.current.children[this.current.children.indexOf(element)] 
-						: null;
+					if(this.current.children.hasElement(element)) {
+						s = new Select(this.current.children[this.current.children.indexOf(element)]);
+					}
 				}
 			} else if((typeof element) === "string") {
 				const selection = this.multiple ? 
-						this.current?.querySelectorAll(element) 
+						this.current?.querySelectorAll(element)
 						: this.node?.querySelectorAll(element);
 
 				if(selection.length === 1) {
-					this.node = selection[0];
+					s = new Select(selection[0]);
 				} else if(selection.length > 1) {
-					this.multiple = true;
-					this.nodelist = selection;
+					s = new Select(selection);
 				}
 			}
 		}
 
-		return this;
+		return s;
 	}
 
 	getObject() {
