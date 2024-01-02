@@ -1,4 +1,4 @@
-class Converter {
+export default class Converter {
 	static rgb2Hex(r, g, b) {
 		r = r.toString(16).toUpperCase().length === 1 ? "0" + r : r;
 		g = g.toString(16).toUpperCase().length === 1 ? "0" + g : g;
