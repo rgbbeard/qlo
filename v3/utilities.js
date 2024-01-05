@@ -358,7 +358,7 @@ class Select {
 			target.hashes[event] = [];	
 		}
 
-		if(!target.hashes[event][hash]) {
+		if(!target.hashes[event].includes(hash)) {
 			target.hashes[event].push(hash);
 		}
 	}
@@ -372,13 +372,16 @@ class Select {
 
 		if(target?.hashes) {
 			if(!event && fn.empty()) {
-				return target.hashes[event];
+				return target.hashes.includes(event);
+			} else if(!event?.empty() && fn.empty()) {
+				// case not handled
+				console.log("line 377");
 			} else if(!event?.empty() && !fn.empty()) {
-				return target?.hashes[event] && target?.hashes[event][hash];
+				return target?.hashes[event]?.includes(hash);
 			}
 		}
 
-		return target?.hashes;
+		return false;
 	}
 }
 export const $ = selector => new Select(selector);

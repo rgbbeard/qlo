@@ -138,7 +138,7 @@ Object.prototype.addStyles = function (styles = {}) {
 		new_styles = temp.join(";");
 	let style = prev_styles + ";" + new_styles;
 
-	if(isNull(prev_styles)) {
+	if(prev_styles == null) {
 		style = new_styles;
 	}
 

@@ -33,7 +33,7 @@ Objects.prototype.instance = function(instance) {
 	return this instanceof instance;
 };
 Objects.prototype.mousepos = function(e) {
-	if (isUndefined(e)) e = win.event;
+	if (isUndefined(e)) e = window.event;
 	let
 		pos = this.getBoundingClientRect(),
 		posX = e.clientX - pos.left,
@@ -53,33 +53,33 @@ Objects.prototype.getPadding = function(padding = "global") {
 			let pads = padding.split(","),
 				p = [];
 			for (let x = 0; x < pads.length; x++) {
-				p.push(pads[x].rmwhitesp(), parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-" + pads[x].rmwhitesp())));
+				p.push(pads[x].rmwhitesp(), parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-" + pads[x].rmwhitesp())));
 			}
 			return p;
 		case (padding.rmwhitesp() == "global"):
 			return {
-				top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
-					right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
-					bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
-					left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
+				top: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-top")),
+					right: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-right")),
+					bottom: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
+					left: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-left")),
 			};
 		case (["top", "right", "bottom", "left"].inArray(padding)):
 			switch (padding) {
 				case "top":
-					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top"));
+					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-top"));
 				case "right":
-					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right"));
+					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-right"));
 				case "bottom":
-					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom"));
+					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-bottom"));
 				case "left":
-					return parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left"));
+					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-left"));
 			}
 		default:
 			return {
-				top: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-top")),
-					right: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-right")),
-					bottom: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
-					left: parseFloat(win.getComputedStyle(target, null).getPropertyValue("padding-left")),
+				top: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-top")),
+					right: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-right")),
+					bottom: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
+					left: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-left")),
 			};
 
 	}

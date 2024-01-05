@@ -1,4 +1,7 @@
-class Contextmenu {
+import { $, isDeclared, isUndefined, ww, wh } from "../utilities.js";
+import E from "./e.js";
+
+export default class Contextmenu {
 	title = "Menu";
 	menuParams = {};
 
@@ -17,7 +20,7 @@ class Contextmenu {
 			id: ["contextmenu"],
 			class: ["contextmenu"],
 			children: [
-				element({
+				new E({
 					type: "h4",
 					id: ["menu-title"],
 					text: this.title
@@ -25,14 +28,16 @@ class Contextmenu {
 			]
 		};
 		this.setParams(data);
-		let menu = element(this.menuParams);
-		this.setMenuPos(menu);
+		let menu = new E(this.menuParams);
+		$(window).on("scroll", (d) => {
+			this.closeMenus();
+		});
 		return menu;
 	}
 
 	closeMenus() {
 		$(".contextmenu").each(m => {
-			m.remove();
+			m?.remove();
 		});
 	}
 
@@ -54,7 +59,7 @@ class Contextmenu {
 							value.click.call();
 							this.closeMenus();
 						};
-						this.menuParams.children.push(element(params));
+						this.menuParams.children.push(new E(params));
 					}
 				}
 			} else {
@@ -65,23 +70,43 @@ class Contextmenu {
 		}
 
 		//Add close menu btn
-		this.menuParams.children.push(element({
+		this.menuParams.children.push(new E({
 			type: "a",
 			class: ["contextmenu-item"],
-			text: "Annulla",
+			text: "Cancel",
 			click: () => {
 				this.closeMenus();
 			}
 		}));
 	}
 
-	setMenuPos(menu, e) {
-		if (isUndefined(e)) e = win.event;
-		let top = document.body.mousepos().y + "px",
-			left = document.body.mousepos().x + "px";
-		menu.addStyles({
-			"top": top,
-			"left": left
-		});
+	static setMenuPos(menu) {
+	    let 
+	    	mousePos = document.body.mousepos(),
+	    	top = mousePos.y,
+	    	left = mousePos.x,
+	    	menuWidth = menu.offsetWidth,
+	    	menuHeight = menu.offsetHeight;
+
+	    if(left + menuWidth > ww) {
+	    	left = left - menuWidth;
+	    } else if(left < menuWidth) {
+	    	left = menuWidth / 2;
+	    } else if(left > ww - menuWidth) {
+	    	left = ww - menuWidth;
+	    }
+
+	    if(top + menuHeight > wh) {
+	    	top = top - menuHeight;
+	    } else if(top < menuHeight) {
+	    	top = menuHeight / 2;
+	    } else if(top > wh - menuHeight) {
+	    	top = wh - menuHeight;
+	    }
+
+	    menu.addStyles({
+	        "top": top + "px",
+	        "left": left + "px"
+	    });
 	}
 }
