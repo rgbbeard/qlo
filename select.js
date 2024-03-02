@@ -10,7 +10,6 @@ window.addEventListener("load", function() {
 			s = document.createElement("ul"), 
 			d = document.createElement("p");
 
-
 		Array.from(options).forEach((option, index) => {
 			const o = document.createElement("li");
 
@@ -22,7 +21,8 @@ window.addEventListener("load", function() {
 		container.appendChild(d);
 		container.appendChild(s);
 
-		d.textContent = s.children[0]?.textContent;
+		d.textContent = s.children[0]?.textContent;		
+		select.value = s.children[0]?.dataset.value.trim();
 		s.style.left = `${d.offsetLeft}px`;
 
 		d.addEventListener("click", function() {
@@ -42,6 +42,7 @@ window.addEventListener("load", function() {
 					d.textContent = c.textContent;
 					d.removeAttribute("open");
 					s.removeAttribute("visible");
+					select.value = c.dataset.value.trim();
 				}
 			});
 		});
