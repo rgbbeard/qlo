@@ -1,4 +1,7 @@
-class SpinnerRing {
+import {isDeclared} from "../utilities.js";
+import {element} from "./e.js";
+
+export default class SpinnerRing {
 	constructor(data = {
 		generateContainer: false,
 		message: "Please wait...",
@@ -25,7 +28,7 @@ class SpinnerRing {
 		return this.result;
 	}
 	generateContainer() {
-		return new E({
+		return element({
 			type: "spinner-container"
 		});
 	}
@@ -71,19 +74,18 @@ class SpinnerRing {
 		}
 		if (!this.message.empty()) {
 			let text = this.message;
-			this.result = new E({
+			this.result = element({
 				type: "p",
 				text: text,
 				children: [
-					new E({
+					element({
 						type: "br"
 					}),
-					new E(this.spinnerParams)
+					element(this.spinnerParams)
 				]
 			});
 		} else {
-			let spinnerRing = new E(this.spinnerParams);
-			this.result = spinnerRing;
+			this.result = element(this.spinnerParams);
 		}
 	}
 }

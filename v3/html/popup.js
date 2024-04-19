@@ -1,4 +1,7 @@
-class Popup {
+import {element} from "./e.js";
+import {isDeclared} from "../utilities.js";
+
+export default class Popup {
 	constructor(data = {
 		title: "",
 		buttons: {}
@@ -8,7 +11,7 @@ class Popup {
 		this.title = isDeclared(data.title) ? data.title : "Messaggio";
 		this.setParams(data);
 
-		this.popupWindow = new E({
+		this.popupWindow = element({
 			type: "div",
 			class: ["confirm-window-background"],
 			children: [this.element]
@@ -19,7 +22,7 @@ class Popup {
 
 	setParams(data) {
 		let element_children = [
-			new E({
+			element({
 				type: "h3",
 				class: ["confirm-window-title"],
 				text: this.title
@@ -98,12 +101,12 @@ class Popup {
 					}
 				}
 
-				element_children.push(new E(compiled_button_options));
+				element_children.push(element(compiled_button_options));
 				button_count++;
 			}
 		}
 
-		this.element = new E({
+		this.element = element({
 			type: "div",
 			class: ["confirm-window-content"],
 			children: element_children

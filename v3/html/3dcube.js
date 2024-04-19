@@ -1,4 +1,8 @@
-class Cube {
+import {element} from "./e.js"
+import {isDeclared} from "../utilities.js";
+import Converter from "../converter.js";
+
+export default class Cube {
 	constructor(data = {
 		size: 0,
 		images: {
@@ -21,12 +25,12 @@ class Cube {
 		borderRadius: 0,
 		borderWidth: 1,
 		colors: {
-			top: "background-color:#00000055;",
-			right: "background-color:#00000055;",
-			bottom: "background-color:#00000055;",
-			left: "background-color:#00000055;",
-			front: "background-color:#00000055;",
-			back: "background-color:#00000055;"
+			top: "00000055",
+			right: "00000055",
+			bottom: "00000055",
+			left: "00000055",
+			front: "00000055",
+			back: "00000055"
 		},
 		globalColor: "",
 		transparency: false,
@@ -35,39 +39,91 @@ class Cube {
 		randomRotate: true,
 		rotationTimeout: 1
 	}) {
-		let size = 120;
-		if (data.size !== null && data.size !== undefined && data.size > 10) size = data.size;
-		//Set default labels
-		var
+		let
+			size = 120,
+			borderWidth = data.borderWidth ?? 0,
+			//Set default labels
 			topLabel = "1",
 			rightLabel = "2",
 			botLabel = "3",
 			leftLabel = "4",
 			frontLabel = "5",
-			backLabel = "6";
-		if (data.labels !== undefined && data.labels !== null) {
-			topLabel = data.labels.top;
-			rightLabel = data.labels.right;
-			botLabel = data.labels.bottom;
-			leftLabel = data.labels.left;
-			frontLabel = data.labels.front;
-			backLabel = data.labels.back;
+			backLabel = "6",
+			//Set default colors
+			topBg = "#000000",
+			rightBg = "#000000",
+			botBg = "#000000",
+			leftBg = "#000000",
+			frontBg = "#000000",
+			backBg = "#000000",
+			properties = {},
+			rotationTimeout = data.rotationTimeout ?? 1,
+			styles = {
+				display: "inline-block",
+				margin: "40px",
+				transition: "all 1.5s",
+				position: "relative",
+				"transform-style": "preserve-3d",
+				width: `${size}px`,
+				height: `${size}px`,
+				"user-select": "none"
+			}
+		;
+
+		if (isDeclared(data.size) && data.size > 10) {
+			size = data.size;
+
 		}
-		//Set default colors
-		var
-			topBg = "#00000088;",
-			rightBg = "#00000088;",
-			botBg = "#00000088;",
-			leftBg = "#00000088;",
-			frontBg = "#00000088;",
-			backBg = "#00000088;";
-		if (data.colors !== undefined) {
-			topBg = `#${data.colors.top}`;
-			rightBg = `#${data.colors.right}`;
-			botBg = `#${data.colors.bottom}`;
-			leftBg = `#${data.colors.left}`;
-			frontBg = `#${data.colors.front}`;
-			backBg = `#${data.colors.back}`;
+		if (isDeclared(data.labels)) {
+			if(isDeclared(data.labels.top)) {
+				topLabel = data.labels.top;
+			}
+
+			if(isDeclared(data.labels.right)) {
+				rightLabel = data.labels.right;
+			}
+
+			if(isDeclared(data.labels.bottom)) {
+				botLabel = data.labels.bottom;
+			}
+
+			if(isDeclared(data.labels.left)) {
+				leftLabel = data.labels.left;
+			}
+
+			if(isDeclared(data.labels.front)) {
+				frontLabel = data.labels.front;
+			}
+
+			if(isDeclared(data.labels.back)) {
+				backLabel = data.labels.back;
+			}
+		}
+
+		if (isDeclared(data.colors)) {
+			if(isDeclared(data.colors.top)) {
+				topBg = `#${data.colors.top}`;
+			}
+
+			if(isDeclared(data.colors.right)) {
+				rightBg = `#${data.colors.right}`;
+			}
+
+			if(isDeclared(data.colors.bottom)) {
+				botBg = `#${data.colors.bottom}`;
+			}
+
+			if(isDeclared(data.colors.left)) {
+				leftBg = `#${data.colors.left}`;
+			}
+
+			if(isDeclared(data.colors.front)) {
+				frontBg = `#${data.colors.front}`;
+			}
+
+			if(isDeclared(data.colors.back)) {
+				backBg = `#${data.colors.back}`;
+			}
 		} else if (data.useGlobalColor === true && data.globalColor.length.inRange(6, 8) === true) {
 			topBg = `#${data.globalColor}`;
 			rightBg = `#${data.globalColor}`;
@@ -77,88 +133,146 @@ class Cube {
 			backBg = `#${data.globalColor}`;
 		}
 
-		if (data.randomRotate === true) properties.push(`autorotate@${data.rotationTimeout}`);
-		let b = new E({
+		if (data.randomRotate === true) {
+			properties.autorotate = rotationTimeout;
+		}
+
+		if(isDeclared(data.globalTransparency)) {
+			topBg = Converter.hex2Rgba(topBg, data.globalTransparency);
+			rightBg = Converter.hex2Rgba(rightBg, data.globalTransparency);
+			botBg = Converter.hex2Rgba(botBg, data.globalTransparency);
+			leftBg = Converter.hex2Rgba(leftBg, data.globalTransparency);
+			frontBg = Converter.hex2Rgba(frontBg, data.globalTransparency);
+			backBg = Converter.hex2Rgba(backBg, data.globalTransparency);
+		}
+
+		return element({
 			type: "div",
 			class: ["cube"],
-			style: {
-				"display": "inline-block",
-				"margin": "40px",
-				"transition": "all 1.5s",
-				"position": "relative",
-				"transform-style": "preserve-3d",
-				"width": `${size}px`,
-				"height": `${size}px`,
-				"user-select": "none"
-			},
+			style: styles,
 			children: [
 				//Front face
-				new E({
+				element({
 					type: "div",
 					class: ["cube-face"],
 					style: {
 						"border-radius": `${data.borderRadius}px`,
-						"border": `solid ${data.borderWidth}px #000`,
-						"background-color": `${frontBg}`,
-						"position": "absolute",
-						"width": "100%",
-						"height": "100%",
+						border: `solid ${borderWidth}px #000`,
+						"background-color": frontBg,
+						position: "absolute",
+						width: "100%",
+						height: "100%",
 						"font-size": `${(size / 2) - 10}px`,
 						"font-weight": "bold",
-						"color": "#fff",
+						color: "#fff",
 						"text-align": "center",
-						"transform": `rotateY(0deg) translateZ(${size / 2}px)`,
+						transform: `rotateY(0deg) translateZ(${size / 2}px)`,
 						"line-height": `${size}px`
 					},
 					text: frontLabel.toString()
 				}),
 				//Back face
-				new E({
+				element({
 					type: "div",
-					properties: [
-						"class@cube-face",
-						`style@border-radius:${data.borderRadius}px;border:solid ${data.borderWidth}px #000;${backBg}position:absolute;width:100%;height:100%;font-size:${(size / 2) - 10}px;font-weight:bold;color:#fff;text-align:center;transform:rotateY(180deg) translateZ(${size / 2}px);line-height:${size}px;`
-					],
+					class: ["cube-face"],
+					style: {
+						"border-radius": `${data.borderRadius}px`,
+						border: `solid ${data.borderWidth}px #000`,
+						"background-color": backBg,
+						position: "absolute",
+						width: "100%",
+						height: "100%",
+						"font-size": `${(size / 2) - 10}px`,
+						"font-weight": "bold",
+						color: "#fff",
+						"text-align": "center",
+						transform: `rotateY(180deg) translateZ(${size / 2}px)`,
+						"line-height": `${size}px`
+					},
 					text: backLabel.toString()
 				}),
 				//Top face
-				new E({
+				element({
 					type: "div",
-					properties: [
-						"class@cube-face",
-						`style@border-radius:${data.borderRadius}px;border:solid ${data.borderWidth}px #000;${topBg}position:absolute;width:100%;height:100%;font-size:${(size / 2) - 10}px;font-weight:bold;color:#fff;text-align:center;transform:rotateX(90deg) translateZ(${size / 2}px);line-height:${size}px;`
-					],
+					class: ["cube-face"],
+					style: {
+						"border-radius": `${data.borderRadius}px`,
+						border: `solid ${data.borderWidth}px #000`,
+						"background-color": topBg,
+						position: "absolute",
+						width: "100%",
+						height: "100%",
+						"font-size": `${(size / 2) - 10}px`,
+						"font-weight": "bold",
+						color: "#fff",
+						"text-align": "center",
+						transform: `rotateX(90deg) translateZ(${size / 2}px)`,
+						"line-height": `${size}px`
+					},
 					text: topLabel.toString()
 				}),
 				//Right face
-				new E({
+				element({
 					type: "div",
-					properties: [
-						"class@cube-face",
-						`style@border-radius:${data.borderRadius}px;border:solid ${data.borderWidth}px #000;${rightBg}position:absolute;width:100%;height:100%;font-size:${(size / 2) - 10}px;font-weight:bold;color:#fff;text-align:center;transform:rotateY(90deg) translateZ(${size / 2}px);line-height:${size}px;`
-					],
+					class: ["cube-face"],
+					style: {
+						"border-radius": `${data.borderRadius}px`,
+						border: `solid ${data.borderWidth}px #000`,
+						"background-color": rightBg,
+						position: "absolute",
+						width: "100%",
+						height: "100%",
+						"font-size": `${(size / 2) - 10}px`,
+						"font-weight": "bold",
+						color: "#fff",
+						"text-align": "center",
+						transform: `rotateY(90deg) translateZ(${size / 2}px)`,
+						"line-height": `${size}px`
+					},
 					text: rightLabel.toString()
 				}),
 				//Bottom face
-				new E({
+				element({
 					type: "div",
-					properties: [
-						"class@cube-face",
-						`style@border-radius:${data.borderRadius}px;border:solid ${data.borderWidth}px #000;${botBg}position:absolute;width:100%;height:100%;font-size:${(size / 2) - 10}px;font-weight:bold;color:#fff;text-align:center;transform:rotateX(-90deg) translateZ(${size / 2}px);line-height:${size}px;`
-					],
+					class: ["cube-face"],
+					style: {
+						"border-radius": `${data.borderRadius}px`,
+						border: `solid ${data.borderWidth}px #000`,
+						"background-color": botBg,
+						position: "absolute",
+						width: "100%",
+						height: "100%",
+						"font-size": `${(size / 2) - 10}px`,
+						"font-weight": "bold",
+						color: "#fff",
+						"text-align": "center",
+						transform: `rotateX(-90deg) translateZ(${size / 2}px)`,
+						"line-height": `${size}px`
+					},
 					text: botLabel.toString()
 				}),
 				//Left face
-				new E({
+				element({
 					type: "div",
-					properties: [
-						"class@cube-face",
-						`style@border-radius:${data.borderRadius}px;border:solid ${data.borderWidth}px #000;${leftBg}position:absolute;width:100%;height:100%;font-size:${(size / 2) - 10}px;font-weight:bold;color:#fff;text-align:center;transform:rotateY(-90deg) translateZ(${size / 2}px);line-height:${size}px;`
-					],
+					class: ["cube-face"],
+					style: {
+						"border-radius": `${data.borderRadius}px`,
+						border: `solid ${data.borderWidth}px #000`,
+						"background-color": leftBg,
+						position: "absolute",
+						width: "100%",
+						height: "100%",
+						"font-size": `${(size / 2) - 10}px`,
+						"font-weight": "bold",
+						color: "#fff",
+						"text-align": "center",
+						transform: `rotateY(-90deg) translateZ(${size / 2}px)`,
+						"line-height": `${size}px`
+					},
 					text: leftLabel.toString()
 				})
-			]
+			],
+			attributes: properties
 		});
-		return b;
 	}
 }

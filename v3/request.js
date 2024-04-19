@@ -1,4 +1,6 @@
-export default class Request {
+import { isDeclared, isNull } from "./utilities.js";
+
+export class Request {
 	#methods = ["POST", "GET", "PUT", "DELETE"];
 	#method = "POST";
 	#url = "";
@@ -36,7 +38,7 @@ export default class Request {
 
 		this.setData(params.data);
 
-		if(isDeclared(params.send_files) && params.send_files == true) {
+		if(isDeclared(params.send_files) && params.send_files === true) {
 			this.#xhr.overrideMimeType("multipart/form-data");
 		}
 
@@ -82,7 +84,7 @@ export default class Request {
 			for(let key in data) {
 				let value = data[key];
 
-				if(!value.isFunction()) {
+				if(isDeclared(value) && !value.isFunction()) {
 					if(isDeclared(value.type) && value.type === "file") { //This one for file upload
 						for(let f = 0;f<value.files.length;f++) {
 							form.append(`${key}[]`, value.files[f], value.files[f].name);

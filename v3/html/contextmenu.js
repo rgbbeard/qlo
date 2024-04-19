@@ -1,5 +1,5 @@
-import { $, isDeclared, isUndefined, ww, wh } from "../utilities.js";
-import E from "./e.js";
+import {$, isDeclared, ww, wh} from "../utilities.js";
+import {element} from "./e.js";
 
 export default class Contextmenu {
 	title = "Menu";
@@ -20,7 +20,7 @@ export default class Contextmenu {
 			id: ["contextmenu"],
 			class: ["contextmenu"],
 			children: [
-				new E({
+				element({
 					type: "h4",
 					id: ["menu-title"],
 					text: this.title
@@ -28,7 +28,7 @@ export default class Contextmenu {
 			]
 		};
 		this.setParams(data);
-		let menu = new E(this.menuParams);
+		let menu = element(this.menuParams);
 		$(window).on("scroll", (d) => {
 			this.closeMenus();
 		});
@@ -59,7 +59,7 @@ export default class Contextmenu {
 							value.click.call();
 							this.closeMenus();
 						};
-						this.menuParams.children.push(new E(params));
+						this.menuParams.children.push(element(params));
 					}
 				}
 			} else {
@@ -70,7 +70,7 @@ export default class Contextmenu {
 		}
 
 		//Add close menu btn
-		this.menuParams.children.push(new E({
+		this.menuParams.children.push(element({
 			type: "a",
 			class: ["contextmenu-item"],
 			text: "Cancel",
@@ -91,7 +91,7 @@ export default class Contextmenu {
 	    if(left + menuWidth > ww) {
 	    	left = left - menuWidth;
 	    } else if(left < menuWidth) {
-	    	left = menuWidth / 2;
+	    	left = menuWidth / 4;
 	    } else if(left > ww - menuWidth) {
 	    	left = ww - menuWidth;
 	    }
