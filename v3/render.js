@@ -11,39 +11,40 @@ const elementsRender = function() {
 
     // Custom selectors
     $(".select-input").each(container => {
-    	const rendered = container.getAttribute("rendered");
+    	if(isDeclared(container)) {
+	    	const rendered = container.getAttribute("rendered");
 
-    	if(!isDeclared(rendered)) {
-    		container.setAttribute("rendered", "true");
-	    	const 
-	    		$container = $(container),
-	    		label = $container.getIfExists("label")?.first(),
-				select = $container.getIfExists("select"),
-				options = $(select).getIfExists("option"),
-				select_id = label.getAttribute("for"),
-	    		s = element({
-	    			type: "ul"
-	    		}),
-	    		d = element({
-	    			type: "p"
-	    		});
+	    	if(!isDeclared(rendered)) {
+	    		container.setAttribute("rendered", "true");
+		    	const 
+		    		$container = $(container),
+		    		label = $container.getIfExists("label")?.first(),
+					select = $container.getIfExists("select"),
+					options = $(select).getIfExists("option"),
+					select_id = label.getAttribute("for"),
+		    		s = element({
+		    			type: "ul"
+		    		}),
+		    		d = element({
+		    			type: "p"
+		    		});
 
-	    	options.each(option => {
-	    		const o = element({
-	    			type: "li",
-	    			text: option.textContent,
-	    			attributes: {
-	    				"data-value": option.value
-	    			}
-	    		});
+		    	options.each(option => {
+		    		const o = element({
+		    			type: "li",
+		    			text: option.textContent,
+		    			attributes: {
+		    				"data-value": option.value
+		    			}
+		    		});
 
-	    		s.appendChild(o);
-	    	});
+		    		s.appendChild(o);
+		    	});
 
-	    	$container.appendChild(d);
-	    	$container.appendChild(s);
+		    	$container.appendChild(d);
+		    	$container.appendChild(s);
 
-	    	d.textContent = s.children[0]?.textContent;
+		    	d.textContent = s.children[0]?.textContent;
 			select.value(s.children[0]?.dataset.value.trim());
 			s.style.left = `${d.offsetLeft}px`;
 
@@ -74,6 +75,7 @@ const elementsRender = function() {
 					}
 				});
 			});
+	    	}
     	}
     });
 };
