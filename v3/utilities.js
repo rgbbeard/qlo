@@ -2,6 +2,7 @@ import {Select} from "./select.js";
 
 export const
 	www = String(window.location.origin + "/"),
+<<<<<<< HEAD
 	ww = window.innerWidth,
 	wh = window.innerHeight,
 	dw = document.documentElement.clientWidth,
@@ -9,6 +10,10 @@ export const
 	bw = document.body.clientWidth,
 	bh = document.body.clientHeight
 ;
+=======
+	ww = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+	wh = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+>>>>>>> a58459e9aa79aab58c947f4487bd97febdb18555
 
 export const $ = selector => new Select(selector);
 export const isNull = function(target) { return target === null; };

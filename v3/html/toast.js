@@ -116,6 +116,10 @@ export default class Toast {
 			}
 		});
 
+<<<<<<< HEAD
 		document.body.appendChild(this.toast);
+=======
+		return this.toast;
+>>>>>>> a58459e9aa79aab58c947f4487bd97febdb18555
 	}
 }
