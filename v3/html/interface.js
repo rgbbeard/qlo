@@ -1,4 +1,7 @@
-class Interface {
+import {$} from "../utilities.js";
+import {element} from "./e.js";
+
+export default class Interface {
 	interface_components = [];
 	
 	constructor(data = {

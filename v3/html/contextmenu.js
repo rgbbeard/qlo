@@ -1,5 +1,5 @@
-import { $, isDeclared, isUndefined, ww, wh } from "../utilities.js";
-import E from "./e.js";
+import {$, isDeclared, dw, dh} from "../utilities.js";
+import {element} from "./e.js";
 
 export default class Contextmenu {
 	title = "Menu";
@@ -20,7 +20,7 @@ export default class Contextmenu {
 			id: ["contextmenu"],
 			class: ["contextmenu"],
 			children: [
-				new E({
+				element({
 					type: "h4",
 					id: ["menu-title"],
 					text: this.title
@@ -28,7 +28,7 @@ export default class Contextmenu {
 			]
 		};
 		this.setParams(data);
-		let menu = new E(this.menuParams);
+		let menu = element(this.menuParams);
 		$(window).on("scroll", (d) => {
 			this.closeMenus();
 		});
@@ -59,7 +59,7 @@ export default class Contextmenu {
 							value.click.call();
 							this.closeMenus();
 						};
-						this.menuParams.children.push(new E(params));
+						this.menuParams.children.push(element(params));
 					}
 				}
 			} else {
@@ -70,7 +70,7 @@ export default class Contextmenu {
 		}
 
 		//Add close menu btn
-		this.menuParams.children.push(new E({
+		this.menuParams.children.push(element({
 			type: "a",
 			class: ["contextmenu-item"],
 			text: "Cancel",
@@ -83,25 +83,33 @@ export default class Contextmenu {
 	static setMenuPos(menu) {
 	    let 
 	    	mousePos = document.body.mousepos(),
-	    	top = mousePos.y,
-	    	left = mousePos.x,
+	    	x = mousePos.x,
+	    	y = mousePos.y,
+	    	top = y,
+	    	left = x,
 	    	menuWidth = menu.offsetWidth,
-	    	menuHeight = menu.offsetHeight;
+	    	menuHeight = menu.offsetHeight,
+	    	parentWidth = menu.parentNode.offsetWidth,
+	    	parentHeight = menu.parentNode.offsetHeight;
 
-	    if(left + menuWidth > ww) {
-	    	left = left - menuWidth;
-	    } else if(left < menuWidth) {
-	    	left = menuWidth / 2;
-	    } else if(left > ww - menuWidth) {
-	    	left = ww - menuWidth;
+	    if((x + menuWidth) > parentWidth) {
+	    	left = x - menuWidth;
+	    } else if(x < menuWidth) {
+	    	left = menuWidth / 4;
+	    } else if(x > (parentWidth - menuWidth)) {
+	    	left = parentWidth - menuWidth;
+	    } else {
+	    	// handle this case
 	    }
 
-	    if(top + menuHeight > wh) {
-	    	top = top - menuHeight;
-	    } else if(top < menuHeight) {
+	    if((y + menuHeight) > parentHeight) {
+	    	top = y - menuHeight;
+	    } else if(y < menuHeight) {
 	    	top = menuHeight / 2;
-	    } else if(top > wh - menuHeight) {
-	    	top = wh - menuHeight;
+	    } else if(y > (parentHeight - menuHeight)) {
+	    	top = parentHeight - menuHeight;
+	    } else {
+	    	// handle this case
 	    }
 
 	    menu.addStyles({

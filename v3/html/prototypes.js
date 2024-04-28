@@ -1,15 +1,19 @@
-import { isDeclared, isNull, isUndefined } from "../utilities.js";
+import {isDeclared, isUndefined} from "../utilities.js";
+import {E} from "./e.js";
+import Contextmenu from "./contextmenu.js";
+import ConfirmDialog from "./confirmdialog.js";
+import Toast from "./toast.js";
+import Interface from "./interface.js";
 
-const Elements = Element || Interface || Confirm || Script || Cube || Toast || TextSwitchbox || Menu || E;
-const Objects = Object || Elements;
+const Elements = Element || Interface || ConfirmDialog || Toast || Contextmenu || E;
+const Objects = Object || Elements || HTMLObjectElement;
 
-// WIP
 Objects.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
 	this.parentHeight = this.parentNode.offsetHeight;
 	this.parentWidth = this.parentNode.offsetWidth;
 
 	if(properties && properties.length >= 3) {
-		if(!properties.match(/\,/)) {
+		if(!properties.match(/,/)) {
 			switch(properties) {
 				case "all":
 					this.style.width = this.parentNode.offsetWidth + "px";
@@ -22,7 +26,7 @@ Objects.prototype.stretch = function(properties = "width, height", mode = "match
 					this.style.width = this.parentWidth + "px";
 					break;
 			}
-		} else if(properties.match(/((\w+)\,?\s?){2}/)) {
+		} else if(properties.match(/((\w+),?\s?){2}/)) {
 			const 
 				width = properties.split(",")[0].trim(), 
 				height = properties.split(",")[1].trim();
@@ -49,14 +53,14 @@ Objects.prototype.getPadding = function(padding = "global") {
 		padding = "global";
 	}
 	switch (String(padding).toLowerCase()) {
-		case (padding.match(/(\,)+/)):
+		case (padding.match(/(,)+/)):
 			let pads = padding.split(","),
 				p = [];
 			for (let x = 0; x < pads.length; x++) {
 				p.push(pads[x].rmwhitesp(), parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-" + pads[x].rmwhitesp())));
 			}
 			return p;
-		case (padding.rmwhitesp() == "global"):
+		case (padding.rmwhitesp() === "global"):
 			return {
 				top: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-top")),
 					right: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-right")),
@@ -74,6 +78,7 @@ Objects.prototype.getPadding = function(padding = "global") {
 				case "left":
 					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-left"));
 			}
+			break;
 		default:
 			return {
 				top: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-top")),
@@ -81,7 +86,6 @@ Objects.prototype.getPadding = function(padding = "global") {
 					bottom: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
 					left: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-left")),
 			};
-
 	}
 };
 Objects.prototype.gravity = function(endpoint = "parent", planet = "earth") {
@@ -97,10 +101,16 @@ Objects.prototype.gravity = function(endpoint = "parent", planet = "earth") {
 	setInterval(() => {
 		if (target.held !== true) {
 			if (endpoint.match(/parent/i)) {
-				if (target.style.top == "") target.style.top = "0px";
+				if (target.style.top === "") {
+					target.style.top = "0px";
+				}
+
 				if ((parseFloat(target.style.top) + target.offsetHeight) < target.parentNode.offsetHeight - target.parentNode.getPadding("bottom")) {
 					doAttraction();
-					if ((parseFloat(target.style.top) + target.offsetHeight) > target.parentNode.offsetHeight - target.parentNode.getPadding("bottom")) target.style.top = target.parentNode.offsetHeight - target.parentNode.getPadding("bottom") - target.offsetHeight + "px";
+
+					if ((parseFloat(target.style.top) + target.offsetHeight) > target.parentNode.offsetHeight - target.parentNode.getPadding("bottom")) {
+						target.style.top = target.parentNode.offsetHeight - target.parentNode.getPadding("bottom") - target.offsetHeight + "px";
+					}
 				}
 			}
 		}
@@ -123,7 +133,7 @@ Objects.prototype.attachTo = function(element) {
 	}
 };
 Objects.prototype.isHidden = function() {
-	return this.hasAttribute("hidden") ? true : false;
+	return this.hasAttribute("hidden");
 };
 Objects.prototype.hide = function() {
 	if (!this.isHidden()) {
@@ -137,20 +147,6 @@ Objects.prototype.show = function() {
 };
 Objects.prototype.clearUp = function() {
 	this.innerHTML = "";
-};
-Objects.prototype.rippleAnimation = function(e) {
-	e = window.event;
-	let t = e.target;
-
-	t.removeClass("animated");
-
-	if (!t.hasClass("animated")) {
-		t.addClass("animated");
-	}
-
-	setTimeout(function() {
-		t.removeClass("animated");
-	}, 700);
 };
 Objects.prototype.txt = function(t) {
 	if (isDeclared(t)) {

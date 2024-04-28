@@ -1,3 +1,5 @@
+import {isNull} from "./utilities.js";
+
 const Javascript = Object || String || Number || Array || Boolean;
 Javascript.prototype.isArray = function() { return Array.isArray(this); };
 Javascript.prototype.isFunction = function () { return this && {}.toString.call(this) === '[object Function]'; };
@@ -39,14 +41,14 @@ Object.prototype.insertAfter = function (...args) {
 		this.parentNode.insertBefore(a, this.nextElementSibling);
 	});
 };
-Object.prototype.isFirstChild = function() { return this == this.parentNode.children[0] ? true : false; };
+Object.prototype.isFirstChild = function() { return this === this.parentNode.children[0]; };
 Object.prototype.isLastChild = function() {
 	let
 		parent = this.parentNode,
 		c = parent.children,
 		ls = parent.children[c.length - 1];
 
-	return this == ls ? true : false;	
+	return this === ls;
 };
 Object.prototype.previousSibling = function() { return this.isFirstChild() ? null : this.previousElementSibling; };
 Object.prototype.nextSibling = function() {	return this.isLastChild() ? null : this.nextElementSibling; }
@@ -106,7 +108,7 @@ Object.prototype.hasId = function(id) {
 	if(!isNull(ids)) {
 		ids = ids.split(" ");
 		ids.forEach(i => {
-			if(i == id.toString()) {
+			if(i === id.toString()) {
 				return true;
 			}
 		});
@@ -145,7 +147,21 @@ Object.prototype.addStyles = function (styles = {}) {
 	this.setAttribute("style", style);
 };
 Object.prototype.length = function() { return Object.keys(this).length; };
-Object.prototype.isDisabled = function() { return isNull(this.getAttribute("disabled")) ? false : true; };
+Object.prototype.isDisabled = function() { return isNull(this.getAttribute("disabled")); };
+Object.prototype.rippleAnimation = function(e) {
+	e = window.event;
+	let t = e.target;
+
+	t.removeClass("animated");
+
+	if (!t.hasClass("animated")) {
+		t.addClass("animated");
+	}
+
+	setTimeout(function() {
+		t.removeClass("animated");
+	}, 700);
+};
 String.prototype.capitalize = function () {
 	let str = this.substr(1).toLowerCase(), cap = this[0].toUpperCase();
 	return cap + str;

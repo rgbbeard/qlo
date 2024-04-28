@@ -1,4 +1,7 @@
-class InputFile {
+import {isDeclared} from "../utilities";
+import {element} from "./e";
+
+export default class InputFile {
 	constructor(data = {
 		input_text: "Upload",
 		input_name: "",
@@ -33,35 +36,35 @@ class InputFile {
 		data.parent_classes.push("input-group");
 		data.parent_classes.push("file");
 
-		if (data.multiple == true) {
+		if (data.multiple === true) {
 			this.input_attrs["multiple"] = true;
 		}
 
-		if (data.required == true) {
+		if (data.required === true) {
 			this.input_attrs["required"] = true;
 		}
 
-		this.element = new E({
+		this.element = element({
 			type: "div",
 			class: data.parent_classes,
 			children: [
-				new E({
+				element({
 					type: "p",
 					text: data.label_text
 				}),
-				new E({
+				element({
 					type: "input",
 					id: ["input-" + input_id],
 					name: [data.input_name],
 					attributes: this.input_attrs
 				}),
-				new E({
+				element({
 					type: "label",
 					for: "input-" + input_id,
 					class: ["btn-ripple", "info"],
 					text: data.input_text
 				}),
-				new E({
+				element({
 					type: "div",
 					class: ["files-list"],
 					text: data.list_placeholder

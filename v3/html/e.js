@@ -1,6 +1,6 @@
-import { isDeclared, isUndefined, isNull } from "../utilities.js";
+import {isDeclared} from "../utilities.js";
 
-export default class E {
+export class E {
 	constructor(data = {
 		type: "",
 		id: [],
@@ -111,7 +111,7 @@ export default class E {
 		/* Set events */
 		//Creation event
 		if(isDeclared(data.load) && data.load.isFunction()) {
-			this.element.addEventListener("load", data.load);
+			this.element.addEventListener("load", data.load(this.element));
 		}
 
 		//Click event
@@ -150,3 +150,4 @@ export default class E {
 		}
 	}
 }
+export const element = options => new E(options);

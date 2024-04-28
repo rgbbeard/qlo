@@ -1,3 +1,4 @@
+// TODO: fix this
 class TextSwitchbox {
 	constructor(data = {
 		description: "",

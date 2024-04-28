@@ -1,12 +1,20 @@
-class Toast {
+import {isDeclared} from "../utilities.js";
+import {element} from "./e.js";
+
+export default class Toast {
 	constructor(data = {
 		text: "",
 		position: "",
 		timeout: 0,
-		appearance: ""
+		appearance: "",
+		useMaterial: false
 	}) {
-		this.timeout = parseInt(data.timeout) > 0 ? data.timeout : 5;
+		data.timeout = parseInt(data.timeout) > 0 ? data.timeout : 5;
 		this.classes = ["toast"];
+
+		if(data.useMaterial) {
+			this.classes.push("material");
+		}
 
 		switch (data.position) {
 			case "top-center":
@@ -89,22 +97,25 @@ class Toast {
 			}
 		}
 
-		this.toast = new E({
+		this.toast = element({
 			type: "div",
 			class: this.classes,
 			attributes: {
 				"script-generated": "true"
 			},
 			children: [
-				new E({
+				element({
 					type: "div",
 					text: data.text
 				})
-			]
+			],
+			load: (t) => {
+				setTimeout(() => {
+					t.parentNode.removeChild(t);
+				}, data.timeout * 1000);
+			}
 		});
+
 		document.body.appendChild(this.toast);
-		setTimeout(() => {
-			document.body.removeChild(this.toast);
-		}, this.timeout * 1000);
 	}
 }
