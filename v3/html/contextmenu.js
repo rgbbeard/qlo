@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import {$, isDeclared, dw, dh} from "../utilities.js";
-=======
-import {$, isDeclared, ww, wh} from "../utilities.js";
->>>>>>> a58459e9aa79aab58c947f4487bd97febdb18555
+import {$, isDeclared, dw, dh, ww, wh} from "../utilities.js";
 import {element} from "./e.js";
 
 export default class Contextmenu {
@@ -96,7 +92,6 @@ export default class Contextmenu {
 	    	parentWidth = menu.parentNode.offsetWidth,
 	    	parentHeight = menu.parentNode.offsetHeight;
 
-<<<<<<< HEAD
 	    if((x + menuWidth) > parentWidth) {
 	    	left = x - menuWidth;
 	    } else if(x < menuWidth) {
@@ -105,14 +100,6 @@ export default class Contextmenu {
 	    	left = parentWidth - menuWidth;
 	    } else {
 	    	// handle this case
-=======
-	    if(left + menuWidth > ww) {
-	    	left = left - menuWidth;
-	    } else if(left < menuWidth) {
-	    	left = menuWidth / 4;
-	    } else if(left > ww - menuWidth) {
-	    	left = ww - menuWidth;
->>>>>>> a58459e9aa79aab58c947f4487bd97febdb18555
 	    }
 
 	    if((y + menuHeight) > parentHeight) {
