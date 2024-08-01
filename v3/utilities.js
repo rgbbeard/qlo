@@ -1,14 +1,22 @@
 import {Select} from "./select.js";
 
-export const
+export let
 	www = String(window.location.origin + "/"),
 	ww = window.innerWidth,
 	wh = window.innerHeight,
 	dw = document.documentElement.clientWidth,
 	dh = document.documentElement.clientHeight,
 	bw = document.body.clientWidth,
-	bh = document.body.clientHeight
+	bh = document.body.clientHeightww = window.innerWidth
 ;
+
+window.addEventListener("resize", function() {
+	wh = window.innerHeight;
+	dw = document.documentElement.clientWidth;
+	dh = document.documentElement.clientHeight;
+	bw = document.body.clientWidth;
+	bh = document.body.clientHeigh;
+});
 
 export const $ = selector => new Select(selector);
 export const isNull = function(target) { return target === null; };
