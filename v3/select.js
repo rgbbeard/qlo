@@ -22,9 +22,6 @@ export class Select {
 			}
 		} else if(selector instanceof HTMLElement) {
 			this.node = selector;
-		} else if(selector instanceof HTMLCollection) {
-			this.multiple = true;
-			this.nodelist = selector;
 		} else if(selector instanceof Select) {
 			if(selector.multiple) {
 				this.current = selector.current;
@@ -47,15 +44,19 @@ export class Select {
 
 		if(element) {
 			if(element instanceof HTMLElement) {
-				if(!this.multiple) {
-					if(this.node.children.hasElement(element)) {
-						s = new Select(this.node.children[this.node.children.indexOf(element)]);
-					}
-				} else {
-					if(this.current.children.hasElement(element)) {
-						s = new Select(this.current.children[this.current.children.indexOf(element)]);
-					}
-				}
+				if (!this.multiple) {
+	                const child = Array.from(this.node.children).find(child => child === element);
+	                if (child) {
+	                    s = new Select(child);
+	                }
+	            } else {
+	                const child = Array.from(this.current.children).find(child => child === element);
+	                if (child) {
+	                    s = new Select(child);
+	                }
+	            }
+			} else if(element instanceof NodeList || element instanceof SVGElement) {
+				s = new Select(element);
 			} else if((typeof element) === "string") {
 				const selection = this.multiple ? 
 						this.current?.querySelectorAll(element)
@@ -128,14 +129,14 @@ export class Select {
 	attr(name, value = null) {
 		if(name && !name.empty()) {
 			if(this.multiple) {
-				if(!value) {
+				if(value && value.empty()) {
 					return this.current.getAttribute(name);
 				} else {
 					this.current.setAttribute(name, value);
 					return value;
 				}
 			} else {
-				if(!value) {
+				if(value && value.empty()) {
 					return this.node.getAttribute(name);
 				} else {
 					this.node.setAttribute(name, value);
@@ -195,25 +196,19 @@ export class Select {
 		return result;
 	}
 
-	children(options = {
-		push_child: null,
-		objectify: false
-	}) {
+	children(push_child = null) {
 		if(!this.multiple) {
-			if(options.push_child?.isObject()) {
+			if(push_child?.isObject()) {
 				this.current.appendChild(push_child);
 			} else {
-				if(options?.objectify) {
-					return new Select(this.node.children);
-				}
 				return this.node.children;
 			}
+		} else {
+			return this.current.children;
 		}
-
-		return [];
 	}
 
-	get length() {
+	length() {
 		return this.multiple ? this.nodelist.length : 1;
 	}
 
@@ -274,16 +269,13 @@ export class Select {
 
 	on(listener_name, fn) {
 		if(fn.isFunction()) {
-			let n = this.node;
-
 			if(this.multiple) {
 			    for(let x = 0;x<this.nodelist.length;x++) {
-			        n = this.nodelist[x];
-			        
+			        const n = this.nodelist[x];
 			        if(!Hasher.hasHashFunction(n, listener_name, fn)) {
 						this.bind(n, listener_name, fn);
 			        	n.addEventListener(listener_name, function(e) {
-			        		e.currentTarget === n & fn.call(n);
+			        		e.currentTarget === n & fn.call();
 			        	});
 					}
 				}
@@ -298,6 +290,30 @@ export class Select {
 		}
 
 		return this;
+	}
+
+	trigger(listener_name) {
+	    if (this.multiple) {
+	        for (let x = 0; x < this.nodelist.length; x++) {
+	            const n = this.nodelist[x];
+	            if (Hasher.hasHashFunction(n, listener_name)) {
+	                const event = new Event(listener_name, {
+	                    bubbles: true,
+	                    cancelable: true,
+	                });
+	                n.dispatchEvent(event);
+	            }
+	        }
+	    } else {
+	        if (Hasher.hasHashFunction(this.node, listener_name)) {
+	            const event = new Event(listener_name, {
+	                bubbles: true,
+	                cancelable: true,
+	            });
+	            this.node?.dispatchEvent(event);
+	        }
+	    }
+	    return this;
 	}
 
 	appendChild(child) {
