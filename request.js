@@ -1,10 +1,6 @@
 import { isDeclared, isNull } from "./utilities.js";
 
-<<<<<<< HEAD
 export default class Request {
-=======
-export class Request {
->>>>>>> a58459e9aa79aab58c947f4487bd97febdb18555
 	#methods = ["POST", "GET", "PUT", "DELETE"];
 	#method = "POST";
 	#url = "";
