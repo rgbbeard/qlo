@@ -1,5 +1,4 @@
 import {Select} from "./select.js";
-
 export let
 	www = String(window.location.origin + "/"),
 	ww = window.innerWidth,
@@ -9,7 +8,6 @@ export let
 	bw = document.body.clientWidth,
 	bh = document.body.clientHeightww = window.innerWidth
 ;
-
 window.addEventListener("resize", function() {
 	wh = window.innerHeight;
 	dw = document.documentElement.clientWidth;
@@ -17,7 +15,6 @@ window.addEventListener("resize", function() {
 	bw = document.body.clientWidth;
 	bh = document.body.clientHeigh;
 });
-
 export const $ = selector => new Select(selector);
 export const isNull = function(target) { return target === null; };
 export const isUndefined = function(target) { return target === undefined; };
@@ -32,7 +29,6 @@ export const SystemFn = function(fn) {
 };
 const SystemExec = function() {
 	let functions = window.SystemExecution, temp = [];
-
 	functions.forEach(fn => {
 		if(fn.isFunction()) {
 			temp.push(fn);
