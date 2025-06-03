@@ -3,6 +3,7 @@ import {isNull} from "./utilities.js";
 const Javascript = Object || String || Number || Array || Boolean;
 Javascript.prototype.isArray = function() { return Array.isArray(this); };
 Javascript.prototype.isFunction = function () { return this && {}.toString.call(this) === '[object Function]'; };
+Object.prototype.isDict = function () { return this && Object.prototype.toString.call(this) === '[object Object]'; };
 Javascript.prototype.bool = function () { return String(this).replace(/[\s|\t|\n]+/gm, "").match(/^true|yes|y|1$/i); };
 Javascript.prototype.empty = function () { 
 	const target = String(this);
