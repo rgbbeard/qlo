@@ -8,29 +8,43 @@ import Interface from "./interface.js";
 const Elements = Element || Interface || ConfirmDialog || Toast || Contextmenu || E;
 const Objects = Object || Elements || HTMLObjectElement;
 
-Objects.prototype.stretch = function(properties = "width, height", mode = "match_parent, match_parent") {
+Objects.prototype.stretch = function(properties = "width, height", value) {
+	if (!this.parentNode || !this.style) return;
+
 	this.parentHeight = this.parentNode.offsetHeight;
 	this.parentWidth = this.parentNode.offsetWidth;
 
-	if(properties && properties.length >= 3) {
-		if(!properties.match(/,/)) {
-			switch(properties) {
-				case "all":
-					this.style.width = this.parentNode.offsetWidth + "px";
-					this.style.height = this.parentNode.offsetHeight + "px";
-					break;
-				case "height":
-					this.style.height = this.parentHeight + "px";
-					break;
-				case "width":
-					this.style.width = this.parentWidth + "px";
-					break;
-			}
-		} else if(properties.match(/((\w+),?\s?){2}/)) {
-			const 
-				width = properties.split(",")[0].trim(), 
-				height = properties.split(",")[1].trim();
-		}
+	if (
+		typeof properties === "string" &&
+		properties.toLowerCase() === "proportional" &&
+		typeof value === "number"
+	) {
+		this.style.height = (this.parentHeight * value) + "px";
+		this.style.width = (this.parentWidth * value) + "px";
+		return;
+	}
+
+	const 
+		[prop1, prop2] = properties.split(",").map(p => p.trim()),
+		[width, height] = typeof value === "string" ?
+			value.split(",").map(m => m.trim()):
+			["match_parent", "match_parent"];
+
+	if(properties === "all") {
+		this.style.width = `${value}px`;
+		this.style.height = `${value}px`;
+	}
+
+	if(width === "match_parent") {
+		this.style.width = `${this.parentWidth}px`;
+	} else {
+		this.style.width = `${width}px`;
+	}
+
+	if(height === "match_parent") {
+		this.style.height = `${this.parentHeight}px`;
+	} else {
+		this.style.height = `${height}px`;
 	}
 };
 Objects.prototype.instance = function(instance) {
@@ -154,15 +168,6 @@ Objects.prototype.txt = function(t) {
 	}
 	return this.innerText;
 };
-Objects.prototype.on = function(listener, fn) {
-	listener = String(listener);
-	if (!fn.isFunction()) {
-		console.error("Parameter fn must be a function");
-		return;
-	}
-	this.addEventListener(listener, fn);
-};
-
 Objects.prototype.parentUntilClass = function(value, element = null) {
 	if(value && !value.empty()) {
 		let target = element ?? this;
