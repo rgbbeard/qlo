@@ -180,6 +180,60 @@ export class Select {
 		}
 	}
 
+	data(name, value = null) {
+		if(name && !name.empty()) {
+			if(this.multiple) {
+				const has_attribute = Object.hasOwn(this.current.dataset, name);
+				if(!value || value.empty()) {
+					if(has_attribute) {
+						return this.current.dataset[name];
+					}
+					return null;
+				} else {
+					this.current.setAttribute(`data-${name}`, value);
+					return value;
+				}
+			} else {
+				const has_attribute = Object.hasOwn(this.node.dataset, name);
+				if(!value || value.empty()) {
+					if(has_attribute) {
+						return this.node.dataset[name];
+					}
+					return null;
+				} else {
+					this.node.setAttribute(`data-${name}`, value);
+					return value;
+				}
+			}
+		} else {
+			console.warn("Missing attribute name");
+			return false;
+		}
+	}
+
+	style(styles) {
+		if(styles.isDict() && !styles.isFunction()) {
+			let tmp = "";
+			for(let s in styles) {
+				if(styles.hasOwnProperty(s) && !s.isFunction()) {
+					let value = styles[s];
+					tmp += `${s}: ${value}`;
+				}
+			}
+
+			if(!tmp.empty()) {
+				if(this.multiple) {
+					this.current.setAttribute("style", tmp);
+				} else {
+					this.node.setAttribute("style", tmp);
+				}
+			}
+		} else {
+			console.warn("Style must be passed within a dictionary");
+			return false;
+		}
+	}
+
 	#getPropertyByName(name) {
 		let result = null;
 		const
