@@ -1,6 +1,14 @@
-import { isDeclared, isUndefined, isNull } from "../utilities.js";
+import { 
+    isNull, 
+    isUndefined, 
+    isDeclared, 
+    isFunction, 
+    isDict, 
+    isArray
+} from "../utilities.js";
+import * as prototypes from "../prototypes.js";
 
-export class SVG {
+export default class SVG {
     constructor(data = {
         type: "",
         id: [],
@@ -14,9 +22,13 @@ export class SVG {
         attributes: {},
         children: []
     }) {
-        isDeclared(data.type) && data.type.length > 0 ?
-            this.type = data.type :
-            console.error("HTML tag must be defined");
+        if(!isDict(data) || data.isEmpty()) {
+            console.error("Missing parameters");
+            return;
+        }
+
+        this.type = isDeclared(data.type) && data.type.length > 0 ? data.type : "svg";
+
 
         this.element = document.createElementNS("http://www.w3.org/2000/svg", this.type);
 
@@ -28,15 +40,15 @@ export class SVG {
     setParams(data) {
         /* Set properties */
         //IDs
-        if(isDeclared(data.id) && data.id.isArray() && data.id.length > 0) {
+        if(isDeclared(data.id) && isArray(data.id) && data.id.isEmpty()) {
             data.id.forEach(i => this.element.addId(i));
         }
         //Classes
-        if(isDeclared(data.class) && data.class.isArray() && data.class.length > 0) {
+        if(isDeclared(data.class) && isArray(data.class) && !data.class.isEmpty()) {
             data.class.forEach(c => this.element.addClass(c));
         }
         //Inline styles
-        if(isDeclared(data.style) && typeof data.style === "object" && data.style.length() > 0) {
+        if(isDeclared(data.style) && isDict(data.style) && !data.style.isEmpty()) {
             this.element.addStyles(data.style);
         }
 
@@ -45,40 +57,10 @@ export class SVG {
         if(isDeclared(data.text)) {
             this.element.innerHTML = data.text;
         }
-
-        //Other attributes
-        if(isDeclared(data.attributes) && typeof data.attributes == "object" && data.attributes.length() > 0) {
-            for (let attribute in data.attributes) {
-                if(!attribute.isFunction()) {
-                    let value = data.attributes[attribute];
-                    if(!value.isFunction()) {
-                        const a = document.createAttribute(attribute);
-                        a.value = value;
-                        this.element.setAttributeNode(a);
-                    }
-                }
-            }
-        }
-        //Inline style
-        if(isDeclared(data.style) && typeof data.style == "object" && data.style.length() > 0) {
-            let styles = "";
-
-            for (let attribute in data.style) {
-                if(!attribute.isFunction()) {
-                    let values = data.style[attribute];
-
-                    if(!values.isFunction()) {
-                        styles += `${attribute}:${values};`;
-                    }
-                }
-            }
-
-            this.element.setAttribute("style", styles);
-        }
     }
 
     addChildren(children) {
-        if(isDeclared(children) && children.isArray()) {
+        if(isDeclared(children) && isArray(children)) {
             children.forEach(child => {
                 if(typeof child === "object") {
                     this.element.appendChild(child);
@@ -87,4 +69,3 @@ export class SVG {
         }
     }
 }
-export const svg = options => new SVG(options);

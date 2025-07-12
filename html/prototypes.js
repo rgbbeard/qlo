@@ -1,4 +1,8 @@
-import {isDeclared, isUndefined} from "../utilities.js";
+import {
+	isDeclared, 
+	isUndefined, 
+	isFunction
+} from "../utilities.js";
 import {E} from "./e.js";
 import Contextmenu from "./contextmenu.js";
 import ConfirmDialog from "./confirmdialog.js";
@@ -142,7 +146,7 @@ QloObject.prototype.addStyles = function(styles = {}) {
 	let temp = [];
 
 	for(let style in styles) {
-		if(styles[style].isFunction()) {
+		if(isFunction(styles[style])) {
 			continue;
 		}
 		temp.push(String(style+":"+styles[style]));
