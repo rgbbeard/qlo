@@ -1,3 +1,4 @@
+import {isFunction} from "./utilities.js";
 import Hasher from "./hasher.js";
 
 export class Select {
@@ -212,10 +213,10 @@ export class Select {
 	}
 
 	style(styles) {
-		if(styles.isDict() && !styles.isFunction()) {
+		if(styles.isDict() && !isFunction(styles)) {
 			let tmp = "";
 			for(let s in styles) {
-				if(styles.hasOwnProperty(s) && !s.isFunction()) {
+				if(styles.hasOwnProperty(s) && !isFunction(s)) {
 					let value = styles[s];
 					tmp += `${s}: ${value}`;
 				}
@@ -267,7 +268,7 @@ export class Select {
 	}
 
 	each(fn) {
-		if(fn.isFunction()) {
+		if(isFunction(fn)) {
 			if(this.multiple) {
 			    for(let x = 0;x<this.nodelist.length;x++) {
 			        const n = this.nodelist[x];
@@ -322,7 +323,7 @@ export class Select {
 	}
 
 	on(listener_name, fn) {
-		if(fn.isFunction()) {
+		if(isFunction(fn)) {
 			if(this.multiple) {
 			    for(let x = 0;x<this.nodelist.length;x++) {
 			        const n = this.nodelist[x];
