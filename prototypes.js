@@ -1,3 +1,4 @@
+// Shared prototypes
 [
 	String.prototype, 
 	Number.prototype, 

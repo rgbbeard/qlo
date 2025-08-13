@@ -3,11 +3,12 @@ import {element} from "./html/e.js";
 
 const elementsRender = function() {
     // Ripple animate button
-    $(".btn-ripple").each(btn => {
+    // SEE html/prototypes.js -> rippleAnimation
+    /*$(".btn-ripple").each(btn => {
         $(btn).on("click", function() {
             btn.rippleAnimation();
         });
-    });
+    });*/
 
     // Custom selectors
     $(".select-input").each(container => {

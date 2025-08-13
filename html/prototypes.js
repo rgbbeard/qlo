@@ -9,170 +9,260 @@ import ConfirmDialog from "./confirmdialog.js";
 import Toast from "./toast.js";
 import Interface from "./interface.js";
 
-const Elements = Element || Interface || ConfirmDialog || Toast || Contextmenu || E;
-const QloObject = Object || Elements || HTMLObjectElement;
-
-QloObject.prototype.hasClass = function(c) {
-	return this.classList.contains(String(c));
-};
-QloObject.prototype.toggleClass = function(c) {
-	this.classList.toggle(String(c));
-};
-QloObject.prototype.toggleClasses = function(...args) {
-	args.forEach(c => this.classList.toggle(String(c)));
-};
-QloObject.prototype.removeClass = function(c) {
-	this.classList.remove(String(c));
-};
-QloObject.prototype.removeClasses = function(...args) {
-	args.forEach(c => this.removeClass(String(c)));
-};
-QloObject.prototype.addClass = function(c) {
-	this.classList.add(String(c));
-};
-QloObject.prototype.addClasses = function(...args) {
-	args.forEach(c => this.addClass(String(c)));
-};
-QloObject.prototype.removeAttributes = function(...args) {
-	args.forEach(a => this.removeAttribute(String(a)));
-};
-QloObject.prototype.appendChildren = function(...args) {
-	args.forEach(child => this.appendChild(child));
-};
-QloObject.prototype.removeChildren = function(...args) {
-	args.forEach(child => this.removeChild(child));
-};
-QloObject.prototype.insertAfter = function(...args) { 
-	args.forEach(a => {
-		this.parentNode.insertBefore(a, this.nextElementSibling);
-	});
-};
-QloObject.prototype.isFirstChild = function() {
-	return this === this.parentNode.children[0];
-};
-QloObject.prototype.isLastChild = function() {
-	let
-		parent = this.parentNode,
-		c = parent.children,
-		ls = parent.children[c.length - 1];
-
-	return this === ls;
-};
-QloObject.prototype.prevSibling = function() {
-	return this.isFirstChild() ? null : this.previousElementSibling;
-};
-QloObject.prototype.nextSibling = function() {
-	return this.isLastChild() ? null : this.nextElementSibling;
-}
-QloObject.prototype.moveBefore = function() {
-    let 
-    	parent = this.parentNode, 
-    	prev = this.previousElementSibling;
-
-	if(!isNull(prev)) {
-		parent.insertBefore(this, prev);
-	}
-};
-QloObject.prototype.moveAfter = function() {
-	let 
-		parent = this.parentNode,
-		next = this.nextElementSibling, 
-		nextIsLast = isNull(next.nextElementSibling);
-
-	if(!isNull(next)) {
-		let index = parent.children.elementIndex(next);
-
-		if(!nextIsLast) {
-			parent.insertBefore(this, parent.children[index+1]);
+/**
+ * Shared prototypes
+ * 
+ * hasClass
+ * toggleClass
+ * toggleClasses
+ * removeClass
+ * removeClasses
+ * addClass
+ * addClasses
+ * removeAttributes
+ * removeId
+ * addId
+ * hasId
+ * instance
+ * mousepos
+ * getPadding
+ * isHidden
+ * isDisabled
+ * hide
+ * show
+ * addStyles
+ * attachTo
+ * appendChildren
+ * removeChildren
+ * insertAfter -> lets you move the element to a specific position
+ * isFirstChild
+ * isLastChild
+ * prevSibling -> gets the previous element in the NodeList
+ * nextSibling -> gets the next element in the NodeList
+ * moveBefore -> moves the element ahead of the element next to it
+ * moveAfter -> moves the element behind of the element next to it
+ * elementIndex -> returns the index of an element in the NodeList
+ * stretch -> manipulates the size of an element
+ */
+const extensions = {
+	hasClass(c) {
+		return this.classList.contains(String(c));
+	},
+	toggleClass(c) {
+		this.classList.toggle(String(c));
+	},
+	toggleClasses(...args) {
+		args.forEach(c => this.classList.toggle(String(c)));
+	},
+	removeClass(c) {
+		this.classList.remove(String(c));
+	},
+	removeClasses(...args) {
+		args.forEach(c => this.removeClass(String(c)));
+	},
+	addClass(c) {
+		this.classList.add(String(c));
+	},
+	addClasses(...args) {
+		args.forEach(c => this.addClass(String(c)));
+	},
+	removeAttributes(...args) {
+		args.forEach(a => this.removeAttribute(String(a)));
+	},
+	removeId(id) {
+		const current = this.getAttribute("id");
+		if(current) {
+			let ids = current.split(" ").filter(x => x !== String(id));
+			if(ids.length > 0) {
+				this.setAttribute("id", ids.join(" "));
+			} else {
+				this.removeAttribute("id");
+			}
+		}
+	},
+	addId(id) {
+		const current = this.getAttribute("id");
+		if(!current) {
+			this.setAttribute("id", id);
 		} else {
-			parent.appendChild(this);
-		}
-	}
-};
-QloObject.prototype.removeId = function(id) {
-	if (this.getAttribute("id") !== null) {
-		let 
-			ids = this.getAttribute("id").split(" "),
-			i = ids.indexOf(id.toString());
-
-		ids = ids.splice(i, i);
-		ids.length > 0 ?
-	    	this.setAttribute("id", ids.join(" ")):
-	        this.removeAttribute("id");
-	}
-};
-QloObject.prototype.addId = function(id) {
-	if (this.getAttribute("id") == null) {
-		this.setAttribute("id", id);
-	} else {
-		let ids = this.getAttribute("id").split(" "), hasId = false;
-
-		for (let x = 0; x < ids.length; x++) {
-			if (ids[x] === id) {
-				hasId = true;
-				break;
+			let ids = current.split(" ");
+			if(!ids.includes(String(id))) {
+				this.setAttribute("id", ids.join(" ") + ` ${id}`);
 			}
 		}
+	},
+	hasId(id) {
+		const ids = this.getAttribute("id");
+		return ids !== null && ids.split(" ").includes(String(id));
+	},
+	instance(instance) {
+		return this instanceof instance;
+	},
+	mousepos(e = window.event) {
+		const rect = this.getBoundingClientRect();
+		return {
+			x: e.clientX - rect.left,
+			y: e.clientY - rect.top
+		};
+	},
+	getPadding(padding = "global") {
+		const styles = window.getComputedStyle(this, null);
+		const pad = side => parseFloat(styles.getPropertyValue(`padding-${side}`)) || 0;
 
-		if (hasId === false) {
-			this.setAttribute("id", ids.join(" "));
+		const top = pad("top"), right = pad("right"), bottom = pad("bottom"), left = pad("left");
+
+		if(padding.includes(",")) {
+			return padding.split(",").map(p => p.trim()).map(side => [side, pad(side)]);
+		}
+		if(padding.toLowerCase() === "global") {
+			return { top, right, bottom, left };
+		}
+		if(["top", "right", "bottom", "left"].includes(padding)) {
+			return pad(padding);
+		}
+		return { top, right, bottom, left };
+	},
+	isHidden() {
+		return this.hasAttribute("hidden") || this.hasClass("hidden");
+	},
+	isDisabled() {
+		return this.hasAttribute("disabled");
+	},
+	hide() {
+		if(!this.isHidden()) this.setAttribute("hidden", "");
+	},
+	show() {
+		if(this.isHidden()) this.removeAttribute("hidden");
+	},
+	addStyles(styles = {}) {
+		const inlineStyles = Object.entries(styles)
+			.filter(([, v]) => typeof v !== "function")
+			.map(([k, v]) => `${k}:${v}`)
+			.join(";");
+
+		const prev = this.getAttribute("style");
+		this.setAttribute("style", prev ? prev + ";" + inlineStyles : inlineStyles);
+	},
+	attachTo(element) {
+		const rect = element.getBoundingClientRect();
+		const padding = element.getPadding();
+		const top = rect.top + padding.top + (element.offsetHeight / 2);
+
+		this.addStyles({ top: `${top}px` });
+	},
+	appendChildren(...args) {
+		this.append(...args);
+	},
+	appendAt(target, index) {
+		if(!this.childNodes || this.childNodes.length === 0) {
+			this.appendChild(target);
+			return;
+		}
+
+		if(index < 0 || index > this.childNodes.length) {
+			index = 0;
+		}
+
+		if(index === this.childNodes.length) {
+			this.appendChild(target);
+		} else {
+			const referenceNode = this.childNodes[index];
+			this.insertBefore(target, referenceNode);
+		}
+	},
+	removeChildren(...args) {
+		args.forEach(child => child.remove());
+	},
+	insertAfter(...args) {
+		args.forEach(a => this.parentNode.insertBefore(a, this.nextElementSibling));
+	},
+	isFirstChild() {
+		return this === this.parentNode.children[0];
+	},
+	isLastChild() {
+		const parent = this.parentNode;
+		return this === parent.children[parent.children.length - 1];
+	},
+	prevSibling() {
+		return this.isFirstChild() ? null : this.previousElementSibling;
+	},
+	nextSibling() {
+		return this.isLastChild() ? null : this.nextElementSibling;
+	},
+	moveBefore() {
+		const prev = this.previousElementSibling;
+		if(prev) {
+			this.parentNode.insertBefore(this, prev);
+		}
+	},
+	moveAfter() {
+		const next = this.nextElementSibling;
+		if(next) {
+			const parent = this.parentNode;
+			const index = Array.from(parent.children).indexOf(next);
+			if(index < parent.children.length - 1) {
+				parent.insertBefore(this, parent.children[index + 1]);
+			} else {
+				parent.appendChild(this);
+			}
+		}
+	},
+	elementIndex(element) {
+		return Array.from(this.children).indexOf(element);
+	},
+	stretch(properties = "width, height", value) {
+		if(!this.parentNode || !this.style) return;
+
+		const parentHeight = this.parentNode.offsetHeight;
+		const parentWidth = this.parentNode.offsetWidth;
+
+		if(typeof properties === "string" && properties.toLowerCase() === "proportional" && typeof value === "number") {
+			this.style.height = `${parentHeight * value}px`;
+			this.style.width = `${parentWidth * value}px`;
+			return;
+		}
+
+		const [width, height] = typeof value === "string"
+			? value.split(",").map(m => m.trim())
+			: ["match_parent", "match_parent"];
+
+		if(properties === "all") {
+			this.style.width = `${value}px`;
+			this.style.height = `${value}px`;
+		} else {
+			this.style.width = width === "match_parent" ? `${parentWidth}px` : `${width}px`;
+			this.style.height = height === "match_parent" ? `${parentHeight}px` : `${height}px`;
 		}
 	}
 };
-QloObject.prototype.hasId = function(id) {
-	let ids = this.getAttribute("id");
 
-	if(!isNull(ids)) {
-		ids = ids.split(" ");
-		ids.forEach(i => {
-			if(i === id.toString()) {
-				return true;
-			}
+[
+	E.prototype,
+	Interface.prototype,
+	ConfirmDialog.prototype,
+	Toast.prototype,
+	Contextmenu.prototype,
+	Element.prototype,
+	HTMLObjectElement.prototype
+].forEach(proto => {
+	Object.entries(extensions).forEach(([name, fn]) => {
+		Object.defineProperty(proto, name, {
+			value: fn,
+			writable: false,
+			configurable: false
 		});
-	}
+	});
+});
 
-	return false;
-};
-QloObject.prototype.elementIndex = function(element) {
-	for (let i = 0; i < this.children.length; i++) {
-		if (this.children[i] === element) {
-			return i;
-		}
-	}
 
-	return -1;
-};
-QloObject.prototype.addStyles = function(styles = {}) {
-	let temp = [];
-
-	for(let style in styles) {
-		if(isFunction(styles[style])) {
-			continue;
-		}
-		temp.push(String(style+":"+styles[style]));
-	}
-
-	let
-		prev_styles = this.getAttribute("style"),
-		new_styles = temp.join(";");
-	let style = prev_styles + ";" + new_styles;
-
-	if(prev_styles == null) {
-		style = new_styles;
-	}
-
-	this.setAttribute("style", style);
-};
-QloObject.prototype.isDisabled = function() {
-	return isNull(this.getAttribute("disabled"));
-};
-QloObject.prototype.rippleAnimation = function(e) {
+// TODO: rewrite this functionality
+/*QloObject.prototype.rippleAnimation = function(e) {
 	e = window.event;
 	let t = e.target;
 
 	t.removeClass("animated");
 
-	if (!t.hasClass("animated")) {
+	if(!t.hasClass("animated")) {
 		t.addClass("animated");
 	}
 
@@ -180,107 +270,7 @@ QloObject.prototype.rippleAnimation = function(e) {
 		t.removeClass("animated");
 	}, 700);
 };
-QloObject.prototype.stretch = function(properties = "width, height", value) {
-	if (!this.parentNode || !this.style) return;
 
-	this.parentHeight = this.parentNode.offsetHeight;
-	this.parentWidth = this.parentNode.offsetWidth;
-
-	if (
-		typeof properties === "string" &&
-		properties.toLowerCase() === "proportional" &&
-		typeof value === "number"
-	) {
-		this.style.height = (this.parentHeight * value) + "px";
-		this.style.width = (this.parentWidth * value) + "px";
-		return;
-	}
-
-	const 
-		[prop1, prop2] = properties.split(",").map(p => p.trim()),
-		[width, height] = typeof value === "string" ?
-			value.split(",").map(m => m.trim()):
-			["match_parent", "match_parent"];
-
-	if(properties === "all") {
-		this.style.width = `${value}px`;
-		this.style.height = `${value}px`;
-	}
-
-	if(width === "match_parent") {
-		this.style.width = `${this.parentWidth}px`;
-	} else {
-		this.style.width = `${width}px`;
-	}
-
-	if(height === "match_parent") {
-		this.style.height = `${this.parentHeight}px`;
-	} else {
-		this.style.height = `${height}px`;
-	}
-};
-QloObject.prototype.instance = function(instance) {
-	return this instanceof instance;
-};
-QloObject.prototype.mousepos = function(e) {
-	if (isUndefined(e)) e = window.event;
-	let
-		pos = this.getBoundingClientRect(),
-		posX = e.clientX - pos.left,
-		posY = e.clientY - pos.top;
-	return {
-		x: posX,
-		y: posY
-	};
-};
-QloObject.prototype.getPadding = function(padding = "global") {
-	let target = this;
-	if (!isDeclared(padding) || padding.empty()) {
-		padding = "global";
-	}
-	
-	switch (String(padding).toLowerCase()) {
-		case (padding.match(/(,)+/)):
-			let 
-				pads = padding.split(","),
-				p = [];
-			for (let x = 0; x < pads.length; x++) {
-				const pd = window.getComputedStyle(target, null)
-					.getPropertyValue("padding-" + pads[x].rmwhitesp());
-				p.push(
-					pads[x].rmwhitesp(), 
-					parseFloat(pd)
-				);
-			}
-			return p;
-		case (padding.rmwhitesp() === "global"):
-			return {
-				top: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-top")),
-					right: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-right")),
-					bottom: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
-					left: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-left")),
-			};
-		case (["top", "right", "bottom", "left"].inArray(padding)):
-			switch (padding) {
-				case "top":
-					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-top"));
-				case "right":
-					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-right"));
-				case "bottom":
-					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-bottom"));
-				case "left":
-					return parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-left"));
-			}
-			break;
-		default:
-			return {
-				top: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-top")),
-					right: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-right")),
-					bottom: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-bottom")),
-					left: parseFloat(window.getComputedStyle(target, null).getPropertyValue("padding-left")),
-			};
-	}
-};
 QloObject.prototype.applyGravity = function(endpoint = "parent", planet = "earth") {
 	let 
 		acceleration = 9.81,
@@ -313,53 +303,4 @@ QloObject.prototype.applyGravity = function(endpoint = "parent", planet = "earth
 		requestAnimationFrame(tick);
 	};
 	tick();
-};
-QloObject.prototype.isQloObject = function() {
-	return this.instance(QloObject);
-};
-QloObject.prototype.attachTo = function(element) {
-	if (element.isQloObject() || element?.instance(QloObject)) {
-		let
-			ot = element.getBoundingClientRect().top,
-			ep = element.getPadding(),
-			eh = element.offsetHeight,
-			top = ot + ep.top + (eh / 2);
-
-		this.addStyles({
-			"top": top + "px",
-		});
-	}
-};
-QloObject.prototype.isHidden = function() {
-	return this.hasAttribute("hidden") || this.hasClass("hidden");
-};
-QloObject.prototype.hide = function() {
-	if (!this.isHidden()) {
-		this.setAttribute("hidden", "");
-	}
-};
-QloObject.prototype.show = function() {
-	if (this.isHidden()) {
-		this.removeAttribute("hidden");
-	}
-};
-QloObject.prototype.clearUp = function() {
-	this.innerHTML = "";
-};
-QloObject.prototype.txt = function(t) {
-	if (isDeclared(t)) {
-		this.innerHTML = t;
-	}
-	return this.innerText;
-};
-QloObject.prototype.parentUntilClass = function(value, element = null) {
-	if(value && !value.empty()) {
-		let target = element ?? this;
-
-		if(target.hasClass(value)) {
-			return target;
-		}
-
-		return target.parentUntilClass(value, target.parentNode);
-	}
-};
+};*/
