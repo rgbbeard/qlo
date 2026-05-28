@@ -1,4 +1,3 @@
-import {isFunction} from "./utilities.js";
 import Hasher from "./hasher.js";
 
 export class Select {
@@ -45,19 +44,15 @@ export class Select {
 
 		if(element) {
 			if(element instanceof HTMLElement) {
-				if (!this.multiple) {
-	                const child = Array.from(this.node.children).find(child => child === element);
-	                if (child) {
-	                    s = new Select(child);
-	                }
-	            } else {
-	                const child = Array.from(this.current.children).find(child => child === element);
-	                if (child) {
-	                    s = new Select(child);
-	                }
-	            }
-			} else if(element instanceof NodeList || element instanceof SVGElement) {
-				s = new Select(element);
+				if(!this.multiple) {
+					if(this.node.children.hasElement(element)) {
+						s = new Select(this.node.children[this.node.children.indexOf(element)]);
+					}
+				} else {
+					if(this.current.children.hasElement(element)) {
+						s = new Select(this.current.children[this.current.children.indexOf(element)]);
+					}
+				}
 			} else if((typeof element) === "string") {
 				const selection = this.multiple ? 
 						this.current?.querySelectorAll(element)
@@ -181,60 +176,6 @@ export class Select {
 		}
 	}
 
-	data(name, value = null) {
-		if(name && !name.empty()) {
-			if(this.multiple) {
-				const has_attribute = Object.hasOwn(this.current.dataset, name);
-				if(!value || value.empty()) {
-					if(has_attribute) {
-						return this.current.dataset[name];
-					}
-					return null;
-				} else {
-					this.current.setAttribute(`data-${name}`, value);
-					return value;
-				}
-			} else {
-				const has_attribute = Object.hasOwn(this.node.dataset, name);
-				if(!value || value.empty()) {
-					if(has_attribute) {
-						return this.node.dataset[name];
-					}
-					return null;
-				} else {
-					this.node.setAttribute(`data-${name}`, value);
-					return value;
-				}
-			}
-		} else {
-			console.warn("Missing attribute name");
-			return false;
-		}
-	}
-
-	style(styles) {
-		if(styles.isDict() && !isFunction(styles)) {
-			let tmp = "";
-			for(let s in styles) {
-				if(styles.hasOwnProperty(s) && !isFunction(s)) {
-					let value = styles[s];
-					tmp += `${s}: ${value}`;
-				}
-			}
-
-			if(!tmp.empty()) {
-				if(this.multiple) {
-					this.current.setAttribute("style", tmp);
-				} else {
-					this.node.setAttribute("style", tmp);
-				}
-			}
-		} else {
-			console.warn("Style must be passed within a dictionary");
-			return false;
-		}
-	}
-
 	#getPropertyByName(name) {
 		let result = null;
 		const
@@ -268,7 +209,7 @@ export class Select {
 	}
 
 	each(fn) {
-		if(isFunction(fn)) {
+		if(fn.isFunction()) {
 			if(this.multiple) {
 			    for(let x = 0;x<this.nodelist.length;x++) {
 			        const n = this.nodelist[x];
@@ -323,7 +264,7 @@ export class Select {
 	}
 
 	on(listener_name, fn) {
-		if(isFunction(fn)) {
+		if(fn.isFunction()) {
 			if(this.multiple) {
 			    for(let x = 0;x<this.nodelist.length;x++) {
 			        const n = this.nodelist[x];
@@ -347,28 +288,10 @@ export class Select {
 		return this;
 	}
 
-	trigger(listener_name) {
-	    if (this.multiple) {
-	        for (let x = 0; x < this.nodelist.length; x++) {
-	            const n = this.nodelist[x];
-	            if (Hasher.hasHashFunction(n, listener_name)) {
-	                const event = new Event(listener_name, {
-	                    bubbles: true,
-	                    cancelable: true,
-	                });
-	                n.dispatchEvent(event);
-	            }
-	        }
-	    } else {
-	        if (Hasher.hasHashFunction(this.node, listener_name)) {
-	            const event = new Event(listener_name, {
-	                bubbles: true,
-	                cancelable: true,
-	            });
-	            this.node?.dispatchEvent(event);
-	        }
-	    }
-	    return this;
+	events(listeners, fn) {
+		listeners.forEach(l => this.on(l, fn));
+		
+		return this;
 	}
 
 	appendChild(child) {
@@ -463,6 +386,33 @@ export class Select {
 			if(obj) {
 	        	delete n.hashes[obj.name][obj.hash];
 	        }
+		}
+
+		return this;
+	}
+
+	trigger(event, detail = null, useCurrent = false) {
+		if (!event || typeof event !== "string") {
+			console.warn("Missing or invalid event name");
+			return this;
+		}
+
+		const e = new CustomEvent(event, {
+			bubbles: true,
+			cancelable: true,
+			detail: detail
+		});
+
+		if (this.multiple) {
+			if (useCurrent == true) {
+				this.current.dispatchEvent(e);
+			} else {
+				for (let i = 0; i < this.nodelist.length; i++) {
+					this.nodelist[i].dispatchEvent(e);
+				}
+			}
+		} else if(this.node) {
+			this.node.dispatchEvent(event);
 		}
 
 		return this;
