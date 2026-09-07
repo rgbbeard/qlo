@@ -6,9 +6,11 @@
 ].forEach(proto => {
 	Object.defineProperty(proto, "toBool", {
 		value: function() {
-			return String(this)
-				.replace(/\s+/gm, "")
-				.match(/^true|yes|y|1$/i);
+			return Boolean(
+				String(this)
+					.replace(/\s+/gm, "")
+					.match(/^true|yes|y|1$/i)
+			);
 		},
 		writable: false,
 		configurable: false
@@ -22,6 +24,9 @@ Object.entries({
 	},
   	isEmpty: function() {
 		return Object.keys(this).length === 0;
+	},
+	length: function() {
+		return Object.keys(this).length;
 	}
 }).forEach(([name, fn]) => {
 	if(!Object.prototype[name]) {
@@ -69,6 +74,24 @@ Object.entries({
 	},
 	toDouble: function() {
 		return parseFloat(this) || 0;
+	},
+	replaceArr: function(a, r) {
+		try {
+			if(Array.isArray(a)) {
+				let tmp = "";
+
+				a.forEach(i => {
+					tmp += this.replace(String(i), r);
+				});
+
+				return tmp;
+			}
+		} catch(e) {}
+		
+		return this;
+	},
+	isEmpty: function() {
+		return this?.trim() === "";
 	}
 }).forEach(([name, fn]) => {
 	if(!String.prototype[name]) {

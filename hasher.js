@@ -1,5 +1,5 @@
-import {Select} from "./select.js";
-import {isDeclared} from "./utilities.js";
+import Select from "./select.js";
+import isDeclared from "./utilities.js";
 
 export default class Hasher {
 	static hasHashFunction(target, event, fn) {

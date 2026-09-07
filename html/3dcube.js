@@ -1,5 +1,5 @@
-import {element} from "./e.js"
-import {isDeclared} from "../utilities.js";
+import isDeclared from "../utilities.js";
+import element from "./e.js"
 import Converter from "../converter.js";
 
 export default class Cube {
@@ -124,7 +124,10 @@ export default class Cube {
 			if(isDeclared(data.colors.back)) {
 				backBg = `#${data.colors.back}`;
 			}
-		} else if (data.useGlobalColor === true && data.globalColor.length.inRange(6, 8) === true) {
+		} else if(
+			data.useGlobalColor === true 
+			&& data.globalColor.length.inRange(6, 8) === true
+		) {
 			topBg = `#${data.globalColor}`;
 			rightBg = `#${data.globalColor}`;
 			botBg = `#${data.globalColor}`;

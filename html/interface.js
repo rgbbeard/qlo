@@ -1,5 +1,5 @@
-import {$} from "../utilities.js";
-import {element} from "./e.js";
+import {$, isArray} from "../utilities.js";
+import element from "./e.js";
 
 export default class Interface {
 	interface_components = [];
@@ -9,17 +9,24 @@ export default class Interface {
 		body: []
 	}) {
 		if (data.title && data.body) {
-			if (data.body.isArray() && data.body.length > 0) {
+			if (isArray(data.body) && data.body.length > 0) {
 				data.body.forEach(c => {
 					this.interface_components.push(c);
 				});
 
 				let
-					interface_id = "interface-" + $(".interface-background").length() + 1,
+					iid = $(".interface-background").length() + 1, 
+					interface_id = "interface-" + iid,
 					close_btn = element({
 						type: "span",
 						id: [interface_id],
-						class: ["interface-close-btn", "btn-ripple", "round", "error", "mini"],
+						class: [
+							"interface-close-btn", 
+							"btn-ripple", 
+							"round", 
+							"error", 
+							"mini"
+						],
 						text: "x"
 					}),
 					interface_title_bar = element({

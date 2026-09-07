@@ -1,13 +1,18 @@
 import Hasher from "./hasher.js";
+import {isFunction, isDeclared} from "./utilities.js";
 
-export class Select {
+export default class Select {
 	current = null;
 	node = null;
 	nodelist = null;
 	multiple = false;
 
 	constructor(selector = document.body) {
-		if(selector === document.body || selector === document || selector === window) {
+		if(
+			selector === document.body
+			|| selector === document
+			|| selector === window
+		) {
 			this.node = selector;
 		} else if((typeof selector) === "string") {
 			const selection = this.node === null ?
@@ -44,19 +49,25 @@ export class Select {
 
 		if(element) {
 			if(element instanceof HTMLElement) {
+				let t = null;
+
 				if(!this.multiple) {
 					if(this.node.children.hasElement(element)) {
-						s = new Select(this.node.children[this.node.children.indexOf(element)]);
+						let i = this.node.children.indexOf(element);
+						t = this.node.children[i];
 					}
 				} else {
 					if(this.current.children.hasElement(element)) {
-						s = new Select(this.current.children[this.current.children.indexOf(element)]);
+						let i = this.current.children.indexOf(element);
+						t = this.current.children[i];
 					}
 				}
+
+				s = new Select(t);
 			} else if((typeof element) === "string") {
 				const selection = this.multiple ? 
-						this.current?.querySelectorAll(element)
-						: this.node?.querySelectorAll(element);
+					this.current?.querySelectorAll(element)
+					: this.node?.querySelectorAll(element);
 
 				if(selection.length === 1) {
 					s = new Select(selection[0]);
@@ -71,6 +82,9 @@ export class Select {
 
 	getObject() {
 		const e = window.event;
+
+		console.log(e);
+		return;
 		if(this.multiple) {
 			for(let n = 0;n < this.nodelist.length;n++) {
 				if(e.target === this.nodelist[n]) {
@@ -100,8 +114,10 @@ export class Select {
 
 	value(value = "") {
 		if(this.multiple) {
-			if(value.empty()) {
-				return Select.isInput(this.current) ? this.current.value : this.current.textContent;
+			if(isDeclared(value) && value.isEmpty()) {
+				return Select.isInput(this.current) ? 
+					this.current.value : 
+					this.current.textContent;
 			} else {
 				if(Select.isInput(this.current)) {
 					this.current.value = value;
@@ -110,8 +126,10 @@ export class Select {
 				}
 			}
 		} else {
-			if(value.empty()) {
-				return Select.isInput(this.node) ? this.node?.value : this.node?.textContent;
+			if(isDeclared(value) && value.isEmpty()) {
+				return Select.isInput(this.node) ? 
+					this.node?.value : 
+					this.node?.textContent;
 			} else {
 				if(Select.isInput(this.node)) {
 					this.node.value = value;
@@ -123,16 +141,16 @@ export class Select {
 	}
 
 	attr(name, value = null) {
-		if(name && !name.empty()) {
+		if(name && !name.isEmpty()) {
 			if(this.multiple) {
-				if(value && value.empty()) {
+				if(value && value.isEmpty()) {
 					return this.current.getAttribute(name);
 				} else {
 					this.current.setAttribute(name, value);
 					return value;
 				}
 			} else {
-				if(value && value.empty()) {
+				if(value && value.isEmpty()) {
 					return this.node.getAttribute(name);
 				} else {
 					this.node.setAttribute(name, value);
@@ -145,16 +163,39 @@ export class Select {
 		}
 	}
 
+	data(name, value = null) {
+		if(name && !name.isEmpty()) {
+			if(this.multiple) {
+				if(value && value.isEmpty()) {
+					return this.current.getAttribute(`data-${name}`);
+				} else {
+					this.current.setAttribute(`data-${name}`, value);
+					return value;
+				}
+			} else {
+				if(value && value.isEmpty()) {
+					return this.node.getAttribute(`data-${name}`);
+				} else {
+					this.node.setAttribute(`data-${name}`, value);
+					return value;
+				}
+			}
+		} else {
+			console.warn("Missing attribute name");
+			return false;
+		}
+	}
+
 	prop(name, value = null, editable = false) {
-		if(!name?.empty()) {
+		if(name) {
 			if(this.multiple) {
 				if(!value) {
 					return this.#getPropertyByName(name);
 				} else {
 					Object.defineProperty(this.current, name, {
-			                value: value,
-			                writable: editable,
-			                configurable: true
+		                value: value,
+		                writable: editable,
+		                configurable: true
 			        });
 					return value;
 				}
@@ -162,11 +203,13 @@ export class Select {
 				if(!value) {
 					return this.#getPropertyByName(name);
 				} else {
-					Object.defineProperty(this.node, name, {
+					if(isDeclared(this.node)) {
+						Object.defineProperty(this.node, name, {
 			                value: value,
 			                writable: editable,
 			                configurable: true
-			        });
+				        });
+					}
 					return value;
 				}
 			}
@@ -194,7 +237,7 @@ export class Select {
 
 	children(push_child = null) {
 		if(!this.multiple) {
-			if(push_child?.isObject()) {
+			if(push_child) {
 				this.current.appendChild(push_child);
 			} else {
 				return this.node.children;
@@ -209,7 +252,7 @@ export class Select {
 	}
 
 	each(fn) {
-		if(fn.isFunction()) {
+		if(isFunction(fn)) {
 			if(this.multiple) {
 			    for(let x = 0;x<this.nodelist.length;x++) {
 			        const n = this.nodelist[x];
@@ -217,13 +260,13 @@ export class Select {
 			        if(!Hasher.hasHashFunction(n, "each", fn)) {
 						this.bind(n, "each", fn);
 					}
-					fn(n, x);
+					fn(this, x);
 				}
 			} else {
 				if(!Hasher.hasHashFunction(this.node, "each", fn)) {
 					this.bind(this.node, "each", fn);
 				}
-				fn(this.node, 0);
+				fn(this, 0);
 			}
 		} else {
 			console.warn("Missing function to evaluate");
@@ -264,22 +307,22 @@ export class Select {
 	}
 
 	on(listener_name, fn) {
-		if(fn.isFunction()) {
+		if(isFunction(fn)) {
 			if(this.multiple) {
 			    for(let x = 0;x<this.nodelist.length;x++) {
 			        const n = this.nodelist[x];
 			        if(!Hasher.hasHashFunction(n, listener_name, fn)) {
 						this.bind(n, listener_name, fn);
-			        	n.addEventListener(listener_name, function(e) {
-			        		e.currentTarget === n & fn.call();
+			        	n.addEventListener(listener_name, (e) => {
+			        		e.currentTarget === n & fn(this);
 			        	});
 					}
 				}
 			} else {
 				if(!Hasher.hasHashFunction(this.node, listener_name, fn)) {
 					this.bind(this.node, listener_name, fn);
-					this.node?.addEventListener(listener_name, function(e) {
-		        		e.currentTarget === this.node & fn(e.currentTarget);
+					this.node?.addEventListener(listener_name, (e) => {
+		        		e.currentTarget === this.node & fn(this);
 		        	});
 				}
 			}
@@ -338,15 +381,15 @@ export class Select {
 	}
 
 	static isInput(target) {
-		const t = target && target.tagName.toLowerCase(); 
-		return t === "input" || t === "textarea" || t === "button" || t === "select";
+		const t = target && target.tagName.toLowerCase();
+		return ["input", "textarea", "button", "select"].includes(t);
 	}
 
 	bind(target, event, fn) {
 		const hash = Hasher.hashFunction(fn);
 
 		if(target) {
-			if(target instanceof Select) {
+			if(target.constructor.name === "Select") {
 				target = target.getObject();
 			}
 
@@ -412,7 +455,7 @@ export class Select {
 				}
 			}
 		} else if(this.node) {
-			this.node.dispatchEvent(event);
+			this.node.dispatchEvent(e);
 		}
 
 		return this;

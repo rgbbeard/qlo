@@ -1,3 +1,5 @@
+import isDict from "./utilities.js";
+
 class JSONMaid {
 	#jsondata = {};
 
@@ -5,8 +7,8 @@ class JSONMaid {
 		try {
 			this.#jsondata = JSON.parse(jsondata);
 		} catch(ignore) {
-		}finally {
-			if(!this.#jsondata) {
+		} finally {
+			if(!this.#jsondata || !isDict(this.#jsondata)) {
 				this.#jsondata = {};
 			}
 		}

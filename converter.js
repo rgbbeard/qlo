@@ -1,3 +1,5 @@
+import {isFunction, isDict} from "./utilities.js";
+
 export default class Converter {
 	static rgb2Hex(r, g, b) {
 		r = r.toString(16).toUpperCase().length === 1 ? "0" + r : r;
@@ -10,8 +12,8 @@ export default class Converter {
 		color = color.trim().toUpperCase();
 		color.match(/^#?/) ? color = color.replace("#", "") : color;
 
-		if (color.length !== 6) {
-			console.error("The written color does not match the requirements: color length must be exactly 6.");
+		if(color.length !== 6) {
+			console.error("The color length must be exactly 6.");
 			return false;
 		} else {
 			const 
@@ -27,8 +29,8 @@ export default class Converter {
 		color = color.trim().toUpperCase();
 		color.match(/^#?/) ? color = color.replace("#", "") : color;
 
-		if (color.length !== 6) {
-			console.error("The written color does not match the requirements: color length must be exactly 6.");
+		if(color.length !== 6) {
+			console.error("The color length must be exactly 6.");
 			return false;
 		} else {
 			const
@@ -44,10 +46,10 @@ export default class Converter {
 		let temp = [];
 
 		for(let object in jsonObject) {
-			if(!jsonObject[object].isFunction()) {
+			if(!isFunction(jsonObject[object])) {
 				temp.push(object);
 
-				if(typeof jsonObject[object] === "object") {
+				if(isDict(jsonObject[object])) {
 					temp[object] = this.json2Array(jsonObject[object]);
 				} else {
 					temp[object] = jsonObject[object];

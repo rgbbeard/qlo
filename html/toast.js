@@ -1,5 +1,5 @@
-import {isDeclared} from "../utilities.js";
-import {element} from "./e.js";
+import {isDeclared, isFunction} from "../utilities.js";
+import element from "./e.js";
 
 export default class Toast {
 	constructor(data = {
@@ -16,7 +16,7 @@ export default class Toast {
 			this.classes.push("material");
 		}
 
-		switch (data.position) {
+		switch(data.position) {
 			case "top-center":
 				this.classes.push("top");
 				this.classes.push("center");
@@ -71,8 +71,11 @@ export default class Toast {
 				break;
 		}
 
-		if (isDeclared(data.appearance) && !data.appearance.isFunction()) {
-			switch (String(data.appearance)) {
+		if(
+			isDeclared(data.appearance) 
+			&& !isFunction(data.appearance)
+		) {
+			switch(String(data.appearance)) {
 				case "success":
 					this.classes.push("success");
 					break;

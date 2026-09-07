@@ -1,5 +1,5 @@
 import {SystemFn, $, isDeclared} from "./utilities.js";
-import {element} from "./html/e.js";
+import element from "./html/e.js";
 
 const elementsRender = function() {
     // Ripple animate button

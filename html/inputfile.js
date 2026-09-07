@@ -1,5 +1,5 @@
-import {isDeclared} from "../utilities";
-import {element} from "./e";
+import {$, isDeclared, isArray} from "../utilities.js";
+import element from "./e.js";
 
 export default class InputFile {
 	constructor(data = {
@@ -11,25 +11,29 @@ export default class InputFile {
 		multiple: false,
 		parent_classes: []
 	}) {
-		let input_id = _("div.input-group.file").length + 1;
+		let input_id = $("div.input-group.file").length + 1;
 
 		this.input_attrs = {
 			"type": "file"
 		};
 
-		if (data.label_text.empty()) {
+		if (data.label_text.isEmpty()) {
 			data.label_text = "Upload a file";
 		}
 
-		if (data.list_placeholder.empty()) {
+		if (data.list_placeholder.isEmpty()) {
 			data.list_placeholder = "No file in the queue";
 		}
 
-		if (data.input_name.empty()) {
+		if (data.input_name.isEmpty()) {
 			data.input_name = "input-file-" + input_id;
 		}
 
-		if (!isDeclared(data.parent_classes) ||data.parent_classes.empty() || !data.parent_classes.isArray()) {
+		if (
+			!isDeclared(data.parent_classes) 
+			|| data.parent_classes.isEmpty() 
+			|| !isArray(data.parent_classes)
+		) {
 			data.parent_classes = [];
 		}
 

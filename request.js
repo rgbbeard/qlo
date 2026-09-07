@@ -1,4 +1,4 @@
-import { isDeclared, isNull } from "./utilities.js";
+import {isDeclared, isNull, isFunction, isDict} from "./utilities.js";
 
 export default class Request {
 	#methods = ["POST", "GET", "PUT", "DELETE"];
@@ -6,7 +6,9 @@ export default class Request {
 	#url = "";
 	#data = null;
 	#done = null;
-	#xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP"); //Edge-Explorer compatibility;
+	#xhr = new XMLHttpRequest() 
+		// Edge-Explorer compatibility;
+		|| new ActiveXObject("Microsoft.XMLHTTP");
 
 	constructor(params = {
 		method: "",
@@ -16,7 +18,7 @@ export default class Request {
 		data: {},
 		done: function () {}
 	}) {
-		if(isDeclared(params.done) && params.done.isFunction()) {
+		if(isDeclared(params.done) && isFunction(params.done)) {
 			this.#done = params.done;
 		}
 
@@ -24,7 +26,7 @@ export default class Request {
 		
 		this.#xhr.open(this.#method, this.#url, true);
 
-		if(!isDeclared(params.headers) || params.headers.length() === 0) {
+		if(!isDeclared(params.headers) || !isDict(params.headers)) {
 			params.headers = {};
 		}
 
@@ -38,7 +40,10 @@ export default class Request {
 
 		this.setData(params.data);
 
-		if(isDeclared(params.send_files) && params.send_files === true) {
+		if(
+			isDeclared(params.send_files) 
+			&& params.send_files === true
+		) {
 			this.#xhr.overrideMimeType("multipart/form-data");
 		}
 
@@ -61,7 +66,10 @@ export default class Request {
 
 	setParams(data) {
 		//Set method
-		if (isDeclared(data.method) && this.#methods.inArray(data.method.toUpperCase())) {
+		if (
+			isDeclared(data.method) 
+			&& this.#methods.includes(data.method.toUpperCase())
+		) {
 			this.#method = data.method.toUpperCase();
 		} else {
 			console.error("Method parameter is not supported. Try using one of these methods: post, get, put, delete.");
@@ -78,16 +86,24 @@ export default class Request {
 	}
 
 	setData(data) {
-		if(isDeclared(data) && data.length() > 0) {
+		if(isDeclared(data) && isDict(data)) {
 			const form = new FormData();
 
 			for(let key in data) {
 				let value = data[key];
 
-				if(isDeclared(value) && !value.isFunction()) {
-					if(isDeclared(value.type) && value.type === "file") { //This one for file upload
-						for(let f = 0;f<value.files.length;f++) {
-							form.append(`${key}[]`, value.files[f], value.files[f].name);
+				if(isDeclared(value) && !isFunction(value)) {
+					//This one for file upload
+					if(
+						isDeclared(value.type) 
+						&& value.type === "file"
+					) {
+						for(let f = 0; f < value.files.length;f++) {
+							form.append(
+								`${key}[]`, 
+								value.files[f], 
+								value.files[f].name
+							);
 						}
 					} else {
 						form.append(key, value);

@@ -1,5 +1,5 @@
-import {isDeclared} from "../utilities.js";
-import {element} from "./e.js";
+import {isDeclared, isFunction} from "../utilities.js";
+import element from "./e.js";
 
 export default class SpinnerRing {
 	constructor(data = {
@@ -19,25 +19,42 @@ export default class SpinnerRing {
 		this.classes = [];
 		this.setAttributes(data);
 
-		if (isDeclared(data.generateContainer) && !data.generateContainer.isFunction() && data.generateContainer.bool()) {
+		if(
+			isDeclared(data.generateContainer) 
+			&& !isFunction(data.generateContainer) 
+			&& data.generateContainer.toBool()
+		) {
 			this.container = this.generateContainer();
 			this.container.setAttribute("waiter", "waiter");
 			this.container.appendChild(this.result);
+
 			return this.container;
 		}
+
 		return this.result;
 	}
+
 	generateContainer() {
 		return element({
 			type: "spinner-container"
 		});
 	}
+
 	setAttributes(data) {
-		if (isDeclared(data.message) && !data.message.isFunction() && !data.message.empty()) {
+		if(
+			isDeclared(data.message) 
+			&& !isFunction(data.message) 
+			&& !data.message.isEmpty()
+		) {
 			this.message = String(data.message);
 		}
-		if (isDeclared(data.style) && !data.style.isFunction() && !data.style.empty()) {
-			switch (data.style.toString()) {
+
+		if(
+			isDeclared(data.style) 
+			&& !isFunction(data.style) 
+			&& !data.style.isEmpty()
+		) {
+			switch(data.style.toString()) {
 				case "coin":
 					this.classes.push("gold");
 					break;
@@ -52,8 +69,13 @@ export default class SpinnerRing {
 					break;
 			}
 		}
-		if (isDeclared(data.size) && !data.size.isFunction() && !data.size.empty()) {
-			switch (data.size.toString()) {
+
+		if(
+			isDeclared(data.size) 
+			&& !isFunction(data.size) 
+			&& !data.size.isEmpty()
+		) {
+			switch(data.size.toString()) {
 				case "small":
 					this.classes.push("small");
 					break;
@@ -69,11 +91,13 @@ export default class SpinnerRing {
 			}
 		}
 
-		if (this.classes.length > 0) {
+		if(this.classes.length > 0) {
 			this.spinnerParams.class = this.classes;
 		}
-		if (!this.message.empty()) {
+
+		if(!this.message.isEmpty()) {
 			let text = this.message;
+			
 			this.result = element({
 				type: "p",
 				text: text,

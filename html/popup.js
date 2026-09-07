@@ -1,5 +1,5 @@
-import {element} from "./e.js";
-import {isDeclared} from "../utilities.js";
+import {isDeclared, isFunction} from "../utilities.js";
+import element from "./e.js";
 
 export default class Popup {
 	constructor(data = {
@@ -29,13 +29,17 @@ export default class Popup {
 			})
 		];
 
-		if (isDeclared(data.buttons) && !data.buttons.isFunction() && data.buttons.length() > 0) {
+		if(
+			isDeclared(data.buttons) 
+			&& !isFunction(data.buttons) 
+			&& data.buttons.length() > 0
+		) {
 			let button_count = 1;
 
-			for (let button in data.buttons) {
+			for(let button in data.buttons) {
 				button = data.buttons[button];
 
-				if (button.isFunction()) {
+				if(isFunction(button)) {
 					continue;
 				}
 
@@ -43,18 +47,28 @@ export default class Popup {
 					type: "span",
 					id: [`popup_button_${button_count}`],
 					class: ["popup-button", "btn-custom"],
-					text: (isDeclared(button.text) ? button.text : `Button ${button_count}`)
+					text:(
+						isDeclared(button.text) ? 
+							button.text : 
+							`Button ${button_count}`
+					)
 				};
 
-				if (isDeclared(button.click) && button.click.isFunction()) {
+				if(
+					isDeclared(button.click) 
+					&& isFunction(button.click)
+				) {
 					compiled_button_options.click = function() {
 						button.click.call();
-						this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);
+						this.parentNode
+							.parentNode
+							.parentNode
+							.removeChild(this.parentNode.parentNode);
 					};
 				}
 
-				if (isDeclared(button.appearance)) {
-					switch (String(button.appearance)) {
+				if(isDeclared(button.appearance)) {
+					switch(String(button.appearance)) {
 						case "default":
 							compiled_button_options.class.push("btn-white");
 							break;

@@ -1,5 +1,10 @@
-import {$, isDeclared, dw, dh, ww, wh} from "../utilities.js";
-import {element} from "./e.js";
+import {
+	$, 
+	isDeclared, 
+	isFunction, 
+	isDict
+} from "../utilities.js";
+import E from "./e.js";
 
 export default class Contextmenu {
 	title = "Menu";
@@ -12,15 +17,17 @@ export default class Contextmenu {
 		closeOnClickOver: true
 	}) {
 		this.closeMenus();
-		if(isDeclared(data.title) && String(data.title)) {
-			this.title = data.title;
+
+		if(isDeclared(data.title)) {
+			this.title = String(data.title);
 		}
+
 		this.menuParams = {
 			type: "div",
 			id: ["contextmenu"],
 			class: ["contextmenu"],
 			children: [
-				element({
+				new E({
 					type: "h4",
 					id: ["menu-title"],
 					text: this.title
@@ -28,10 +35,13 @@ export default class Contextmenu {
 			]
 		};
 		this.setParams(data);
-		let menu = element(this.menuParams);
+
+		let menu = new E(this.menuParams);
+
 		$(window).on("scroll", (d) => {
 			this.closeMenus();
 		});
+
 		return menu;
 	}
 
@@ -43,23 +53,34 @@ export default class Contextmenu {
 
 	setParams(data) {
 		let voices = data.voices;
-		if (isDeclared(voices)) {
-			if (typeof voices == "object" && !voices.isFunction()) {
+		if(isDeclared(voices)) {
+			if(isDict(voices) && !isFunction(voices)) {
 				//Add menu voices
-				for (let voice in voices) {
+				for(let voice in voices) {
 					let value = voices[voice];
-					if (!value.isFunction() && typeof value == "object" && isDeclared(value.label)) {
+					if(
+						!isFunction(value) 
+						&& isDict(value) 
+						&& isDeclared(value.label)
+					) {
 						let params = {
 							type: "a",
 							class: ["contextmenu-item"],
 							text: value.label
 						};
+
 						//Add action
-						if (isDeclared(value.click) && value.click.isFunction()) params.click = () => {
-							value.click.call();
-							this.closeMenus();
-						};
-						this.menuParams.children.push(element(params));
+						if(
+							isDeclared(value.click) 
+							&& isFunction(value.click)
+						) {
+							params.click = () => {
+								value.click.call();
+								this.closeMenus();
+							};
+						}
+
+						this.menuParams.children.push(new E(params));
 					}
 				}
 			} else {
@@ -70,11 +91,11 @@ export default class Contextmenu {
 		}
 
 		//Add close menu btn
-		this.menuParams.children.push(element({
+		this.menuParams.children.push(new E({
 			type: "a",
 			class: ["contextmenu-item"],
 			text: "Cancel",
-			click: () => {
+			click:() => {
 				this.closeMenus();
 			}
 		}));
@@ -82,7 +103,7 @@ export default class Contextmenu {
 
 	static setMenuPos(menu) {
 	    let 
-	    	mousePos = document.body.mousepos(),
+	    	mousePos = document.body.mousepos,
 	    	x = mousePos.x,
 	    	y = mousePos.y,
 	    	top = y,
@@ -96,7 +117,7 @@ export default class Contextmenu {
 	    	left = x - menuWidth;
 	    } else if(x < menuWidth) {
 	    	left = menuWidth / 4;
-	    } else if(x > (parentWidth - menuWidth)) {
+	    } else if(x >(parentWidth - menuWidth)) {
 	    	left = parentWidth - menuWidth;
 	    } else {
 	    	// handle this case
@@ -106,7 +127,7 @@ export default class Contextmenu {
 	    	top = y - menuHeight;
 	    } else if(y < menuHeight) {
 	    	top = menuHeight / 2;
-	    } else if(y > (parentHeight - menuHeight)) {
+	    } else if(y >(parentHeight - menuHeight)) {
 	    	top = parentHeight - menuHeight;
 	    } else {
 	    	// handle this case
