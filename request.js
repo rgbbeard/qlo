@@ -50,13 +50,16 @@ export default class Request {
 		//Send data
 		this.#xhr.send(this.data);
 		this.#xhr.onload = () => {
-			let result = [];
-			result["code"] = this.#xhr.status;
-			result["response"] = this.#xhr.statusText;
-			result["return"] = this.#xhr.responseText;
-			result["xmlReturn"] = this.#xhr.responseXML;
-
 			if(!isNull(this.#done)) {
+				let result = [];
+				result["code"] = this.#xhr.status;
+				result["response"] = this.#xhr.statusText;
+				result["return"] = this.#xhr.responseText;
+				result["xmlReturn"] = this.#xhr.responseXML;
+				result["success"] = this.#xhr.status === 200 
+					|| this.#xhr.responseText.trim() === "ok";
+				result["error"] = !result["success"];
+
 				this.#done(result);
 			}
 		};

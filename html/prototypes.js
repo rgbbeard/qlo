@@ -158,15 +158,13 @@ const extensions = {
 		"get": true,
 		"set": false,
 		"value": function(e = window.event) {
-			const rect = this.getBoundingClientRect();
-
 			if(!e) {
 				e = window.event;
 			}
 
 			return {
-				x: e.clientX - rect.left,
-				y: e.clientY - rect.top
+				x: e.clientX,
+				y: e.clientY
 			};
 		}
 	},

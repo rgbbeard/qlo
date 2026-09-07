@@ -36,13 +36,11 @@ export default class Contextmenu {
 		};
 		this.setParams(data);
 
-		let menu = new E(this.menuParams);
-
-		$(window).on("scroll", (d) => {
+		$(window).events(["scroll", "click"], (d) => {
 			this.closeMenus();
 		});
 
-		return menu;
+		return new E(this.menuParams);
 	}
 
 	closeMenus() {
@@ -108,29 +106,17 @@ export default class Contextmenu {
 	    	y = mousePos.y,
 	    	top = y,
 	    	left = x,
-	    	menuWidth = menu.offsetWidth,
-	    	menuHeight = menu.offsetHeight,
-	    	parentWidth = menu.parentNode.offsetWidth,
-	    	parentHeight = menu.parentNode.offsetHeight;
+	        menuWidth = menu.offsetWidth,
+	        menuHeight = menu.offsetHeight,
+	        parentWidth = window.innerWidth,
+	        parentHeight = window.innerHeight;
 
 	    if((x + menuWidth) > parentWidth) {
-	    	left = x - menuWidth;
-	    } else if(x < menuWidth) {
-	    	left = menuWidth / 4;
-	    } else if(x >(parentWidth - menuWidth)) {
-	    	left = parentWidth - menuWidth;
-	    } else {
-	    	// handle this case
-	    }
+	        left = x - menuWidth;
+	    } 
 
 	    if((y + menuHeight) > parentHeight) {
-	    	top = y - menuHeight;
-	    } else if(y < menuHeight) {
-	    	top = menuHeight / 2;
-	    } else if(y >(parentHeight - menuHeight)) {
-	    	top = parentHeight - menuHeight;
-	    } else {
-	    	// handle this case
+	        top = y - menuHeight;
 	    }
 
 	    menu.addStyles({
