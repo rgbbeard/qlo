@@ -187,14 +187,14 @@ export default class Select {
 	data(name, value = null) {
 		if(name && !name.isEmpty()) {
 			if(this.multiple) {
-				if(isDeclared(value) && value.isEmpty()) {
+				if(!isDeclared(value) || value.isEmpty()) {
 					return this.current.getAttribute(`data-${name}`);
 				} else {
 					this.current.setAttribute(`data-${name}`, value);
 					return value;
 				}
 			} else {
-				if(isDeclared(value) && value.isEmpty()) {
+				if(!isDeclared(value) || value.isEmpty()) {
 					return this.node.getAttribute(`data-${name}`);
 				} else {
 					this.node.setAttribute(`data-${name}`, value);
