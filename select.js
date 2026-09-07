@@ -1,3 +1,4 @@
+import "./prototypes.js";
 import "./html/prototypes.js";
 import Hasher from "./hasher.js";
 import {isFunction, isDeclared} from "./utilities.js";
@@ -105,8 +106,6 @@ export default class Select {
 	getObject() {
 		const e = window.event;
 
-		console.log(e);
-		return;
 		if(this.multiple) {
 			for(let n = 0;n < this.nodelist.length;n++) {
 				if(e.target === this.nodelist[n]) {
@@ -188,14 +187,14 @@ export default class Select {
 	data(name, value = null) {
 		if(name && !name.isEmpty()) {
 			if(this.multiple) {
-				if(value && value.isEmpty()) {
+				if(isDeclared(value) && value.isEmpty()) {
 					return this.current.getAttribute(`data-${name}`);
 				} else {
 					this.current.setAttribute(`data-${name}`, value);
 					return value;
 				}
 			} else {
-				if(value && value.isEmpty()) {
+				if(isDeclared(value) && value.isEmpty()) {
 					return this.node.getAttribute(`data-${name}`);
 				} else {
 					this.node.setAttribute(`data-${name}`, value);
@@ -266,13 +265,13 @@ export default class Select {
 			        if(!Hasher.hasHashFunction(n, "each", fn)) {
 						this.bind(n, "each", fn);
 					}
-					fn(this, x);
+					fn(new Select(n), x);
 				}
 			} else {
 				if(!Hasher.hasHashFunction(this.node, "each", fn)) {
 					this.bind(this.node, "each", fn);
 				}
-				fn(this, 0);
+				fn(new Select(this.node), 0);
 			}
 		} else {
 			console.warn("Missing function to evaluate");
@@ -305,10 +304,10 @@ export default class Select {
 	remove() {
 		if(this.multiple) {
 			for(let x = 0;x<this.nodelist.length;x++) {
-				this.nodelist[x].parentNode.removeChild(n);
+				this.nodelist[x]?.remove();
 			}
 		} else {
-			this.node.parentNode.removeChild(this.node);
+			this.node?.remove();
 		}
 	}
 
@@ -320,7 +319,7 @@ export default class Select {
 			        if(!Hasher.hasHashFunction(n, listener_name, fn)) {
 						this.bind(n, listener_name, fn);
 			        	n.addEventListener(listener_name, (e) => {
-			        		e.currentTarget === n & fn(this);
+			        		e.currentTarget === n & fn(new Select(n));
 			        	});
 					}
 				}
@@ -328,7 +327,7 @@ export default class Select {
 				if(!Hasher.hasHashFunction(this.node, listener_name, fn)) {
 					this.bind(this.node, listener_name, fn);
 					this.node?.addEventListener(listener_name, (e) => {
-		        		e.currentTarget === this.node & fn(this);
+		        		e.currentTarget === this.node & fn(new Select(this.node));
 		        	});
 				}
 			}
@@ -474,7 +473,6 @@ export default class Select {
 
 	show() {
 		if (this.multiple) {
-			console.log(this.current);
 			this.current.show();
 		} else if(this.node) {
 			this.node.show();
