@@ -1,3 +1,4 @@
+import "./html/prototypes.js";
 import Hasher from "./hasher.js";
 import {isFunction, isDeclared} from "./utilities.js";
 
@@ -42,6 +43,27 @@ export default class Select {
 		}
 
 		return this;
+	}
+
+	static isInput(target) {
+		const t = target && target.tagName.toLowerCase();
+		return ["input", "textarea", "button", "select"].includes(t);
+	}
+
+	#getPropertyByName(name) {
+		let result = null;
+		const
+			target = this.multiple ? this.current : this.node,
+			properties = Object.getOwnPropertyNames(target);
+
+		for(let x = 0;x<properties.length;x++) {
+			if(name === properties[x]) {
+				result = properties[x];
+				break;
+			}
+		}
+
+		return result;
 	}
 
 	getIfExists(element) {
@@ -219,22 +241,6 @@ export default class Select {
 		}
 	}
 
-	#getPropertyByName(name) {
-		let result = null;
-		const
-			target = this.multiple ? this.current : this.node,
-			properties = Object.getOwnPropertyNames(target);
-
-		for(let x = 0;x<properties.length;x++) {
-			if(name === properties[x]) {
-				result = properties[x];
-				break;
-			}
-		}
-
-		return result;
-	}
-
 	children(push_child = null) {
 		if(!this.multiple) {
 			if(push_child) {
@@ -380,11 +386,6 @@ export default class Select {
 		});
 	}
 
-	static isInput(target) {
-		const t = target && target.tagName.toLowerCase();
-		return ["input", "textarea", "button", "select"].includes(t);
-	}
-
 	bind(target, event, fn) {
 		const hash = Hasher.hashFunction(fn);
 
@@ -456,6 +457,27 @@ export default class Select {
 			}
 		} else if(this.node) {
 			this.node.dispatchEvent(e);
+		}
+
+		return this;
+	}
+
+	hide() {
+		if (this.multiple) {
+			this.current.hide();
+		} else if(this.node) {
+			this.node.hide();
+		}
+
+		return this;
+	}
+
+	show() {
+		if (this.multiple) {
+			console.log(this.current);
+			this.current.show();
+		} else if(this.node) {
+			this.node.show();
 		}
 
 		return this;

@@ -140,6 +140,13 @@ const extensions = {
 			return ids !== null && ids.split(" ").includes(String(id));
 		}
 	},
+	"hasAttribute": {
+		"get": false,
+		"set": false,
+		"value": function(attr) {
+			return isDeclared(this.getAttribute(attr));
+		}
+	},
 	"instance": {
 		"get": false,
 		"set": false,
@@ -196,6 +203,13 @@ const extensions = {
 			return { top, right, bottom, left };
 		}
 	},
+	"isDisabled": {
+		"get": true,
+		"set": false,
+		"value": function() {
+			return this.hasAttribute("disabled");
+		}
+	},
 	"isHidden": {
 		"get": true,
 		"set": false,
@@ -204,25 +218,18 @@ const extensions = {
 				|| this.hasClass("hidden");
 		}
 	},
-	"isDisabled": {
-		"get": true,
-		"set": false,
-		"value": function() {
-			return this.hasAttribute("disabled");
-		}
-	},
 	"hide": {
 		"get": false,
 		"set": false,
 		"value": function() {
-			if(!this.isHidden()) this.setAttribute("hidden", "");
+			if(!this.isHidden) this.setAttribute("hidden", "");
 		}
 	},
 	"show": {
 		"get": false,
 		"set": false,
 		"value": function() {
-			if(this.isHidden()) this.removeAttribute("hidden");
+			if(this.isHidden) this.removeAttribute("hidden");
 		}
 	},
 	"addStyles": {
@@ -409,15 +416,21 @@ const extensions = {
 	Element.prototype,
 	HTMLObjectElement.prototype
 ].forEach(proto => {
-	Object.entries(extensions).forEach(([name, conf]) => {
-		Object.defineProperty(proto, name, {
-			value: conf.value,
-			writable: false,
-			configurable: false,
-			get: conf.get,
-			set: conf.set
-		});
-	});
+    Object.entries(extensions).forEach(([name, conf]) => {
+        const descriptor = {
+            configurable: false
+        };
+
+        if (conf.get === true) {
+            descriptor.get = conf.value;
+            descriptor.set = conf.set === true ? function(v) {} : undefined;
+        } else {
+            descriptor.value = conf.value;
+            descriptor.writable = false;
+        }
+
+        Object.defineProperty(proto, name, descriptor);
+    });
 });
 
 
