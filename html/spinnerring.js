@@ -1,5 +1,5 @@
 import {isDeclared, isFunction} from "../utilities.js";
-import element from "./e.js";
+import E from "./e.js";
 
 export default class SpinnerRing {
 	constructor(data = {
@@ -9,7 +9,7 @@ export default class SpinnerRing {
 		size: "normal"
 	}) {
 		this.container = null;
-		this.result = null;
+		this.spinner = null;
 		this.spinnerParams = {
 			type: "spinner-ring"
 		};
@@ -24,18 +24,15 @@ export default class SpinnerRing {
 			&& !isFunction(data.generateContainer) 
 			&& data.generateContainer.toBool()
 		) {
-			this.container = this.generateContainer();
-			this.container.setAttribute("waiter", "waiter");
-			this.container.appendChild(this.result);
-
-			return this.container;
+			this.container = this.#generateContainer();
+			this.container.appendChild(this.spinner);
 		}
 
-		return this.result;
+		return this;
 	}
 
-	generateContainer() {
-		return element({
+	#generateContainer() {
+		return new E({
 			type: "spinner-container"
 		});
 	}
@@ -55,17 +52,14 @@ export default class SpinnerRing {
 			&& !data.style.isEmpty()
 		) {
 			switch(data.style.toString()) {
-				case "coin":
-					this.classes.push("gold");
-					break;
-				case "gold":
-					this.classes.push("gold");
-					break;
 				case "inverse":
 					this.classes.push("inverse");
 					break;
 				case "inverted":
 					this.classes.push("inverse");
+					break;
+				default:
+					this.classes.push(data.style);
 					break;
 			}
 		}
@@ -98,18 +92,39 @@ export default class SpinnerRing {
 		if(!this.message.isEmpty()) {
 			let text = this.message;
 			
-			this.result = element({
+			this.spinner = new E({
 				type: "p",
 				text: text,
 				children: [
-					element({
+					new E({
 						type: "br"
 					}),
-					element(this.spinnerParams)
+					new E(this.spinnerParams)
 				]
 			});
 		} else {
-			this.result = element(this.spinnerParams);
+			this.spinner = new E(this.spinnerParams);
 		}
 	}
+
+	setMessage(message) {
+		this.render().querySelector("p")?.remove();
+		this.render().appendChild(new E({
+			type: "p",
+			text: message
+		}));
+		return this;
+	}
+
+	render() {
+        return this.container || this.result;
+    }
+
+    hide() {
+    	this.render().hide();
+    }
+
+    show() {
+    	this.render().show();
+    }
 }

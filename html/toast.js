@@ -1,5 +1,5 @@
 import {isDeclared, isFunction} from "../utilities.js";
-import element from "./e.js";
+import E from "./e.js";
 
 export default class Toast {
 	constructor(data = {
@@ -100,21 +100,21 @@ export default class Toast {
 			}
 		}
 
-		this.toast = element({
+		this.toast = new E({
 			type: "div",
 			class: this.classes,
 			attributes: {
 				"script-generated": "true"
 			},
 			children: [
-				element({
+				new E({
 					type: "div",
 					text: data.text
 				})
 			],
 			load: (t) => {
 				setTimeout(() => {
-					t.parentNode.removeChild(t);
+					t.remove();
 				}, data.timeout * 1000);
 			}
 		});

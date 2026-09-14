@@ -12,7 +12,7 @@ export default class Contextmenu {
 
 	constructor(data = {
 		title: null,
-		voices: {},
+		items: {},
 		closeOnClickOut: true,
 		closeOnClickOver: true
 	}) {
@@ -50,12 +50,12 @@ export default class Contextmenu {
 	}
 
 	setParams(data) {
-		let voices = data.voices;
-		if(isDeclared(voices)) {
-			if(isDict(voices) && !isFunction(voices)) {
-				//Add menu voices
-				for(let voice in voices) {
-					let value = voices[voice];
+		let items = data.items;
+		if(isDeclared(items)) {
+			if(isDict(items) && !isFunction(items)) {
+				//Add menu items
+				for(let item in items) {
+					let value = items[item];
 					if(
 						!isFunction(value) 
 						&& isDict(value) 
