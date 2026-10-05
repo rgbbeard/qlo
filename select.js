@@ -29,7 +29,7 @@ export default class Select {
 			}
 		} else if(selector instanceof HTMLElement) {
 			this.node = selector;
-		} else if(selector instanceof Select) {
+		} else if(Select.isInstanceOfSelf(selector)) {
 			if(selector.multiple) {
 				this.current = selector.current;
 				this.node = selector.current;
@@ -49,6 +49,10 @@ export default class Select {
 	static isInput(target) {
 		const t = target && target.tagName.toLowerCase();
 		return ["input", "textarea", "button", "select"].includes(t);
+	}
+
+	static isInstanceOfSelf(target) {
+		return target.constructor.name === "Select";
 	}
 
 	#getPropertyByName(name) {
@@ -126,11 +130,7 @@ export default class Select {
 	}
 
 	parent() {
-		if(!this.multiple) {
-			this.node = this.node.parentNode;
-		}
-
-		return this;
+		return !this.multiple ? this.node.parentNode : this.current.parentNode;
 	}
 
 	value(value = "") {
@@ -389,7 +389,7 @@ export default class Select {
 		const hash = Hasher.hashFunction(fn);
 
 		if(target) {
-			if(target.constructor.name === "Select") {
+			if(Select.isInstanceOfSelf(target)) {
 				target = target.getObject();
 			}
 
