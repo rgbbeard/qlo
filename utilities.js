@@ -4,6 +4,7 @@ const html = document.documentElement;
 
 let
 	www = String(window.location.origin + "/"),
+	/* almost certainly not used anywhere but keeping them just in case*/
 	ww = window.innerWidth,
 	wh = window.innerHeight,
 	dw = html.clientWidth,
@@ -11,13 +12,6 @@ let
 	bw = document.body.clientWidth,
 	bh = document.body.clientHeight
 ;
-window.addEventListener("resize", function() {
-	wh = window.innerHeight;
-	dw = html.clientWidth;
-	dh = html.clientHeight;
-	bw = document.body.clientWidth;
-	bh = document.body.clientHeight;
-});
 
 window.SystemExecution = [];
 

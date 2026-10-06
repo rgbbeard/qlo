@@ -1,7 +1,13 @@
 import "./prototypes.js";
 import "./html/prototypes.js";
 import Hasher from "./hasher.js";
-import {isFunction, isDeclared, isArray} from "./utilities.js";
+import {
+	isFunction, 
+	isDeclared, 
+	isArray, 
+	isUndefined,
+	isNull
+} from "./utilities.js";
 
 export default class Select {
 	current = null;
@@ -219,14 +225,14 @@ export default class Select {
 	attr(name, value = null) {
 		if(name && !name.isEmpty()) {
 			if(this.multiple) {
-				if(value && value.isEmpty()) {
+				if(!isUndefined(value) && isNull(value)) {
 					return this.current.getAttribute(name);
 				} else {
 					this.current.setAttribute(name, value);
 					return value;
 				}
 			} else {
-				if(value && value.isEmpty()) {
+				if(!isUndefined(value) && isNull(value)) {
 					return this.node.getAttribute(name);
 				} else {
 					this.node.setAttribute(name, value);
