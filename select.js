@@ -1,20 +1,23 @@
 import "./prototypes.js";
 import "./html/prototypes.js";
 import Hasher from "./hasher.js";
-import {isFunction, isDeclared} from "./utilities.js";
+import {isFunction, isDeclared, isArray} from "./utilities.js";
 
 export default class Select {
 	current = null;
 	node = null;
 	nodelist = null;
 	multiple = false;
+	isDom = false;
 
 	constructor(selector = document.body) {
 		if(
 			selector === document.body
+			|| selector === document.documentElement
 			|| selector === document
 			|| selector === window
 		) {
+			this.isDom = true;
 			this.node = selector;
 		} else if((typeof selector) === "string") {
 			const selection = this.node === null ?
@@ -133,6 +136,49 @@ export default class Select {
 		return !this.multiple ? this.node.parentNode : this.current.parentNode;
 	}
 
+	/**
+	 * @param string a
+	 * @param string|array c
+	 * @return Select
+	 */
+	class(a = "add", c = "") {
+		if(!isDeclared(c) || c.isEmpty()) {
+			return this;
+		}
+
+		let t = this.multiple ? this.current : this.node;
+
+		switch(a.toLowerCase()) {
+			case "add":
+				if(this.isDom) {
+					t.addClass(c);
+				} else {
+					t.classList.add(c);
+				}
+				break;
+			case "remove":
+				if(this.isDom) {
+					t.removeClass(c);
+				} else {
+					t.classList.remove(c);
+				}
+				break;
+			case "toggle":
+				if(this.isDom) {
+					t.toggleClass(c);
+				} else {
+					t.classList.toggle(c);
+				}
+				break;
+		}
+
+		return this;
+	}
+
+	/**
+	 * @param mixed value
+	 * @return Select|value
+	 */
 	value(value = "") {
 		if(this.multiple) {
 			if(isDeclared(value) && value.isEmpty()) {
@@ -145,6 +191,8 @@ export default class Select {
 				} else {
 					this.current.textContent = value;
 				}
+
+				return this;
 			}
 		} else {
 			if(isDeclared(value) && value.isEmpty()) {
@@ -157,10 +205,17 @@ export default class Select {
 				} else {
 					this.node.textContent = value;
 				}
+
+				return this;
 			}
 		}
 	}
 
+	/**
+	 * @param string name
+	 * @param mixed value
+	 * @return mixed|bool
+	 */
 	attr(name, value = null) {
 		if(name && !name.isEmpty()) {
 			if(this.multiple) {

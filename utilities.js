@@ -1,18 +1,20 @@
 import Select from "./select.js";
 
+const html = document.documentElement;
+
 let
 	www = String(window.location.origin + "/"),
 	ww = window.innerWidth,
 	wh = window.innerHeight,
-	dw = document.documentElement.clientWidth,
-	dh = document.documentElement.clientHeight,
+	dw = html.clientWidth,
+	dh = html.clientHeight,
 	bw = document.body.clientWidth,
 	bh = document.body.clientHeight
 ;
 window.addEventListener("resize", function() {
 	wh = window.innerHeight;
-	dw = document.documentElement.clientWidth;
-	dh = document.documentElement.clientHeight;
+	dw = html.clientWidth;
+	dh = html.clientHeight;
 	bw = document.body.clientWidth;
 	bh = document.body.clientHeight;
 });
@@ -76,6 +78,7 @@ export {
     SystemFn,
     $, 
     www,
+    html,
     isNull,
     isUndefined,
     isDeclared,

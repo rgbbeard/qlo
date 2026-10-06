@@ -38,6 +38,51 @@ Object.entries({
 	}
 });
 
+// Superior elements
+Object.entries({
+  	addClass: function(...cls) {
+  		let classes = this.className.trim() ? this.className.trim().split(/\s+/).filter(Boolean) : [];
+
+  		cls.forEach(c => {
+  			if(!classes.includes(cls)) {
+  				classes.push(cls);
+  			}
+  		});
+
+  		this.className = classes.join(" ");
+  	},
+  	removeClass: function(...cls) {
+		let classes = this.className.trim() ? this.className.trim().split(/\s+/) : [];
+  		
+  		cls.forEach(c => {
+  			if(classes.includes(cls)) {
+  				delete classes[cls];
+  			}
+  		});
+
+  		this.className = classes.filter(Boolean).join(" ");
+  	},
+  	toggleClass: function(...cls) {
+		let classes = this.className?.trim() ? this.className.trim().split(/\s+/).filter(Boolean) : [];
+
+  		cls.forEach(c => {
+  			!classes.includes(cls) ?
+  				classes.push(cls) :
+  				delete classes[cls];
+  		});
+
+  		this.className = classes.filter(Boolean).join(" ");
+  	}
+}).forEach(([name, fn]) => {
+	if(!HTMLDocument.prototype[name]) {
+		Object.defineProperty(HTMLDocument.prototype, name, {
+			value: fn,
+			writable: false,
+			configurable: false
+		});
+	}
+});
+
 // Array
 Object.entries({
   	prepend: function(o) {
