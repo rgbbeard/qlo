@@ -40,6 +40,11 @@ Object.entries({
 
 // Superior elements
 Object.entries({
+	hasClass: function(cls) {
+		let classes = this.className.trim() ? this.className.trim().split(/\s+/).filter(Boolean) : [];
+
+  		return classes.includes(cls);
+	},
   	addClass: function(...cls) {
   		let classes = this.className.trim() ? this.className.trim().split(/\s+/).filter(Boolean) : [];
 
